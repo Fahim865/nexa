@@ -174,6 +174,10 @@ export function getToolById(id: ToolId | string) {
   return TOOL_REGISTRY.find((tool) => tool.id === id);
 }
 
+export function getToolByRoute(route: string) {
+  return TOOL_REGISTRY.find((tool) => tool.route === route);
+}
+
 export function getToolsForCategory(categoryId: ToolCategoryId) {
   const category: ToolCategoryDefinition = TOOL_CATEGORIES.find((item) => item.id === categoryId) ?? TOOL_CATEGORIES[0];
 

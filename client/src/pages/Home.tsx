@@ -15,7 +15,6 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
   FEATURED_TOOL_IDS,
   getToolById,
-  getToolsForCategory,
   PLAN_CONFIG,
   searchToolRegistry,
   TOOL_CATEGORIES,
@@ -45,6 +44,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 const navItems = [
   { label: "Tool index", href: "#tool-index" },
@@ -64,10 +64,12 @@ function StatusPill({ status }: { status: "available" | "beta" | "coming-soon" }
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+  const [, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<ToolId>("ai-summarizer");
   const [activeCategoryId, setActiveCategoryId] = useState<ToolCategoryId>("all");
+  const [toolIndexQuery, setToolIndexQuery] = useState("");
   const [toolSearchQuery, setToolSearchQuery] = useState("");
   const [calcLeft, setCalcLeft] = useState("24");
   const [calcRight, setCalcRight] = useState("16");
@@ -86,7 +88,10 @@ export default function Home() {
     }),
     [],
   );
-  const visibleTools = useMemo(() => getToolsForCategory(activeCategoryId), [activeCategoryId]);
+  const visibleTools = useMemo(
+    () => searchToolRegistry(toolIndexQuery, activeCategoryId),
+    [activeCategoryId, toolIndexQuery],
+  );
   const commandSearchResults = useMemo(() => searchToolRegistry(toolSearchQuery), [toolSearchQuery]);
   const wordCount = words.trim() ? words.trim().split(/\s+/).length : 0;
 
@@ -104,6 +109,10 @@ export default function Home() {
   const chooseTool = (toolId: ToolId) => {
     setSelectedId(toolId);
     scrollToId("feature-lens");
+  };
+
+  const openToolRoute = (route: string) => {
+    setLocation(route);
   };
 
   const handleToolAction = () => {
@@ -249,26 +258,40 @@ export default function Home() {
                 </button>
               ))}
             </aside>
-            <div className="tool-grid">
-              {visibleTools.map((tool, index) => {
-                const Icon = tool.icon;
-                return (
-                  <button key={tool.id} className={`nexa-tool-card tool-card-${index + 1}`} onClick={() => {
-                    chooseTool(tool.id);
-                  }}>
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="tool-icon"><Icon size={21} /></span>
-                      <StatusPill status={tool.status} />
-                    </div>
-                    <div>
-                      <p className="tool-category">{tool.category}</p>
-                      <h3>{tool.name}</h3>
-                      <p>{tool.description}</p>
-                    </div>
-                    <div className="tool-card-footer"><span>{tool.creditCost} credit{tool.creditCost > 1 ? "s" : ""}</span><ArrowUpRight size={17} /></div>
-                  </button>
-                );
-              })}
+            <div className="tool-index-results">
+              <div className="tool-index-toolbar">
+                <label className="tool-index-search">
+                  <Search size={16} aria-hidden="true" />
+                  <input
+                    type="search"
+                    value={toolIndexQuery}
+                    onChange={(event) => setToolIndexQuery(event.target.value)}
+                    placeholder="Search the tool index"
+                    aria-label="Search the tool index"
+                  />
+                </label>
+                <p>{visibleTools.length} of {TOOL_REGISTRY.length} tools</p>
+              </div>
+              <div className="tool-grid">
+                {visibleTools.map((tool, index) => {
+                  const Icon = tool.icon;
+                  return (
+                    <button key={tool.id} className={`nexa-tool-card tool-card-${index + 1}`} onClick={() => openToolRoute(tool.route)}>
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="tool-icon"><Icon size={21} /></span>
+                        <StatusPill status={tool.status} />
+                      </div>
+                      <div>
+                        <p className="tool-category">{tool.category}</p>
+                        <h3>{tool.name}</h3>
+                        <p>{tool.description}</p>
+                      </div>
+                      <div className="tool-card-footer"><span>{tool.creditCost} credit{tool.creditCost > 1 ? "s" : ""}</span><ArrowUpRight size={17} /></div>
+                    </button>
+                  );
+                })}
+              </div>
+              {visibleTools.length === 0 ? <p className="tool-index-empty">No registered tool matches this category and search.</p> : null}
             </div>
           </div>
         </section>
@@ -417,7 +440,7 @@ export default function Home() {
               return <CommandItem key={tool.id} value={`${tool.name} ${tool.category} ${tool.description} ${tool.route}`} onSelect={() => {
                 setSearchOpen(false);
                 setToolSearchQuery("");
-                chooseTool(tool.id);
+                openToolRoute(tool.route);
               }}><Icon size={16} /><span>{tool.name}</span><span className="ml-auto text-xs text-muted-foreground">{tool.category}</span></CommandItem>;
             })}
           </CommandGroup>

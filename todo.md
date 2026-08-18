@@ -1,7 +1,6 @@
-# NEXA Tool Registry Enhancement
+# NEXA Tool Navigation Enhancement
 
-- [x] Review the current registry, Tool Index, category rail, and command-search usage.
-- [x] Establish registry-derived category and lookup selectors without changing the premium visual system.
-- [x] Replace the artificial Tool Index display limit with complete registry rendering.
-- [x] Connect category selection and search results to the registry with truthful existing actions.
-- [x] Run TypeScript and production build verification, then report the exact changes.
+- [x] Review current registry definitions, existing Tool Index interactions, and route handling.
+- [x] Create a registry-backed route resolver and truthful placeholder tool page.
+- [x] Make every Tool Index card and command-search result navigate to its registered route.
+- [x] Verify category filters, search behavior, direct tool routes, TypeScript, and production build.
