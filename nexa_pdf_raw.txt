@@ -1,0 +1,1666 @@
+NEXA — COMPLETE MASTER BUILD PROMPT
+You are an expert senior full-stack engineer, software architect, premium product designer, UX engineer,
+motion designer, security engineer, and SaaS product architect.
+Your task is to BUILD a premium, production-oriented web application called:
+
+NEXA
+NEXA is an all-in-one AI + utility + productivity + creator platform.
+The product should feel like a premium modern technology product rather than a generic dashboard or
+template.
+The architecture MUST be designed so that the same core business logic and services can later be reused
+for Android, iOS, desktop, or other client applications.
+Do NOT create only a static visual mockup.
+Build a real, modular application foundation with working interactions, reusable components, clean
+architecture, responsive design, server-side security, credit management, future AI integration, future
+payment integration, and future mobile compatibility.
+================================================== 1. PRODUCT VISION
+==================================================
+NEXA should become a single place where users can perform many everyday digital tasks.
+The platform combines:
+• AI tools
+• Image tools
+• PDF tools
+• Document tools
+• File utilities
+• Calculators
+• Converters
+• Productivity tools
+• Text tools
+• Creator tools
+• Personal workspace
+The long-term vision is:
+
+1
+
+"Everything you need. One intelligent workspace."
+The platform should feel:
+• intelligent
+• useful
+• fast
+• premium
+• cinematic
+• modern
+• trustworthy
+• expandable
+================================================== 2. CORE BUSINESS MODEL
+==================================================
+NEXA uses a freemium model.
+FREE PLAN:
+Price: $0
+Daily credits: 100
+PRO PLAN:
+Price: $15/month
+Monthly credits: 15,000
+Do NOT provide unlimited AI usage.
+Do NOT provide unlimited expensive processing.
+The pricing must be stored in centralized configuration.
+Do not hard-code prices or credit amounts across components.
+The architecture must make it easy to later change:
+$15 → another price
+100 → another daily amount
+15,000 → another monthly amount
+
+2
+
+================================================== 3. FREE PLAN
+==================================================
+Plan name:
+NEXA Free
+Price:
+$0
+Credits:
+100 credits per day
+Unused credits do not roll over.
+Every daily reset restores the Free user's available credits to:
+100
+Use a server-authoritative reset system.
+Do not trust the user's browser clock.
+Prefer:
+00:00 UTC
+for daily reset logic.
+The UI may display the next reset in the user's local timezone for convenience, but backend logic remains
+authoritative.
+================================================== 4. PRO PLAN
+==================================================
+Plan name:
+NEXA Pro
+Price:
+$15 USD/month
+
+3
+
+Credits:
+15,000 credits per billing cycle
+Pro users do NOT have the Free plan's 100-credit daily restriction.
+Instead, Pro users consume credits from the 15,000-credit monthly allowance.
+When the monthly allowance reaches zero:
+Show:
+"Your monthly Pro credits are exhausted."
+Then provide appropriate options such as:
+• Wait for the next billing cycle
+• Future additional-credit purchase
+• Future plan upgrade
+Do NOT implement unlimited AI.
+================================================== 5. CREDIT SYSTEM
+==================================================
+Credits are NEXA's internal usage unit.
+Credits are not equal to dollars.
+Different operations consume different amounts of credits.
+The backend MUST determine the actual credit cost.
+The frontend must never be trusted to decide:
+• user balance
+• tool cost
+• plan status
+• payment status
+================================================== 6. BASIC TOOL CREDIT COST
+==================================================
+Every meaningful completed basic utility operation consumes:
+1 credit
+
+4
+
+Examples:
+Calculator: 1 credit per completed calculation/session according to configured usage rule.
+Percentage Calculator: 1 credit
+Age Calculator: 1 credit
+Tip Calculator: 1 credit
+BMI Calculator: 1 credit
+Word Counter: 1 credit per completed operation
+Character Counter: 1 credit
+Case Converter: 1 credit
+JSON Formatter: 1 credit
+Base64 Encoder: 1 credit
+Base64 Decoder: 1 credit
+Password Generator: 1 credit per generation action
+Image Resize: 1 credit per successful processing operation
+Image Compression: 1 credit per successful processing operation
+JPG to PNG: 1 credit per successful conversion
+PNG to JPG: 1 credit per successful conversion
+Basic PDF processing: 1 credit per successful processing operation
+IMPORTANT:
+Do NOT charge credits for normal UI interaction.
+Examples:
+Opening a tool: 0 credits
+Selecting a file: 0 credits
+
+5
+
+Changing a dropdown: 0 credits
+Typing into a text box: 0 credits
+Clicking "Process": consume the configured tool credits only after the operation is accepted/started
+according to the tool's rules.
+Downloading an already-created result: 0 credits unless specifically configured.
+Notes:
+Do not charge 1 credit for every keystroke or every tiny interaction.
+A meaningful completed operation should be the chargeable event.
+================================================== 7. AI CREDIT COSTS
+==================================================
+AI tools consume more credits than basic utilities.
+INITIAL CREDIT CONFIGURATION:
+Short AI Task: 5 credits
+Standard AI Task: 10 credits
+Advanced AI Task: 20 credits
+Large AI Task: 30 credits
+Very Large/Expensive AI Task: 50+ credits
+Examples:
+AI Title Generator: 5 credits
+AI Short Caption Generator: 5 credits
+AI Rewriter: 5 credits
+AI Summarizer: 10 credits
+AI Translator: 10 credits
+AI Email Generator: 10 credits
+
+6
+
+AI Content Generator: 10 credits
+AI Idea Generator: 5 credits
+AI Hook Generator: 5 credits
+AI Content Improver: 10 credits
+AI Script Generator: 20 credits
+Long-form Content Generator: 30 credits
+Advanced Document Analysis: 30 credits
+Future image/video/audio AI: 50–500+ credits depending on actual provider cost
+Every credit cost must be controlled centrally.
+================================================== 8. CREDIT CONFIGURATION
+==================================================
+Create a central configuration such as:
+FREE: price = 0 dailyCredits = 100 monthlyCredits = 0
+PRO: price = 15 dailyCredits = 0 monthlyCredits = 15000
+Tool configuration should define:
+toolId name category creditCost provider model maxInput maxOutput availability status
+Do not scatter values throughout the application.
+================================================== 9. CREDIT LEDGER
+==================================================
+Create a proper credit transaction ledger.
+Each credit change should create a transaction record.
+Conceptual fields:
+userId transactionId type amount toolId reason createdAt
+Possible transaction types:
+
+7
+
+DAILY_GRANT
+MONTHLY_GRANT
+TOOL_USAGE
+AI_USAGE
+REFUND
+ADMIN_ADJUSTMENT
+PROMOTION
+PURCHASED_CREDITS
+The system must support audits and analytics.
+================================================== 10. CREDIT BALANCE
+==================================================
+Track:
+current balance
+credits used today
+credits granted today
+credits used this month
+daily reset timestamp
+monthly billing period
+next reset
+next billing date
+current plan
+subscription status
+================================================== 11. FREE USER EXPERIENCE
+==================================================
+
+8
+
+Dashboard should show:
+"100 / 100 credits"
+After usage:
+"73 / 100 credits"
+Low balance:
+"18 credits remaining"
+Zero:
+"Your daily credits are exhausted."
+Buttons:
+"Upgrade to Pro"
+"Come back tomorrow"
+Do not use manipulative dark patterns.
+================================================== 12. PRO USER EXPERIENCE
+==================================================
+Dashboard should show:
+"12,450 / 15,000 credits"
+Also display:
+billing period
+next renewal
+current plan
+usage history
+When low:
+"2,000 credits remaining this billing cycle."
+
+9
+
+At zero:
+"Your monthly Pro credits are exhausted."
+================================================== 13. FREE CREDIT RESET
+==================================================
+Free users receive exactly:
+100 credits/day
+At daily reset:
+balance becomes:
+100
+Unused balance does not roll over.
+The backend must perform this reset.
+Never rely on:
+• page refresh
+• browser clock
+• localStorage alone
+================================================== 14. PRO CREDIT GRANT
+==================================================
+When a new paid Pro subscription becomes active:
+Grant:
+15,000 credits
+Create:
+MONTHLY_GRANT
+transaction.
+At the beginning of each confirmed billing cycle:
+Grant another:
+
+10
+
+15,000 credits
+Prevent duplicate grants from duplicate payment webhooks.
+Unused monthly credits expire at the end of the billing cycle unless a future rollover setting is explicitly
+enabled.
+================================================== 15. CREDIT RESERVATION
+==================================================
+For AI operations:
+1. Authenticate user.
+2. Verify plan.
+3. Determine tool.
+4. Determine credit cost.
+5. Check balance.
+6. Reserve/deduct credits.
+7. Call AI provider.
+8. If the request fails due to NEXA/provider/system failure before meaningful processing, refund the
+reserved credits when appropriate.
+9. Store usage record.
+10. Return result.
+Never allow credits to become negative.
+================================================== 16. AI MODEL STRATEGY
+==================================================
+Do not use the most expensive AI model for every request.
+Create AI routing abstraction.
+Conceptually:
+Simple task → cost-efficient model
+Standard task → standard model
+Advanced task → stronger model
+Model selection must be configurable.
+Do not hard-code model names inside components.
+
+11
+
+================================================== 17. AI TOKEN LIMITS
+==================================================
+Credit limits alone are insufficient.
+Every AI request must have:
+maximum input length
+maximum output tokens
+maximum request size
+maximum execution time
+maximum provider exposure
+A 5-credit tool must not secretly generate an enormous response that causes disproportionate provider
+cost.
+================================================== 18. AI SERVICE ARCHITECTURE
+==================================================
+Create a provider-independent AI service layer.
+Conceptual interface:
+AIProvider
+Methods may include:
+generateText()
+summarize()
+rewrite()
+translate()
+generateStructuredOutput()
+Create provider adapters.
+Example:
+
+12
+
+OpenAIProvider
+FutureProvider
+This allows NEXA to change providers later.
+================================================== 19. AI API SECURITY
+==================================================
+NEVER expose private AI API keys in frontend JavaScript.
+Never do:
+Browser → secret AI key → AI provider
+Instead:
+Browser → NEXA backend → AI provider → NEXA backend → Browser
+AI secrets must be stored as server-side environment variables.
+Create:
+.env.example
+but NEVER commit real:
+.env
+================================================== 20. AI TOOLS
+==================================================
+Create:
+• AI Summarizer
+• AI Rewriter
+• AI Translator
+• AI Email Generator
+• AI Title Generator
+• AI Content Generator
+• AI Caption Generator
+• AI Hashtag Generator
+• AI Script Generator
+• AI Hook Generator
+• AI Idea Generator
+• AI Content Improver
+
+13
+
+• AI Paragraph Generator
+• AI Document Analysis
+• AI Assistant
+Each tool must have:
+input
+options
+loading state
+output
+copy
+regenerate where appropriate
+clear
+save
+error state
+empty state
+credit cost display
+================================================== 21. EXPENSIVE AI TOOLS
+==================================================
+Do NOT launch expensive features as cheap or unlimited.
+Examples:
+• image generation
+• video generation
+• voice generation
+• large document processing
+• advanced OCR
+• premium background removal
+• advanced speech tools
+These should have higher credit costs or initially be:
+Coming Soon
+
+14
+
+or:
+Beta
+Never pretend unfinished features are fully functional.
+================================================== 22. BASIC TOOLS WITHOUT AI
+==================================================
+Whenever practical, basic tools should work locally/client-side.
+Examples:
+• Calculator
+• Percentage Calculator
+• Age Calculator
+• BMI Calculator
+• Tip Calculator
+• Stopwatch
+• Countdown
+• Notes
+• To-Do
+• Word Counter
+• Character Counter
+• Case Converter
+• JSON Formatter
+• Base64 Encoder/Decoder
+• Password Generator
+• Image Resize
+• Image Compression
+• Image Format Conversion
+• Basic local file transformations
+These tools should not depend on an external AI provider.
+They still consume their configured 1-credit usage fee per meaningful completed operation.
+================================================== 23. IMAGE TOOLS
+==================================================
+Create:
+• Image Compressor
+• Image Resizer
+• Image Cropper
+• JPG to PNG
+• PNG to JPG
+
+15
+
+• Image Format Converter
+• Image Preview
+• quality controls
+• before/after preview
+• drag and drop
+• file picker
+• progress state
+• download
+• reset
+Use local processing wherever practical.
+================================================== 24. IMAGE BACKGROUND REMOVER
+==================================================
+Create a polished background remover workspace.
+Include:
+• upload
+• preview
+• original image
+• processed image
+• transparent preview
+• download
+• reset
+Use a future service abstraction.
+If the actual AI/background-removal engine is not connected, do not pretend it is working.
+================================================== 25. PDF AND DOCUMENT TOOLS
+==================================================
+Create:
+• PDF Merge
+• PDF Split
+• Image to PDF
+• PDF to Image
+• Text Extraction
+• Document Preview
+• file reorder
+• file delete
+• file processing
+• download
+Use local processing when practical.
+
+16
+
+================================================== 26. FILE TOOLS
+==================================================
+Create:
+• File Converter interface
+• File Compressor interface
+• File Preview
+• Upload Center
+• Recent Files
+Include:
+• drag and drop
+• file metadata
+• file size
+• progress
+• processing
+• completion
+• error state
+Do not build enormous permanent cloud storage for the first version.
+================================================== 27. CALCULATORS
+==================================================
+Create fully functional:
+• Basic Calculator
+• Scientific Calculator
+• Percentage Calculator
+• Age Calculator
+• Discount Calculator
+• BMI Calculator
+• Loan Calculator
+• Tip Calculator
+• Date Difference Calculator
+Calculations must be accurate.
+Validate inputs.
+================================================== 28. CONVERTERS
+==================================================
+
+17
+
+Create:
+• Currency Converter
+• Length Converter
+• Weight Converter
+• Temperature Converter
+• Time Converter
+• Data Storage Converter
+• Area Converter
+• Volume Converter
+• Speed Converter
+Currency exchange rates must use a future API/service abstraction.
+Do not hard-code fake live rates.
+================================================== 29. PRODUCTIVITY TOOLS
+==================================================
+Create:
+• To-Do
+• Notes
+• Pomodoro
+• Stopwatch
+• Countdown
+• Daily Planner
+• Habit Tracker
+Use local persistence initially.
+Support:
+• create
+• edit
+• delete
+• complete
+• favorite
+• search
+• filter
+================================================== 30. TEXT TOOLS
+==================================================
+Create:
+• Word Counter
+• Character Counter
+
+18
+
+• Case Converter
+• Remove Duplicate Lines
+• Text Formatter
+• JSON Formatter
+• Base64 Encoder
+• Base64 Decoder
+• Password Generator
+Provide:
+• copy
+• reset
+• clear
+• validation
+• download where useful
+================================================== 31. CREATOR TOOLS
+==================================================
+Create:
+• YouTube Title Generator
+• Social Caption Generator
+• Hashtag Generator
+• Thumbnail Idea Generator
+• Content Idea Generator
+• Video Script Generator
+• Hook Generator
+• Video Description Generator
+AI-powered creator tools must consume configured credits.
+================================================== 32. DASHBOARD
+==================================================
+Create a premium personalized dashboard.
+Display:
+• welcome message
+• current credit balance
+• recent tools
+• favorite tools
+• recent files
+• quick actions
+• productivity overview
+• saved notes
+• activity
+
+19
+
+• suggested tools
+Do not make the dashboard look like a corporate analytics panel.
+================================================== 33. UNIVERSAL SEARCH
+==================================================
+Create a global search/command palette.
+Search:
+• tools
+• categories
+• actions
+• favorites
+• recent tools
+Support:
+• keyboard shortcut
+• arrow navigation
+• enter
+• escape
+• recent searches
+• category labels
+================================================== 34. FAVORITES
+==================================================
+Allow users to favorite tools.
+Persist favorites.
+Create:
+/favorites
+Favorite button should animate subtly.
+================================================== 35. RECENT TOOLS
+==================================================
+Track recently used tools.
+Persist locally or in the user's account when backend auth exists.
+Create:
+
+20
+
+/recent
+Show:
+• tool
+• last used
+• quick open
+================================================== 36. SETTINGS
+==================================================
+Create:
+• Appearance
+• Light/Dark/System
+• Reduced Motion
+• Notifications
+• Privacy
+• Data Management
+• Keyboard Shortcuts
+• Account
+• Subscription
+• Credits
+• About
+Allow clearing local data.
+================================================== 37. CINEMATIC HOMEPAGE
+==================================================
+The homepage must feel like a premium product launch.
+Hero:
+• large headline
+• supporting text
+• primary CTA
+• secondary CTA
+• animated background
+• floating tool previews
+• ambient motion
+• premium typography
+• subtle lighting
+Possible headline:
+"Everything you need. One intelligent workspace."
+
+21
+
+Primary CTA:
+"Explore Tools"
+Secondary CTA:
+"Try AI"
+================================================== 38. CINEMATIC VISUAL DESIGN
+==================================================
+Use:
+• premium dark theme
+• polished light theme
+• subtle glass effects
+• layered surfaces
+• depth
+• soft shadows
+• elegant typography
+• ambient gradients
+• animated abstract shapes
+• subtle particle/light motion
+• modern spacing
+• sophisticated composition
+Do not make it look like:
+• gaming UI
+• cheap SaaS template
+• generic admin dashboard
+• old utility website
+================================================== 39. PRODUCT CARD DESIGN
+==================================================
+Every tool card should contain:
+• icon
+• name
+• description
+• category
+• favorite
+• open action
+
+22
+
+Hover:
+• slight elevation
+• subtle scale
+• light/glow
+• icon movement
+• border transition
+Do not overdo animation.
+================================================== 40. CINEMATIC TOOL SELECTION
+==================================================
+This is a signature NEXA interaction.
+When the user selects a tool:
+1. Detect selected card.
+2. Smoothly transition selected card.
+3. Expand card.
+4. Animate icon/image position.
+5. Fade/move surrounding elements.
+6. Transform the selected card into the tool workspace.
+7. Reveal content progressively.
+8. Maintain visual continuity.
+Use:
+• transform
+• opacity
+• scale
+• blur
+• position
+• layout transitions
+• shared-element style animation where practical
+It should feel like:
+"The selected product opened"
+not:
+"A new page suddenly loaded."
+================================================== 41. CINEMATIC SCROLL
+==================================================
+
+23
+
+Homepage sections:
+Hero
+→ Featured Tools
+→ AI Tools
+→ Image Tools
+→ Productivity
+→ Creator Tools
+→ Why NEXA
+→ Personal Workspace
+→ Final CTA
+Use:
+• reveal
+• stagger
+• subtle parallax
+• depth
+Do not break normal browser scrolling.
+Respect reduced-motion preferences.
+================================================== 42. FEATURED TOOL SHOWCASE
+==================================================
+Create an interactive featured tool area.
+When user switches tool:
+• image/icon transitions
+• text updates
+• buttons update
+• background changes subtly
+• content animates smoothly
+================================================== 43. INTERACTIVE TOOL PREVIEWS
+==================================================
+
+24
+
+Show miniature interactive previews of:
+• AI Summarizer
+• Image Compressor
+• Calculator
+• Notes
+• other selected tools
+Make the previews useful, not merely decorative.
+================================================== 44. RESPONSIVE DESIGN
+==================================================
+Support:
+• desktop
+• laptop
+• tablet
+• mobile
+Mobile must not feel like a squeezed desktop.
+Desktop:
+• sidebar
+• workspace
+• large layouts
+Mobile:
+• bottom navigation
+• touch-friendly controls
+• stacked layout
+• full-screen tool workspace
+• mobile upload controls
+================================================== 45. DESKTOP SIDEBAR
+==================================================
+Include:
+• NEXA logo
+• Home
+• AI
+• Image
+• PDF & Documents
+• Files
+• Calculators
+
+25
+
+• Productivity
+• Text
+• Creator
+• Favorites
+• Recent
+• Settings
+Allow compact/expanded modes.
+================================================== 46. MOBILE NAVIGATION
+==================================================
+Use a clean bottom navigation:
+Home
+Tools
+Search
+Favorites
+Settings/Profile
+Do not overcrowd the navigation.
+================================================== 47. DESIGN SYSTEM
+==================================================
+Create a consistent design system for:
+• typography
+• spacing
+• radii
+• shadows
+• buttons
+• cards
+• inputs
+• modals
+• tabs
+• toast
+• surfaces
+• borders
+Do not style components randomly.
+
+26
+
+================================================== 48. ANIMATION SYSTEM
+==================================================
+Create reusable motion presets:
+fadeIn
+fadeUp
+fadeDown
+scaleIn
+slideIn
+pageEnter
+pageExit
+cardHover
+modalOpen
+modalClose
+toastEnter
+Use consistent easing and duration.
+Animations should communicate hierarchy and feedback.
+================================================== 49. REDUCED MOTION
+==================================================
+Support:
+prefers-reduced-motion
+When enabled:
+• reduce parallax
+• reduce background movement
+• reduce unnecessary transitions
+• preserve important feedback
+
+27
+
+================================================== 50. PERFORMANCE
+==================================================
+Optimize:
+• images
+• rendering
+• animation
+• large lists
+• tool loading
+• unnecessary re-renders
+Do not ship unnecessary dependencies.
+The application should remain usable on lower-end devices.
+================================================== 51. ACCESSIBILITY
+==================================================
+Use:
+• semantic HTML
+• keyboard navigation
+• visible focus
+• labels
+• contrast
+• accessible controls
+• reduced motion
+• screen reader support where appropriate
+================================================== 52. ROUTING
+==================================================
+Use clean routes.
+Examples:
+/
+/dashboard
+/tools
+/tools/ai
+/tools/ai/summarizer
+
+28
+
+/tools/ai/rewriter
+/tools/image
+/tools/image/compressor
+/tools/pdf
+/tools/pdf/merge
+/tools/calculators
+/tools/productivity
+/tools/text
+/tools/creator
+/favorites
+/recent
+/credits
+/pricing
+/settings
+/help
+================================================== 53. TOOL REGISTRY
+==================================================
+Create a centralized tool registry.
+Every tool defines:
+id
+slug
+name
+description
+
+29
+
+category
+icon
+route
+creditCost
+provider
+model
+availability
+status
+This registry should power:
+• search
+• categories
+• cards
+• navigation
+• recommendations
+• favorites
+• recent tools
+Adding a new tool should be easy.
+================================================== 54. TOOL STATUS
+==================================================
+Allow:
+available
+beta
+coming-soon
+Do not pretend an unfinished API feature is fully functional.
+================================================== 55. USER AUTHENTICATION
+==================================================
+Do not require payment for initial development.
+
+30
+
+Prepare architecture for:
+• email login
+• Google login
+• user profile
+• cloud sync
+• subscription
+• credits
+• usage history
+Keep authentication modular.
+================================================== 56. DATABASE
+==================================================
+Prepare models for:
+users
+plans
+subscriptions
+credit_balances
+credit_transactions
+ai_usage
+payment_events
+user_preferences
+favorites
+recent_tools
+notes
+tasks
+files
+activity
+
+31
+
+================================================== 57. USER DATA
+==================================================
+Store:
+userId
+email
+plan
+subscriptionStatus
+creditBalance
+lastDailyReset
+billingPeriodStart
+billingPeriodEnd
+createdAt
+updatedAt
+================================================== 58. SECURITY
+==================================================
+Never expose:
+• AI API keys
+• payment secrets
+• webhook secrets
+• database credentials
+Use server-side environment variables.
+Never trust frontend values for:
+• plan
+• credits
+• price
+• payment success
+• tool cost
+
+32
+
+================================================== 59. RATE LIMITING
+==================================================
+Implement server-side rate limiting for AI endpoints.
+Consider:
+per user
+per IP
+per endpoint
+per minute
+per hour
+Keep values configurable.
+================================================== 60. ABUSE PREVENTION
+==================================================
+Architect for:
+• email verification
+• rate limiting
+• CAPTCHA
+• suspicious activity detection
+• account abuse prevention
+Do not overcomplicate the first MVP.
+================================================== 61. PAYMENT ARCHITECTURE
+==================================================
+Create:
+PaymentService
+SubscriptionService
+WebhookService
+Payment provider integration must be abstracted.
+
+33
+
+The intended first production payment architecture should support a merchant-of-record/subscription
+provider such as Paddle, subject to actual account availability and approval.
+Do not create fake payments.
+================================================== 62. PAYMENT FLOW
+==================================================
+User:
+Upgrade to Pro
+↓
+Payment checkout
+↓
+Payment provider
+↓
+Verified webhook
+↓
+NEXA backend
+↓
+Subscription activated
+↓
+15,000 monthly credits granted
+The frontend must never activate Pro merely because it receives a success-looking request.
+The verified backend webhook is authoritative.
+================================================== 63. PAYMENT WEBHOOK SECURITY
+==================================================
+Verify webhook authenticity.
+
+34
+
+Use idempotency.
+Prevent:
+• duplicate credit grants
+• fake payment events
+• replay attacks
+A transaction must never grant Pro twice.
+================================================== 64. SUBSCRIPTION STATES
+==================================================
+Support:
+FREE
+PENDING
+ACTIVE_PRO
+PAST_DUE
+CANCELED
+EXPIRED
+After expiration:
+User becomes Free.
+Do not delete their data.
+================================================== 65. CANCELLATION
+==================================================
+If user cancels Pro:
+Allow Pro access until the end of the paid billing period according to the payment provider/business rules.
+Then downgrade to Free.
+================================================== 66. PRICING PAGE
+==================================================
+Create:
+
+35
+
+/pricing
+FREE
+$0
+100 credits/day
+Basic tools
+Basic AI access
+Productivity tools
+Image/PDF tools
+Text tools
+PRO
+$15/month
+15,000 credits/month
+No daily 100-credit limit
+Advanced AI
+Higher limits
+Premium tools
+Ad-free experience when ads are enabled
+Priority access to new features
+Do not claim features that do not exist.
+================================================== 67. UPGRADE UX
+==================================================
+At low balance:
+"18 credits remaining."
+
+36
+
+Button:
+"Upgrade to Pro"
+At zero:
+"Your daily credits are exhausted."
+Buttons:
+"Upgrade to Pro"
+"Come back tomorrow"
+================================================== 68. FUTURE ADD-ON CREDITS
+==================================================
+Architect for future credit purchases.
+Example future package:
+1,000 credits
+$X
+Do not activate until configured.
+================================================== 69. ADS
+==================================================
+Create:
+ADS_ENABLED=false
+initially.
+Later:
+Free users: ads enabled
+Pro: ads disabled
+Do not add intrusive ads to critical workflows.
+Keep the premium design intact.
+
+37
+
+================================================== 70. ANALYTICS
+==================================================
+Prepare event tracking for:
+tool_opened
+tool_completed
+ai_request_started
+ai_request_completed
+ai_request_failed
+credits_spent
+credits_exhausted
+upgrade_clicked
+checkout_started
+checkout_completed
+subscription_canceled
+subscription_renewed
+Do not send sensitive user content to analytics.
+================================================== 71. BUSINESS METRICS
+==================================================
+Prepare admin metrics for:
+• Daily Active Users
+• Monthly Active Users
+• Free users
+• Pro users
+• Conversion rate
+• Credits consumed
+• Estimated AI cost
+• Revenue
+• Churn
+• Most used tools
+
+38
+
+• Most expensive tools
+Do not expose admin metrics publicly.
+================================================== 72. AI COST MONITORING
+==================================================
+For AI requests, store enough metadata to estimate provider cost:
+model
+input tokens when available
+output tokens when available
+estimated provider cost
+credit cost
+tool
+user
+timestamp
+Avoid storing sensitive prompt content unless necessary.
+================================================== 73. PROFIT PROTECTION
+==================================================
+The system MUST protect NEXA from uncontrolled AI cost.
+For each AI tool define:
+creditCost
+maxInput
+maxOutput
+maxCostExposure
+If a request is too large:
+Reject or reduce it gracefully.
+
+39
+
+Example:
+"This request is larger than the current plan limit."
+Never allow a cheap credit action to create huge provider costs.
+================================================== 74. FREE HOSTING ARCHITECTURE
+==================================================
+Build the application for a low/no-cost serverless deployment path.
+Target architecture:
+Frontend: Cloudflare Pages
+Backend/API: Cloudflare Workers or Pages Functions
+Database: Free-tier compatible database
+AI: External API accessed securely from backend
+Payments: External payment provider through backend/webhooks
+Avoid requiring:
+• dedicated VPS
+• paid GPU
+• always-on server
+• expensive infrastructure
+for the MVP.
+================================================== 75. HOSTING COMPATIBILITY
+==================================================
+Keep the code compatible with serverless/edge deployment.
+Avoid unnecessary server-specific APIs.
+If a dependency is incompatible with the selected runtime, replace it.
+The application should be efficient with:
+• requests
+• database writes
+• payloads
+
+40
+
+• server-side computation
+================================================== 76. FILE PROCESSING
+==================================================
+Use local processing wherever practical.
+Validate:
+• file type
+• file size
+• file structure
+Avoid storing files permanently unless necessary.
+================================================== 77. PRIVACY
+==================================================
+Clearly distinguish:
+LOCAL PROCESSING
+SERVER PROCESSING
+AI PROCESSING
+Never falsely claim that user data remains local if it is sent to a third-party service.
+================================================== 78. FEATURE FLAGS
+==================================================
+Support:
+AI_ENABLED
+PAYMENTS_ENABLED
+ADS_ENABLED
+PREMIUM_TOOLS_ENABLED
+BETA_TOOLS_ENABLED
+The initial development mode should allow:
+AI_ENABLED=false
+
+41
+
+PAYMENTS_ENABLED=false
+ADS_ENABLED=false
+until real production credentials/services are connected.
+================================================== 79. DEVELOPMENT MODE
+==================================================
+When payment is disabled:
+"Payments are coming soon."
+Do not give Pro access from a frontend-only development button.
+When AI is disabled:
+"AI service is not connected."
+Do not fake AI output as real provider output.
+================================================== 80. SEO
+==================================================
+Create:
+• page titles
+• meta descriptions
+• semantic HTML
+• social metadata
+• clean URLs
+• tool-specific metadata
+Each major tool should have a meaningful route.
+================================================== 81. FOOTER
+==================================================
+Include:
+NEXA
+Tools
+Categories
+
+42
+
+About
+Privacy
+Terms
+Help
+Contact
+Social placeholders
+Keep it clean.
+================================================== 82. FINAL HOMEPAGE
+==================================================
+Suggested homepage flow:
+Hero
+→ Featured Tools
+→ AI Tools
+→ Image Tools
+→ PDF & Documents
+→ Productivity
+→ Creator Tools
+→ Why NEXA
+→ Dashboard Preview
+→ Pricing
+→ Final CTA
+→ Footer
+================================================== 83. FINAL CTA
+==================================================
+
+43
+
+Use a premium CTA:
+"Stop switching between dozens of tools."
+"Bring everything into one workspace."
+Button:
+"Explore NEXA"
+================================================== 84. FIRST RELEASE PRIORITY
+==================================================
+First release should prioritize genuinely working tools.
+Priority list:
+1. Basic Calculator
+2. Percentage Calculator
+3. Age Calculator
+4. Word Counter
+5. Character Counter
+6. Text Formatter
+7. Password Generator
+8. Image Compressor
+9. Image Resizer
+10. Image Format Converter
+11. Notes
+12. To-Do
+13. Pomodoro
+14. PDF Merge interface
+15. AI Summarizer
+16. AI Rewriter
+17. AI Title Generator
+18. AI Caption Generator
+Other advanced tools can initially be:
+Beta
+or:
+Coming Soon
+Do not sacrifice quality merely to claim every feature exists.
+
+44
+
+================================================== 85. PROJECT STRUCTURE
+==================================================
+Use a clean modular architecture.
+Suggested conceptual structure:
+src/
+components/
+components/ui/
+components/layout/
+components/motion/
+features/
+features/ai/
+features/images/
+features/pdf/
+features/files/
+features/calculators/
+features/productivity/
+features/text/
+features/creator/
+services/
+hooks/
+lib/
+data/
+types/
+
+45
+
+routes/
+styles/
+Do not place all business logic inside UI components.
+================================================== 86. STORAGE
+==================================================
+Use local storage for initial:
+• theme
+• favorites
+• recent tools
+• notes
+• tasks
+• preferences
+Create a reusable storage abstraction.
+Backend database should become authoritative when authentication exists.
+================================================== 87. LOCAL TOOLS
+==================================================
+Whenever practical, prefer browser-side processing for:
+• calculations
+• simple text tools
+• image compression
+• image resizing
+• image conversion
+• basic file transformations
+This reduces infrastructure and AI costs.
+================================================== 88. LOADING STATES
+==================================================
+Create:
+• initial loading
+• skeleton loaders
+• AI loading
+• processing states
+• upload progress
+• success states
+
+46
+
+• error states
+Never leave the interface looking frozen.
+================================================== 89. EMPTY STATES
+==================================================
+Create meaningful empty states for:
+• favorites
+• recent tools
+• files
+• notes
+• tasks
+• AI history
+Every empty state should tell the user what to do next.
+================================================== 90. ERROR HANDLING
+==================================================
+Use human-friendly errors.
+Examples:
+"AI service is temporarily unavailable."
+"Payment could not be completed."
+"Not enough credits."
+"Unsupported file type."
+"Something went wrong. Please try again."
+Never expose stack traces to users.
+================================================== 91. NO FALSE FUNCTIONALITY
+==================================================
+This rule is mandatory.
+Never create a fake button that looks functional but does nothing.
+
+47
+
+If functionality is unavailable:
+• show Coming Soon
+• show Beta
+• create a clearly marked placeholder
+• isolate future service integration
+Never claim successful processing without actual processing.
+================================================== 92. SECURITY OF PAYMENT AND AI
+==================================================
+Private values belong server-side.
+Never expose:
+AI_API_KEY
+PAYMENT_PROVIDER_KEY
+PAYMENT_WEBHOOK_SECRET
+DATABASE_URL
+other private secrets
+Use:
+.env.example
+and secure environment configuration.
+================================================== 93. ENVIRONMENT VARIABLES
+==================================================
+Prepare variables conceptually such as:
+AI_API_KEY
+AI_PROVIDER
+PAYMENT_PROVIDER_KEY
+PAYMENT_WEBHOOK_SECRET
+PAYMENT_PRICE_ID
+
+48
+
+DATABASE_URL
+APP_URL
+AI_ENABLED
+PAYMENTS_ENABLED
+ADS_ENABLED
+PREMIUM_TOOLS_ENABLED
+================================================== 94. BUSINESS CONFIGURATION
+==================================================
+Make these configurable:
+freeDailyCredits = 100
+proMonthlyCredits = 15000
+proMonthlyPrice = 15
+basicToolCreditCost = 1
+AI credit costs
+maximum request sizes
+maximum token limits
+feature availability
+Do not require code changes for ordinary pricing experiments.
+================================================== 95. FUTURE MOBILE COMPATIBILITY
+==================================================
+Keep business logic independent from browser-only UI.
+Create reusable services for:
+• AI
+• credits
+• authentication
+
+49
+
+• payments
+• tools
+• storage
+• analytics
+This should make future mobile application development significantly easier.
+================================================== 96. MOBILE APP DIRECTION
+==================================================
+Future clients may include:
+Android
+iOS
+Desktop
+Do not make the web codebase impossible to reuse.
+Prioritize API/service separation.
+================================================== 97. BRAND
+==================================================
+Brand:
+NEXA
+Personality:
+• intelligent
+• premium
+• futuristic
+• approachable
+• useful
+Create a simple original logo treatment.
+Do not copy an existing brand.
+================================================== 98. ORIGINALITY
+==================================================
+Do not reproduce another website pixel-for-pixel.
+
+50
+
+Do not copy copyrighted:
+• text
+• assets
+• layouts
+• branding
+Take inspiration from general premium design principles only.
+Create an original composition.
+================================================== 99. QUALITY
+==================================================
+Before considering the project complete:
+• run the application
+• fix build errors
+• fix broken imports
+• fix routing
+• fix obvious console/runtime errors
+• test desktop
+• test mobile
+• test dark mode
+• test light mode
+• test search
+• test favorites
+• test recent tools
+• test local persistence
+• test core tools
+• test credit deduction
+• test daily reset
+• test Pro credit grant logic
+• test AI-disabled mode
+• test payment-disabled mode
+• verify secrets are not exposed
+================================================== 100. IMPLEMENTATION ORDER
+==================================================
+Build in this order:
+PHASE 1: Design system Application shell Navigation Homepage Tool registry Routing Responsive
+foundation Cinematic animation system Search Favorites Recent tools Dashboard Settings
+PHASE 2: Local/basic tools
+
+51
+
+PHASE 3: Authentication
+PHASE 4: Credit system
+PHASE 5: AI service abstraction and first AI tools
+PHASE 6: Pricing page
+PHASE 7: Payment integration and webhook handling
+PHASE 8: Deployment
+PHASE 9: Analytics and production hardening
+Do not attempt to fake all phases at once.
+================================================== 101. FIRST LAUNCH ECONOMICS
+==================================================
+NEXA MUST start with controlled economics.
+Free:
+100 credits/day
+Pro:
+$15/month
+Pro:
+15,000 credits/month
+Basic tool operation:
+1 credit
+AI operations:
+5–50+ credits based on cost
+Expensive AI:
+higher credit cost or disabled until verified
+
+52
+
+Unlimited AI:
+NOT ALLOWED
+The product must be designed so a small number of extremely active users cannot easily generate
+uncontrolled AI expenses.
+================================================== 102. BUSINESS GOAL
+==================================================
+The strategy is:
+Free users → discover NEXA → use useful tools → become returning users → encounter credit limit →
+upgrade to Pro if they need more usage
+The Free plan must still provide real value.
+The Pro plan must offer meaningful additional value.
+================================================== 103. FINAL USER EXPERIENCE
+==================================================
+A first-time visitor should think:
+"This is not just another utility website."
+It should feel like:
+"A complete digital toolkit."
+The experience should be:
+Beautiful
+Fast
+Useful
+Interactive
+Cinematic
+Intuitive
+Responsive
+
+53
+
+Expandable
+Secure
+App-ready
+================================================== 104. FINAL COMMAND
+==================================================
+Do not create a static landing page.
+Do not create fake payment functionality.
+Do not expose API secrets.
+Do not trust frontend credit values.
+Do not provide unlimited expensive AI usage.
+Do not fake unavailable APIs.
+Do not hard-code pricing in multiple locations.
+Do not hard-code credit costs in UI components.
+Build a modular production-oriented foundation.
+Start by inspecting the existing project.
+If an existing NEXA project exists, preserve useful code and update it rather than rebuilding unnecessarily.
+If no project exists, initialize the appropriate project.
+Begin implementation now.
+
+54
+
+
