@@ -12,7 +12,17 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useTheme } from "@/contexts/ThemeContext";
-import { FEATURED_TOOL_IDS, PLAN_CONFIG, TOOL_REGISTRY } from "@/data/nexa";
+import {
+  FEATURED_TOOL_IDS,
+  getToolById,
+  getToolsForCategory,
+  PLAN_CONFIG,
+  searchToolRegistry,
+  TOOL_CATEGORIES,
+  TOOL_REGISTRY,
+  type ToolCategoryId,
+  type ToolId,
+} from "@/data/nexa";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -56,18 +66,28 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<(typeof FEATURED_TOOL_IDS)[number]>("ai-summarizer");
+  const [selectedId, setSelectedId] = useState<ToolId>("ai-summarizer");
+  const [activeCategoryId, setActiveCategoryId] = useState<ToolCategoryId>("all");
+  const [toolSearchQuery, setToolSearchQuery] = useState("");
   const [calcLeft, setCalcLeft] = useState("24");
   const [calcRight, setCalcRight] = useState("16");
   const [calcResult, setCalcResult] = useState("40");
   const [words, setWords] = useState("Shape a single, clearer next step for your work.");
 
   const selectedTool = useMemo(
-    () => TOOL_REGISTRY.find((tool) => tool.id === selectedId) ?? TOOL_REGISTRY[0],
+    () => getToolById(selectedId) ?? TOOL_REGISTRY[0],
     [selectedId],
   );
   const SelectedIcon = selectedTool.icon;
-  const featuredTools = TOOL_REGISTRY.filter((tool) => FEATURED_TOOL_IDS.includes(tool.id as (typeof FEATURED_TOOL_IDS)[number]));
+  const featuredTools = useMemo(
+    () => FEATURED_TOOL_IDS.flatMap((toolId) => {
+      const tool = getToolById(toolId);
+      return tool ? [tool] : [];
+    }),
+    [],
+  );
+  const visibleTools = useMemo(() => getToolsForCategory(activeCategoryId), [activeCategoryId]);
+  const commandSearchResults = useMemo(() => searchToolRegistry(toolSearchQuery), [toolSearchQuery]);
   const wordCount = words.trim() ? words.trim().split(/\s+/).length : 0;
 
   useEffect(() => {
@@ -81,7 +101,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
-  const chooseTool = (toolId: (typeof FEATURED_TOOL_IDS)[number]) => {
+  const chooseTool = (toolId: ToolId) => {
     setSelectedId(toolId);
     scrollToId("feature-lens");
   };
@@ -223,19 +243,18 @@ export default function Home() {
           <div className="tool-index-layout">
             <aside className="tool-rail" aria-label="Tool categories">
               <span className="micro-label">CATEGORIES</span>
-              {["All tools", "AI & writing", "Images & files", "Numbers", "Personal workspace"].map((label, index) => (
-                <button key={label} className={index === 0 ? "active" : ""} onClick={() => toast.message(`${label} filter is a discovery preview.`)}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>{label}<ChevronRight size={15} />
+              {TOOL_CATEGORIES.map((category, index) => (
+                <button key={category.id} className={activeCategoryId === category.id ? "active" : ""} onClick={() => setActiveCategoryId(category.id)}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>{category.label}<ChevronRight size={15} />
                 </button>
               ))}
             </aside>
             <div className="tool-grid">
-              {TOOL_REGISTRY.slice(0, 6).map((tool, index) => {
+              {visibleTools.map((tool, index) => {
                 const Icon = tool.icon;
                 return (
                   <button key={tool.id} className={`nexa-tool-card tool-card-${index + 1}`} onClick={() => {
-                    if (FEATURED_TOOL_IDS.includes(tool.id as (typeof FEATURED_TOOL_IDS)[number])) chooseTool(tool.id as (typeof FEATURED_TOOL_IDS)[number]);
-                    else toast.message(`${tool.name} is mapped in the future product registry.`);
+                    chooseTool(tool.id);
                   }}>
                     <div className="flex items-start justify-between gap-3">
                       <span className="tool-icon"><Icon size={21} /></span>
@@ -269,7 +288,7 @@ export default function Home() {
                   {featuredTools.map((tool) => {
                     const Icon = tool.icon;
                     return (
-                      <button key={tool.id} className={selectedId === tool.id ? "selected" : ""} onClick={() => chooseTool(tool.id as (typeof FEATURED_TOOL_IDS)[number])} role="tab" aria-selected={selectedId === tool.id}>
+                      <button key={tool.id} className={selectedId === tool.id ? "selected" : ""} onClick={() => chooseTool(tool.id)} role="tab" aria-selected={selectedId === tool.id}>
                         <Icon size={17} /><span>{tool.name}</span><ChevronRight size={15} />
                       </button>
                     );
@@ -388,17 +407,17 @@ export default function Home() {
         </div>
       </footer>
 
-      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
-        <CommandInput placeholder="Search NEXA tools and actions…" />
+      <CommandDialog open={searchOpen} onOpenChange={(open) => { setSearchOpen(open); if (!open) setToolSearchQuery(""); }}>
+        <CommandInput placeholder="Search NEXA tools and actions…" value={toolSearchQuery} onValueChange={setToolSearchQuery} />
         <CommandList>
           <CommandEmpty>No matching tool found.</CommandEmpty>
           <CommandGroup heading="TOOLS">
-            {TOOL_REGISTRY.map((tool) => {
+            {commandSearchResults.map((tool) => {
               const Icon = tool.icon;
-              return <CommandItem key={tool.id} value={`${tool.name} ${tool.category}`} onSelect={() => {
+              return <CommandItem key={tool.id} value={`${tool.name} ${tool.category} ${tool.description} ${tool.route}`} onSelect={() => {
                 setSearchOpen(false);
-                if (FEATURED_TOOL_IDS.includes(tool.id as (typeof FEATURED_TOOL_IDS)[number])) chooseTool(tool.id as (typeof FEATURED_TOOL_IDS)[number]);
-                else { scrollToId("tool-index"); toast.message(`${tool.name} is in the NEXA registry.`); }
+                setToolSearchQuery("");
+                chooseTool(tool.id);
               }}><Icon size={16} /><span>{tool.name}</span><span className="ml-auto text-xs text-muted-foreground">{tool.category}</span></CommandItem>;
             })}
           </CommandGroup>

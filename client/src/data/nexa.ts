@@ -27,6 +27,38 @@ export type ToolDefinition = {
   route: string;
 };
 
+type ToolCategoryDefinition = {
+  id: string;
+  label: string;
+  categories: readonly ToolDefinition["category"][] | "all";
+};
+
+function defineToolRegistry<const T extends readonly ToolDefinition[]>(tools: T): T {
+  const ids = new Set<string>();
+  const names = new Set<string>();
+  const routes = new Set<string>();
+
+  for (const tool of tools) {
+    if (!tool.id || !tool.name || !tool.description || !tool.category || !tool.route) {
+      throw new Error("Every NEXA tool must include an id, name, description, category, and route.");
+    }
+
+    if (!tool.route.startsWith("/")) {
+      throw new Error(`NEXA tool route must begin with '/': ${tool.id}`);
+    }
+
+    if (ids.has(tool.id) || names.has(tool.name) || routes.has(tool.route)) {
+      throw new Error(`NEXA tool registry has a duplicate id, name, or route: ${tool.id}`);
+    }
+
+    ids.add(tool.id);
+    names.add(tool.name);
+    routes.add(tool.route);
+  }
+
+  return tools;
+}
+
 export const PLAN_CONFIG = {
   free: {
     name: "NEXA Free",
@@ -43,7 +75,7 @@ export const PLAN_CONFIG = {
   },
 } as const;
 
-export const TOOL_REGISTRY: ToolDefinition[] = [
+export const TOOL_REGISTRY = defineToolRegistry([
   {
     id: "ai-summarizer",
     name: "AI Summarizer",
@@ -124,7 +156,47 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
     icon: ListTodo,
     route: "/tools/productivity/planner",
   },
-];
+] as const);
+
+export type ToolId = (typeof TOOL_REGISTRY)[number]["id"];
+
+export const TOOL_CATEGORIES = [
+  { id: "all", label: "All tools", categories: "all" },
+  { id: "ai-writing", label: "AI & writing", categories: ["AI", "Text"] },
+  { id: "images-files", label: "Images & files", categories: ["Image", "Files", "PDF & Documents"] },
+  { id: "numbers", label: "Numbers", categories: ["Calculators"] },
+  { id: "workspace", label: "Personal workspace", categories: ["Productivity"] },
+] as const satisfies readonly ToolCategoryDefinition[];
+
+export type ToolCategoryId = (typeof TOOL_CATEGORIES)[number]["id"];
+
+export function getToolById(id: ToolId | string) {
+  return TOOL_REGISTRY.find((tool) => tool.id === id);
+}
+
+export function getToolsForCategory(categoryId: ToolCategoryId) {
+  const category: ToolCategoryDefinition = TOOL_CATEGORIES.find((item) => item.id === categoryId) ?? TOOL_CATEGORIES[0];
+
+  if (category.categories === "all") {
+    return TOOL_REGISTRY;
+  }
+
+  return TOOL_REGISTRY.filter((tool) => category.categories.includes(tool.category));
+}
+
+export function searchToolRegistry(query: string, categoryId: ToolCategoryId = "all") {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const sourceTools = getToolsForCategory(categoryId);
+
+  if (!normalizedQuery) {
+    return sourceTools;
+  }
+
+  return sourceTools.filter((tool) =>
+    [tool.id, tool.name, tool.description, tool.category, tool.route]
+      .some((value) => value.toLocaleLowerCase().includes(normalizedQuery)),
+  );
+}
 
 export const FEATURED_TOOL_IDS = [
   "ai-summarizer",
