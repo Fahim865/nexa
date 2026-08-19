@@ -1,7 +1,6 @@
-# NEXA Image Tools Implementation
+# NEXA Direct Image Route Wiring
 
-- [x] Review image-related registry definitions and current reusable local-tool route dispatch.
-- [x] Register seven Image Tools and the dedicated Image Tools category with unique routes.
-- [x] Build reusable browser-only upload, preview, canvas transform, error, progress, and download primitives.
-- [x] Implement image upscale, compression, resizing, cropping, conversion, rotation/flip, and metadata flows.
-- [x] Verify desktop/mobile routes, TypeScript, and production build; document browser-only limitations.
+- [x] Review App routing and current ImageToolPage/ToolPlaceholder dispatch.
+- [x] Add direct routes for the seven registered Image Tools while preserving text tool routes.
+- [x] Verify representative image and text direct routes, TypeScript, and production build.
+- [x] Create and validate a reusable skill for registry-driven route-to-page wiring.
