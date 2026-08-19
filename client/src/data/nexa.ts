@@ -16,9 +16,11 @@ import {
   FileImage,
   FileStack,
   FileText,
+  FilePenLine,
   ImageIcon,
   Info,
   KeyRound,
+  Languages,
   Link,
   ListTodo,
   Minimize2,
@@ -28,7 +30,9 @@ import {
   RotateCw,
   Sparkles,
   TextCursorInput,
+  Video,
   Wand2,
+  Hash,
 } from "lucide-react";
 
 export type ToolStatus = "available" | "beta" | "coming-soon";
@@ -102,6 +106,46 @@ export const TOOL_REGISTRY = defineToolRegistry([
     status: "beta",
     icon: Sparkles,
     route: "/tools/ai/summarizer",
+  },
+  {
+    id: "ai-translator",
+    name: "AI Translator",
+    category: "AI Creator Tools",
+    description: "Prepare a tone-aware translation request with language and audience controls.",
+    creditCost: 0,
+    status: "beta",
+    icon: Languages,
+    route: "/tools/ai/translator",
+  },
+  {
+    id: "ai-hashtag-generator",
+    name: "AI Hashtag Generator",
+    category: "AI Creator Tools",
+    description: "Shape a platform-specific hashtag brief before connecting an AI generation service.",
+    creditCost: 0,
+    status: "beta",
+    icon: Hash,
+    route: "/tools/ai/hashtag-generator",
+  },
+  {
+    id: "ai-description-generator",
+    name: "AI Description Generator",
+    category: "AI Creator Tools",
+    description: "Prepare an audience-led description request with channel, tone, and length controls.",
+    creditCost: 0,
+    status: "beta",
+    icon: FilePenLine,
+    route: "/tools/ai/description-generator",
+  },
+  {
+    id: "ai-video-analyzer",
+    name: "AI Video Analyzer",
+    category: "AI Creator Tools",
+    description: "Set up a video analysis request for titles, descriptions, and hashtags without simulated output.",
+    creditCost: 0,
+    status: "beta",
+    icon: Video,
+    route: "/tools/ai/video-analyzer",
   },
   {
     id: "image-compressor",
@@ -439,6 +483,19 @@ export function isImageToolId(id: string): id is ImageToolId {
   return (IMAGE_TOOL_IDS as readonly string[]).includes(id);
 }
 
+export const AI_CREATOR_TOOL_IDS = [
+  "ai-translator",
+  "ai-hashtag-generator",
+  "ai-description-generator",
+  "ai-video-analyzer",
+] as const;
+
+export type AiCreatorToolId = (typeof AI_CREATOR_TOOL_IDS)[number];
+
+export function isAiCreatorToolId(id: string): id is AiCreatorToolId {
+  return (AI_CREATOR_TOOL_IDS as readonly string[]).includes(id);
+}
+
 export const DOCUMENT_UTILITY_TOOL_IDS = [
   "pdf-page-counter",
   "markdown-previewer",
@@ -462,6 +519,7 @@ export function isDocumentUtilityToolId(id: string): id is DocumentUtilityToolId
 
 export const TOOL_CATEGORIES = [
   { id: "all", label: "All tools", categories: "all" },
+  { id: "ai-creator", label: "AI Creator Tools", categories: ["AI Creator Tools"] },
   { id: "ai-writing", label: "AI & writing", categories: ["AI", "Text"] },
   { id: "image-tools", label: "Image tools", categories: ["Image Tools"] },
   { id: "documents-utility", label: "Documents & utility", categories: ["Documents & Utility", "Files", "PDF & Documents"] },
