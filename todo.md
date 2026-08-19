@@ -1,6 +1,7 @@
-# NEXA Direct Image Route Wiring
+# NEXA Document & Utility Tools
 
-- [x] Review App routing and current ImageToolPage/ToolPlaceholder dispatch.
-- [x] Add direct routes for the seven registered Image Tools while preserving text tool routes.
-- [x] Verify representative image and text direct routes, TypeScript, and production build.
-- [x] Create and validate a reusable skill for registry-driven route-to-page wiring.
+- [x] Review current registry, routing, and reusable tool component patterns.
+- [x] Register the PDF, Markdown, JSON, encoding, QR, and password tools with direct routes.
+- [x] Build reusable browser-local document and utility tool components.
+- [x] Replace relevant placeholders with functional pages without affecting text or image tools.
+- [ ] Verify routes, responsive behavior, TypeScript, and production build.

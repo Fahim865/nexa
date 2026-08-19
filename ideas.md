@@ -85,3 +85,5 @@ Wordmark-এ NEXA নামটি custom wide geometric spacing-এ থাকব
 ## Style Decisions
 
 Visual review অনুসারে NEXA-এর N/O hybrid mark এবং intersecting X-axis এখন প্রতিটি orbital trace-এর structural source হবে; তাই orbit কেবল মহাকাশ-প্রতীক নয়, এটি নিজস্ব brand geometry। Hero এবং feature area-র গুরুত্বপূর্ণ cards-এ mini working surface, active lens state, node trace ও capacity signal দেখানো হবে—static feature label নয়। Typographic emphasis-এর জন্য Signal Azure italic ব্যবহার সীমিত থাকবে; অন্য section-এ scale contrast, index rail এবং offset line treatment দিয়ে editorial pacing তৈরি হবে।
+
+Document ও utility route-এ shared shell বজায় থাকবে, কিন্তু প্রতিটি tool তার বাস্তব কাজের সঙ্গে সম্পর্কিত একটিমাত্র visual proof motif পাবে—যেমন PDF-এর page stack, Markdown-এর editorial source line, JSON-এর syntax grid, QR-এর encoded matrix এবং Password-এর entropy node। Route headline হবে সংক্ষিপ্ত, tool-specific ও utility-led; একই abstract privacy slogan পুনরাবৃত্তি করা হবে না।
