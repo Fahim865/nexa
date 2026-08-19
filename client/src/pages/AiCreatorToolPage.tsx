@@ -5,6 +5,7 @@
 import { NexaMark } from "@/components/NexaMark";
 import { isAiCreatorToolId, type AiCreatorToolId, type ToolDefinition } from "@/data/nexa";
 import { getAiCreatorConfig } from "@/lib/aiCreator";
+import { trpc } from "@/lib/trpc";
 import { ArrowLeft, Cable, RefreshCw, ShieldAlert, SlidersHorizontal, Sparkles, Upload, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,10 @@ type Props = { tool: ToolDefinition };
 
 function createInitialSettings(toolId: AiCreatorToolId) {
   return Object.fromEntries(getAiCreatorConfig(toolId).settings.map((setting) => [setting.id, setting.defaultValue]));
+}
+
+function outputKey(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
 }
 
 function AiProofMotif({ toolId }: { toolId: AiCreatorToolId }) {
@@ -53,6 +58,21 @@ export default function AiCreatorToolPage({ tool }: Props) {
   const [assetFileName, setAssetFileName] = useState("");
   const [shortInput, setShortInput] = useState("");
   const [contractPrepared, setContractPrepared] = useState(false);
+  const [generatedOutputs, setGeneratedOutputs] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState("");
+  const runAi = trpc.ai.run.useMutation({
+    onSuccess: (result) => {
+      setGeneratedOutputs(result.outputs);
+      setContractPrepared(true);
+      setApiError("");
+      toast.success("Secure AI response received from the configured server provider.");
+    },
+    onError: (error) => {
+      setGeneratedOutputs({});
+      setApiError(error.message);
+      toast.error(error.message);
+    },
+  });
   const inputStatus = useMemo(() => (source.trim() || assetFileName || shortInput.trim() ? "INPUT READY" : "AWAITING INPUT"), [source, assetFileName, shortInput]);
 
   const resetWorkspace = () => {
@@ -61,6 +81,8 @@ export default function AiCreatorToolPage({ tool }: Props) {
     setAssetFileName("");
     setShortInput("");
     setContractPrepared(false);
+    setGeneratedOutputs({});
+    setApiError("");
   };
 
   const prepareContract = () => {
@@ -71,8 +93,15 @@ export default function AiCreatorToolPage({ tool }: Props) {
       toast.error("Complete the required source inputs before preparing the API request.");
       return;
     }
-    setContractPrepared(true);
-    toast.message("Request structure prepared locally. No AI request was sent.");
+    setApiError("");
+    setGeneratedOutputs({});
+    if (config.assetInput) {
+      const message = "A selected local asset still needs a secure server upload reference before it can be analyzed.";
+      setApiError(message);
+      toast.error(message);
+      return;
+    }
+    runAi.mutate({ toolId, source: source.trim(), shortInput: shortInput.trim() || undefined, options: settings });
   };
 
   return <div className={`tool-route-page local-tool-page ai-creator-page ai-creator-${tool.id}`}>
@@ -84,8 +113,8 @@ export default function AiCreatorToolPage({ tool }: Props) {
       </section>
 
       <section className="local-tool-workspace ai-creator-workspace">
-        <div className="local-tool-meta ai-creator-meta"><span>AI REQUEST SURFACE / NOT CONNECTED</span><span className="ai-connection-state"><i /> BACKEND AI API REQUIRED</span><button onClick={() => setLocation("/#tool-index")}><ArrowLeft size={15} /> All tools</button></div>
-        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>Output is intentionally unavailable.</strong><p>This route prepares structured client input only. Connect a secured backend AI API to create, analyze, or return content.</p></div></div>
+        <div className="local-tool-meta ai-creator-meta"><span>AI REQUEST SURFACE / SECURE SERVER ROUTE</span><span className="ai-connection-state"><i /> PROVIDER CONFIGURATION REQUIRED</span><button onClick={() => setLocation("/#tool-index")}><ArrowLeft size={15} /> All tools</button></div>
+        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>Server route is ready; provider access is intentionally gated.</strong><p>Requests are validated and sent only to a server-side provider. Media tools additionally require a secure upload reference before analysis.</p></div></div>
 
         <div className="ai-creator-grid">
           <section className="ai-creator-panel ai-input-panel">
@@ -96,14 +125,15 @@ export default function AiCreatorToolPage({ tool }: Props) {
             <div className="local-input-footer"><span>{config.showSourceText === false ? (assetFileName ? "Asset selected" : "No asset selected") : `${source.length.toLocaleString()} characters`}</span><span>{config.inputHint}</span></div>
 
             <div className="ai-settings-wrap"><div className="ai-settings-heading"><span><SlidersHorizontal size={15} /> REQUEST SETTINGS</span><small>Sent as API options later</small></div><div className="ai-settings-grid">{config.settings.map((setting) => <label key={setting.id} className="local-select-label"><span>{setting.label}</span><select value={settings[setting.id] ?? setting.defaultValue} onChange={(event) => { setSettings((current) => ({ ...current, [setting.id]: event.target.value })); setContractPrepared(false); }}>{setting.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>)}</div></div>
-            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract}><Cable size={17} /> Prepare API request</button><button className="secondary-button" onClick={resetWorkspace}><RefreshCw size={16} /> Reset</button></div>
+            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract} disabled={runAi.isPending}><Cable size={17} /> {runAi.isPending ? "Sending secure request…" : "Send secure AI request"}</button><button className="secondary-button" onClick={resetWorkspace} disabled={runAi.isPending}><RefreshCw size={16} /> Reset</button></div>
           </section>
 
           <aside className="ai-creator-panel ai-output-panel">
-            <div className="local-panel-heading"><div><span>AI OUTPUT</span><h2>{contractPrepared ? "Contract prepared." : "Awaiting connection."}</h2></div><Sparkles size={18} className="ai-output-spark" /></div>
-            <div className="ai-output-stack">{config.outputs.map((output) => <div className="ai-output-slot" key={output.label}><span>{output.label}</span><strong>Not generated</strong><p>{output.hint}</p></div>)}</div>
+            <div className="local-panel-heading"><div><span>AI OUTPUT</span><h2>{runAi.isPending ? "Generating securely." : contractPrepared ? "Response received." : apiError ? "Connection needs attention." : "Awaiting connection."}</h2></div><Sparkles size={18} className="ai-output-spark" /></div>
+            {apiError ? <div className="ai-api-error" role="alert"><ShieldAlert size={15} /><span>{apiError}</span></div> : null}
+            <div className="ai-output-stack">{config.outputs.map((output) => { const value = generatedOutputs[outputKey(output.label)]; return <div className="ai-output-slot" key={output.label}><span>{output.label}</span><strong>{value || (runAi.isPending ? "Generating…" : "Not generated")}</strong><p>{value ? "Returned by the configured server-side provider." : output.hint}</p></div>; })}</div>
             <div className="ai-api-contract"><div><span>SERVER CAPABILITY</span><strong>{config.apiCapability}</strong></div><div><span>CLIENT PAYLOAD</span><code>{config.assetInput ? "toolId · assetRef · source · options" : "toolId · source · options"}</code></div><div><span>SERVER RESPONSE</span><code>outputs[] · metadata</code></div></div>
-            <div className="ai-no-request"><X size={15} /><span>No AI request has been sent from this page.</span></div>
+            <div className="ai-no-request"><X size={15} /><span>{runAi.isPending ? "A secure AI request is in progress." : contractPrepared ? "Response returned through the secure server route." : "No AI request has been sent from this page."}</span></div>
           </aside>
         </div>
       </section>

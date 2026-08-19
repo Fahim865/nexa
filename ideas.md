@@ -95,3 +95,5 @@ AI Creator route-এ shared Orbit Studio shell থাকবে, তবে প্
 Creator asset route-এ body copy-এর আগে capability proof দৃশ্যমান হবে: Stock Metadata-তে asset-to-tag-to-category map, YouTube SEO-তে topic-to-intent-to-discovery signal lane, এবং Subtitle-এ voice-to-timing-to-caption rail। একই family shell রাখলেও desktop composition capability অনুযায়ী বদলাবে—stock output map প্রথমে, YouTube input signal সামান্য offset, এবং subtitle timing surface দৃশ্যমান থাকবে।
 
 Clip Planner route-এ long-cut থেকে ranked moments এবং short-form clip-এ যাওয়ার timing rail hero ও workspace-এ দৃশ্যমান হবে। এই rail কেবল API-ready capability mapping, কোনো generated timestamp বা analysis result নয়।
+
+AI Creator route সর্বদা registry-তে নির্ধারিত canonical `/tools/ai/...` path ব্যবহার করবে। Homepage tool cards এবং direct navigation এই একই registry contract থেকে route নেয়; তাই অননুমোদিত shorthand path-এ generic fallback দেখানো স্বাভাবিক route behavior, UI regression নয়।

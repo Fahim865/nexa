@@ -19,3 +19,11 @@
 - [x] Video upload, optional description ও content-type controlsসহ typed API-ready request contract যোগ করা।
 - [x] Truthful summary, timestamp, clip idea, title, hashtag ও description output structureসহ premium workspace বাস্তবায়ন করা।
 - [x] Existing routes অক্ষুণ্ণ রেখে responsive UI, TypeScript ও production build যাচাই করা।
+
+## Secure AI backend phase
+
+- [x] Full-stack backend capability সক্রিয় করে AI endpoint conventions পর্যালোচনা করা।
+- [x] Provider-বদলযোগ্য AI service layer, server-only environment contract ও request schemas তৈরি করা।
+- [x] সাতটি AI tool-এর validated public endpoint এবং truthful unavailable-provider behavior তৈরি করা।
+- [x] Existing AI Creator UI-তে loading ও error-state backend connection যুক্ত করা।
+- [x] TypeScript, production build ও frontend key-exposure যাচাই করে checkpoint তৈরি করা।
