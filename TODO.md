@@ -12,3 +12,10 @@
 - [x] AI YouTube SEO Assistant-এর registry entry, route ও API-ready SEO request workspace যোগ করা।
 - [x] AI Subtitle Generator-এর registry entry, route ও API-ready audio/video transcript workspace যোগ করা।
 - [x] Existing AI Creator routes অক্ষুণ্ণ রেখে responsive UI, TypeScript ও production build যাচাই করা।
+
+## Clip Planner phase
+
+- [x] AI Video Analyzer / Clip Planner-এর registry entry ও direct route যোগ করা।
+- [x] Video upload, optional description ও content-type controlsসহ typed API-ready request contract যোগ করা।
+- [x] Truthful summary, timestamp, clip idea, title, hashtag ও description output structureসহ premium workspace বাস্তবায়ন করা।
+- [x] Existing routes অক্ষুণ্ণ রেখে responsive UI, TypeScript ও production build যাচাই করা।

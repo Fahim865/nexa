@@ -112,6 +112,28 @@ export const AI_CREATOR_CONFIG: Record<AiCreatorToolId, AiCreatorToolConfig> = {
     apiCapability: "Multimodal video understanding with title, description, and hashtag generation",
     assetInput: { accept: "video/*", prompt: "Choose a local video for the future API", detail: "Retained in this browser only; upload begins after an API integration exists." },
   },
+  "ai-video-clip-planner": {
+    eyebrow: "CLIP LENS",
+    promise: "Find the moments worth cutting.",
+    detail: "Stage a long-form video and optional creator context for a future AI workflow that can surface short-form opportunities without guessing at results today.",
+    inputLabel: "OPTIONAL VIDEO CONTEXT",
+    inputTitle: "Frame the long cut.",
+    inputPlaceholder: "Add speaker names, the central topic, intended audience, recurring segments, or any moments the future analysis should prioritize…",
+    inputHint: "The future API receives your video asset, optional context, and chosen content type.",
+    assetInput: { accept: "video/*", prompt: "Choose a long-form video for the future API", detail: "The video remains in this browser. Production analysis requires a secure upload, media processing, and durable job status flow." },
+    settings: [
+      { id: "contentType", label: "CONTENT TYPE", options: ["Funny", "Informative", "Educational", "Motivational", "Podcast"], defaultValue: "Informative" },
+    ],
+    outputs: [
+      { label: "VIDEO SUMMARY", hint: "A concise video summary appears here." },
+      { label: "BEST MOMENTS + TIMESTAMPS", hint: "Ranked moments with verified timestamps appear here." },
+      { label: "SHORT CLIP IDEAS", hint: "Short-form clip concepts appear here." },
+      { label: "SUGGESTED TITLES", hint: "Platform-ready title options appear here." },
+      { label: "SUGGESTED HASHTAGS", hint: "Relevant discovery hashtags appear here." },
+      { label: "SUGGESTED DESCRIPTIONS", hint: "Concise clip descriptions appear here." },
+    ],
+    apiCapability: "Long-form video ingestion, speech and scene understanding, timestamped moment ranking, clip planning, and metadata generation",
+  },
   "ai-stock-metadata-generator": {
     eyebrow: "ASSET LENS",
     promise: "Make the asset discoverable.",

@@ -20,6 +20,7 @@ function AiProofMotif({ toolId }: { toolId: AiCreatorToolId }) {
   if (toolId === "ai-translator") return <div className="ai-proof-motif ai-proof-translation" aria-hidden="true"><span>SRC</span><i /><span>TGT</span></div>;
   if (toolId === "ai-hashtag-generator") return <div className="ai-proof-motif ai-proof-tags" aria-hidden="true"><span>#</span><span>#</span><span>#</span><span>#</span><i /></div>;
   if (toolId === "ai-description-generator") return <div className="ai-proof-motif ai-proof-editorial" aria-hidden="true"><i /><i /><i /><i /></div>;
+  if (toolId === "ai-video-clip-planner") return <div className="ai-proof-motif ai-proof-clip" aria-hidden="true"><span>00:18</span><i /><span>01:42</span><i /><span>04:09</span></div>;
   if (toolId === "ai-stock-metadata-generator") return <div className="ai-proof-motif ai-proof-stock" aria-hidden="true"><span /><span /><span /><i /></div>;
   if (toolId === "ai-youtube-seo-assistant") return <div className="ai-proof-motif ai-proof-youtube" aria-hidden="true"><span>PLAY</span><i /><span>SEO</span></div>;
   if (toolId === "ai-subtitle-generator") return <div className="ai-proof-motif ai-proof-subtitle" aria-hidden="true"><i /><i /><i /><i /><span>CC</span></div>;
@@ -27,6 +28,7 @@ function AiProofMotif({ toolId }: { toolId: AiCreatorToolId }) {
 }
 
 function AiHeroProof({ toolId }: { toolId: AiCreatorToolId }) {
+  if (toolId === "ai-video-clip-planner") return <div className="ai-hero-proof ai-hero-clip-proof" aria-hidden="true"><span>LONG CUT</span><div><i /><i /><i /><i /><i /><i /></div><small>ANALYZE → RANK → CLIP</small></div>;
   if (toolId === "ai-stock-metadata-generator") return <div className="ai-hero-proof ai-hero-stock-proof" aria-hidden="true"><span>ASSET</span><i /><span>TAG</span><i /><span>CATEGORY</span></div>;
   if (toolId === "ai-youtube-seo-assistant") return <div className="ai-hero-proof ai-hero-youtube-proof" aria-hidden="true"><span>SEARCH SIGNAL</span><div><i /><i /><i /></div><small>TOPIC → INTENT → DISCOVERY</small></div>;
   if (toolId === "ai-subtitle-generator") return <div className="ai-hero-proof ai-hero-subtitle-proof" aria-hidden="true"><span>00:00</span><div><i /><i /><i /><i /><i /></div><small>VOICE → TIMING → CC</small></div>;
@@ -34,6 +36,7 @@ function AiHeroProof({ toolId }: { toolId: AiCreatorToolId }) {
 }
 
 function AiCapabilityMap({ toolId }: { toolId: AiCreatorToolId }) {
+  if (toolId === "ai-video-clip-planner") return <div className="ai-capability-map ai-clip-map" aria-hidden="true"><span>VIDEO</span><i /><span>MOMENT</span><i /><span>SHORT CLIP</span><small>FUTURE REQUEST MAP</small></div>;
   if (toolId === "ai-stock-metadata-generator") return <div className="ai-capability-map ai-stock-map" aria-hidden="true"><span>IMAGE</span><i /><span>TOPIC</span><i /><span>METADATA</span><small>FUTURE REQUEST MAP</small></div>;
   if (toolId === "ai-youtube-seo-assistant") return <div className="ai-capability-map ai-youtube-map" aria-hidden="true"><span>TOPIC</span><i /><span>INTENT</span><i /><span>SEARCH</span><small>FUTURE REQUEST MAP</small></div>;
   if (toolId === "ai-subtitle-generator") return <div className="ai-capability-map ai-subtitle-map" aria-hidden="true"><span>VOICE</span><i /><span>TIME</span><i /><span>CAPTION</span><small>FUTURE REQUEST MAP</small></div>;
