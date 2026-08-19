@@ -16,6 +16,19 @@ export type AiCreatorOutputSlot = {
   hint: string;
 };
 
+export type AiCreatorAssetInput = {
+  accept: string;
+  prompt: string;
+  detail: string;
+};
+
+export type AiCreatorShortInput = {
+  label: string;
+  placeholder: string;
+  hint: string;
+  required?: boolean;
+};
+
 export type AiCreatorToolConfig = {
   eyebrow: string;
   promise: string;
@@ -27,7 +40,10 @@ export type AiCreatorToolConfig = {
   settings: readonly AiCreatorSetting[];
   outputs: readonly AiCreatorOutputSlot[];
   apiCapability: string;
-  supportsVideoSource?: boolean;
+  assetInput?: AiCreatorAssetInput;
+  shortInput?: AiCreatorShortInput;
+  showSourceText?: boolean;
+  requiresSourceText?: boolean;
 };
 
 export const AI_CREATOR_CONFIG: Record<AiCreatorToolId, AiCreatorToolConfig> = {
@@ -94,7 +110,62 @@ export const AI_CREATOR_CONFIG: Record<AiCreatorToolId, AiCreatorToolConfig> = {
     ],
     outputs: [{ label: "TITLE", hint: "Video-aware title options appear here." }, { label: "DESCRIPTION", hint: "A video-aware description appears here." }, { label: "HASHTAGS", hint: "Relevant platform hashtags appear here." }],
     apiCapability: "Multimodal video understanding with title, description, and hashtag generation",
-    supportsVideoSource: true,
+    assetInput: { accept: "video/*", prompt: "Choose a local video for the future API", detail: "Retained in this browser only; upload begins after an API integration exists." },
+  },
+  "ai-stock-metadata-generator": {
+    eyebrow: "ASSET LENS",
+    promise: "Make the asset discoverable.",
+    detail: "Prepare the visual, motion context, and topic that a stock-metadata model needs to return marketplace-ready copy.",
+    inputLabel: "VIDEO DESCRIPTION",
+    inputTitle: "Describe the moving context.",
+    inputPlaceholder: "Describe the scene, movement, camera perspective, visible concepts, and any people, places, or products in the accompanying video…",
+    inputHint: "The future API receives your visual asset, its motion context, topic, and marketplace settings.",
+    shortInput: { label: "TOPIC", placeholder: "e.g. Sustainable city transport", hint: "A required topic anchors the metadata request.", required: true },
+    assetInput: { accept: "image/*", prompt: "Choose a stock image for the future API", detail: "The selected image remains local until a secured AI upload flow is connected." },
+    settings: [
+      { id: "marketplace", label: "MARKETPLACE", options: ["Adobe Stock", "Shutterstock", "iStock", "General stock"], defaultValue: "General stock" },
+      { id: "assetType", label: "ASSET TYPE", options: ["Photography", "Illustration", "Generative artwork", "Video still"], defaultValue: "Photography" },
+      { id: "keywordVolume", label: "KEYWORD VOLUME", options: ["15 essential", "30 balanced", "45 broad discovery"], defaultValue: "30 balanced" },
+    ],
+    outputs: [{ label: "SEO TITLE", hint: "A marketplace-ready title appears here." }, { label: "DESCRIPTION", hint: "A concise descriptive caption appears here." }, { label: "KEYWORDS", hint: "A prioritized keyword set appears here." }, { label: "CATEGORY SUGGESTION", hint: "Likely stock categories appear here." }],
+    apiCapability: "Multimodal image understanding with topic, marketplace, category, and keyword controls",
+    requiresSourceText: true,
+  },
+  "ai-youtube-seo-assistant": {
+    eyebrow: "SEARCH LENS",
+    promise: "Give the upload a clearer signal.",
+    detail: "Set the core video topic and current description before an AI service develops stronger YouTube search metadata.",
+    inputLabel: "CURRENT DESCRIPTION",
+    inputTitle: "Bring in the copy.",
+    inputPlaceholder: "Paste the current YouTube description, script outline, chapter cues, or key points you want to strengthen…",
+    inputHint: "The future API receives your topic, existing description, and search-intent controls.",
+    shortInput: { label: "VIDEO TOPIC / CURRENT TITLE", placeholder: "e.g. Beginner guide to cinematic travel videos", hint: "A required topic gives the SEO request a clear subject.", required: true },
+    settings: [
+      { id: "audience", label: "AUDIENCE", options: ["General viewers", "Beginners", "Creators", "Professionals", "Niche enthusiasts"], defaultValue: "General viewers" },
+      { id: "intent", label: "SEARCH INTENT", options: ["Educational", "How-to", "Review", "Inspiration", "Entertainment"], defaultValue: "Educational" },
+      { id: "titleStyle", label: "TITLE STYLE", options: ["Clear", "Curiosity-led", "Keyword-first", "Editorial"], defaultValue: "Clear" },
+    ],
+    outputs: [{ label: "SEO TITLE SUGGESTIONS", hint: "Title options appear here." }, { label: "DESCRIPTION IMPROVEMENT", hint: "An improved description appears here." }, { label: "TAGS", hint: "YouTube tag ideas appear here." }, { label: "KEYWORDS", hint: "Prioritized search keywords appear here." }],
+    apiCapability: "Text generation for YouTube metadata with topical, audience, and search-intent controls",
+    requiresSourceText: true,
+  },
+  "ai-subtitle-generator": {
+    eyebrow: "VOICE LENS",
+    promise: "Turn speech into structure.",
+    detail: "Stage an audio or video source, language, and subtitle format for a future transcription and timed-caption connection.",
+    inputLabel: "MEDIA SOURCE",
+    inputTitle: "Bring in the recording.",
+    inputPlaceholder: "",
+    inputHint: "The future API receives the media asset and transcript preferences below.",
+    assetInput: { accept: "audio/*,video/*", prompt: "Choose a local audio or video file for the future API", detail: "The media file stays in this browser. A production API will need secure upload and transcription processing." },
+    settings: [
+      { id: "language", label: "SPOKEN LANGUAGE", options: ["Auto-detect", "English", "Bengali", "Arabic", "Spanish", "French"], defaultValue: "Auto-detect" },
+      { id: "subtitleFormat", label: "SUBTITLE FILE", options: ["SRT", "WebVTT", "Plain transcript"], defaultValue: "SRT" },
+      { id: "speakerLabels", label: "SPEAKER LABELS", options: ["Off", "When confident", "Always requested"], defaultValue: "When confident" },
+    ],
+    outputs: [{ label: "TRANSCRIPT", hint: "A timestamped transcript appears here." }, { label: "SUBTITLE FILE PREPARATION", hint: "A downloadable subtitle preparation appears here." }, { label: "LANGUAGE + TIMING", hint: "Detected language and timing notes appear here." }],
+    apiCapability: "Speech-to-text with language detection, timestamps, optional speaker labels, and subtitle-file formatting",
+    showSourceText: false,
   },
 };
 

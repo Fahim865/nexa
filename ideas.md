@@ -91,3 +91,5 @@ Document ও utility route-এ shared shell বজায় থাকবে, কি
 ## Style Decisions
 
 AI Creator route-এ shared Orbit Studio shell থাকবে, তবে প্রত্যেকটির hero lens এবং workspace surface-এ একটি capability-specific proof motif দৃশ্যমান থাকবে: translation-এর direction flow, hashtag-এর signal constellation, description-এর editorial line composition এবং video analysis-এর motion frame। Orbital trace সর্বদা NEXA-এর N/O hybrid mark ও intersecting X-axis থেকে উৎস নেবে, তাই সেটি generic astronomy decoration হবে না। Dense workspace-এ Pearl Mist বা warm status accent কেবল API connection, truthful unavailable state অথবা section anchoring স্পষ্ট করতে ব্যবহৃত হবে; Signal Azure action, active state এবং orbital energy-এর জন্য সংরক্ষিত থাকবে।
+
+Creator asset route-এ body copy-এর আগে capability proof দৃশ্যমান হবে: Stock Metadata-তে asset-to-tag-to-category map, YouTube SEO-তে topic-to-intent-to-discovery signal lane, এবং Subtitle-এ voice-to-timing-to-caption rail। একই family shell রাখলেও desktop composition capability অনুযায়ী বদলাবে—stock output map প্রথমে, YouTube input signal সামান্য offset, এবং subtitle timing surface দৃশ্যমান থাকবে।

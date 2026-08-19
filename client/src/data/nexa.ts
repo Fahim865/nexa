@@ -148,6 +148,36 @@ export const TOOL_REGISTRY = defineToolRegistry([
     route: "/tools/ai/video-analyzer",
   },
   {
+    id: "ai-stock-metadata-generator",
+    name: "AI Stock Metadata Generator",
+    category: "AI Creator Tools",
+    description: "Prepare a stock-marketplace image brief with visual context, topic, and structured metadata outputs.",
+    creditCost: 0,
+    status: "beta",
+    icon: FileImage,
+    route: "/tools/ai/stock-metadata-generator",
+  },
+  {
+    id: "ai-youtube-seo-assistant",
+    name: "AI YouTube SEO Assistant",
+    category: "AI Creator Tools",
+    description: "Prepare a YouTube topic and description brief for title, description, tag, and keyword optimization.",
+    creditCost: 0,
+    status: "beta",
+    icon: Video,
+    route: "/tools/ai/youtube-seo-assistant",
+  },
+  {
+    id: "ai-subtitle-generator",
+    name: "AI Subtitle Generator",
+    category: "AI Creator Tools",
+    description: "Prepare an audio or video source for transcription and subtitle-file generation without simulated output.",
+    creditCost: 0,
+    status: "beta",
+    icon: FileText,
+    route: "/tools/ai/subtitle-generator",
+  },
+  {
     id: "image-compressor",
     name: "Image Compressor",
     category: "Image Tools",
@@ -488,6 +518,9 @@ export const AI_CREATOR_TOOL_IDS = [
   "ai-hashtag-generator",
   "ai-description-generator",
   "ai-video-analyzer",
+  "ai-stock-metadata-generator",
+  "ai-youtube-seo-assistant",
+  "ai-subtitle-generator",
 ] as const;
 
 export type AiCreatorToolId = (typeof AI_CREATOR_TOOL_IDS)[number];
