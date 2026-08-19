@@ -27,3 +27,9 @@
 - [x] সাতটি AI tool-এর validated public endpoint এবং truthful unavailable-provider behavior তৈরি করা।
 - [x] Existing AI Creator UI-তে loading ও error-state backend connection যুক্ত করা।
 - [x] TypeScript, production build ও frontend key-exposure যাচাই করে checkpoint তৈরি করা।
+
+## React root regression fix
+
+- [x] Client bootstrap-এ duplicate `createRoot` initialization-এর কারণ নির্ণয় করা।
+- [x] একক React root initialization প্রয়োগ করে homepage rendering error দূর করা।
+- [x] Browser console, TypeScript ও production build যাচাই করে checkpoint তৈরি করা।
