@@ -7,12 +7,18 @@ import {
   Calculator,
   CaseUpper,
   Clock3,
+  Crop,
   Eraser,
+  Expand,
   FileImage,
   FileText,
   ImageIcon,
+  Info,
   ListTodo,
+  Minimize2,
   NotebookPen,
+  RefreshCw,
+  RotateCw,
   Sparkles,
   TextCursorInput,
   Wand2,
@@ -93,12 +99,72 @@ export const TOOL_REGISTRY = defineToolRegistry([
   {
     id: "image-compressor",
     name: "Image Compressor",
-    category: "Image",
-    description: "Make heavy visuals lighter without leaving the workspace.",
-    creditCost: 1,
-    status: "coming-soon",
-    icon: ImageIcon,
-    route: "/tools/image/compressor",
+    category: "Image Tools",
+    description: "Reduce image size locally while keeping practical visual quality.",
+    creditCost: 0,
+    status: "available",
+    icon: Minimize2,
+    route: "/tools/image-compressor",
+  },
+  {
+    id: "image-upscaler",
+    name: "AI Image Upscaler",
+    category: "Image Tools",
+    description: "Increase canvas resolution with local high-quality resampling and sharpening.",
+    creditCost: 0,
+    status: "available",
+    icon: Expand,
+    route: "/tools/image-upscaler",
+  },
+  {
+    id: "image-resizer",
+    name: "Image Resizer",
+    category: "Image Tools",
+    description: "Set exact dimensions while optionally preserving the original aspect ratio.",
+    creditCost: 0,
+    status: "available",
+    icon: Expand,
+    route: "/tools/image-resizer",
+  },
+  {
+    id: "image-cropper",
+    name: "Image Cropper",
+    category: "Image Tools",
+    description: "Select a precise local crop area and download the resulting image.",
+    creditCost: 0,
+    status: "available",
+    icon: Crop,
+    route: "/tools/image-cropper",
+  },
+  {
+    id: "image-converter",
+    name: "Image Converter",
+    category: "Image Tools",
+    description: "Convert supported JPG, PNG, WebP, GIF, and BMP images in your browser.",
+    creditCost: 0,
+    status: "available",
+    icon: RefreshCw,
+    route: "/tools/image-converter",
+  },
+  {
+    id: "image-rotator",
+    name: "Image Rotator",
+    category: "Image Tools",
+    description: "Rotate and flip an image locally with a transparent before-and-after preview.",
+    creditCost: 0,
+    status: "available",
+    icon: RotateCw,
+    route: "/tools/image-rotator",
+  },
+  {
+    id: "image-metadata",
+    name: "Image Metadata Viewer",
+    category: "Image Tools",
+    description: "Inspect file size, dimensions, rendered format, and core file information.",
+    creditCost: 0,
+    status: "available",
+    icon: Info,
+    route: "/tools/image-metadata",
   },
   {
     id: "quick-calculator",
@@ -230,10 +296,27 @@ export function isLocalToolId(id: string): id is LocalToolId {
   return (LOCAL_TOOL_IDS as readonly string[]).includes(id);
 }
 
+export const IMAGE_TOOL_IDS = [
+  "image-upscaler",
+  "image-compressor",
+  "image-resizer",
+  "image-cropper",
+  "image-converter",
+  "image-rotator",
+  "image-metadata",
+] as const;
+
+export type ImageToolId = (typeof IMAGE_TOOL_IDS)[number];
+
+export function isImageToolId(id: string): id is ImageToolId {
+  return (IMAGE_TOOL_IDS as readonly string[]).includes(id);
+}
+
 export const TOOL_CATEGORIES = [
   { id: "all", label: "All tools", categories: "all" },
   { id: "ai-writing", label: "AI & writing", categories: ["AI", "Text"] },
-  { id: "images-files", label: "Images & files", categories: ["Image", "Files", "PDF & Documents"] },
+  { id: "image-tools", label: "Image tools", categories: ["Image Tools"] },
+  { id: "images-files", label: "Files & documents", categories: ["Files", "PDF & Documents"] },
   { id: "numbers", label: "Numbers", categories: ["Calculators"] },
   { id: "workspace", label: "Personal workspace", categories: ["Productivity"] },
 ] as const satisfies readonly ToolCategoryDefinition[];

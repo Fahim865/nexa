@@ -3,10 +3,11 @@
  * signal-azure navigation, and explicit availability states—never simulated tools.
  */
 import { NexaMark } from "@/components/NexaMark";
-import { getToolByRoute, isLocalToolId, type ToolStatus } from "@/data/nexa";
+import { getToolByRoute, isImageToolId, isLocalToolId, type ToolStatus } from "@/data/nexa";
 import { ArrowLeft, ArrowUpRight, CircleAlert, Home } from "lucide-react";
 import { useLocation } from "wouter";
 import LocalToolPage from "./LocalToolPage";
+import ImageToolPage from "./ImageToolPage";
 
 function statusLabel(status: ToolStatus) {
   return status === "available" ? "Local preview registered" : status === "beta" ? "Beta — service not connected" : "Coming soon";
@@ -35,6 +36,10 @@ export default function ToolPlaceholder() {
 
   if (isLocalToolId(tool.id)) {
     return <LocalToolPage tool={tool} />;
+  }
+
+  if (isImageToolId(tool.id)) {
+    return <ImageToolPage tool={tool} />;
   }
 
   const Icon = tool.icon;
