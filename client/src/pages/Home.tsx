@@ -286,7 +286,7 @@ export default function Home() {
                         <h3>{tool.name}</h3>
                         <p>{tool.description}</p>
                       </div>
-                      <div className="tool-card-footer"><span>{tool.creditCost} credit{tool.creditCost > 1 ? "s" : ""}</span><ArrowUpRight size={17} /></div>
+                      <div className="tool-card-footer"><span>{tool.creditCost === 0 ? "Free local" : `${tool.creditCost} credit${tool.creditCost > 1 ? "s" : ""}`}</span><ArrowUpRight size={17} /></div>
                     </button>
                   );
                 })}

@@ -5,12 +5,16 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Calculator,
+  CaseUpper,
+  Clock3,
+  Eraser,
   FileImage,
   FileText,
   ImageIcon,
   ListTodo,
   NotebookPen,
   Sparkles,
+  TextCursorInput,
   Wand2,
 } from "lucide-react";
 
@@ -101,7 +105,7 @@ export const TOOL_REGISTRY = defineToolRegistry([
     name: "Quick Calculator",
     category: "Calculators",
     description: "A simple calculation surface for everyday numbers.",
-    creditCost: 1,
+    creditCost: 0,
     status: "available",
     icon: Calculator,
     route: "/tools/calculators/basic",
@@ -131,10 +135,60 @@ export const TOOL_REGISTRY = defineToolRegistry([
     name: "Word Counter",
     category: "Text",
     description: "Measure language with a clean, low-friction text utility.",
-    creditCost: 1,
+    creditCost: 0,
     status: "available",
     icon: Wand2,
     route: "/tools/text/word-counter",
+  },
+  {
+    id: "character-counter",
+    name: "Character Counter",
+    category: "Text",
+    description: "Count characters, spaces, and compact text length locally.",
+    creditCost: 0,
+    status: "available",
+    icon: TextCursorInput,
+    route: "/tools/text/character-counter",
+  },
+  {
+    id: "sentence-counter",
+    name: "Sentence Counter",
+    category: "Text",
+    description: "Estimate complete sentences from your working text locally.",
+    creditCost: 0,
+    status: "available",
+    icon: FileText,
+    route: "/tools/text/sentence-counter",
+  },
+  {
+    id: "reading-time",
+    name: "Reading Time Calculator",
+    category: "Text",
+    description: "Estimate reading time from a clear 200-word-per-minute baseline.",
+    creditCost: 0,
+    status: "available",
+    icon: Clock3,
+    route: "/tools/text/reading-time",
+  },
+  {
+    id: "case-converter",
+    name: "Case Converter",
+    category: "Text",
+    description: "Convert selected text into upper, lower, title, or sentence case.",
+    creditCost: 0,
+    status: "available",
+    icon: CaseUpper,
+    route: "/tools/text/case-converter",
+  },
+  {
+    id: "text-cleaner",
+    name: "Text Cleaner",
+    category: "Text",
+    description: "Remove surplus spacing and normalize paragraph breaks in the browser.",
+    creditCost: 0,
+    status: "available",
+    icon: Eraser,
+    route: "/tools/text/cleaner",
   },
   {
     id: "file-converter",
@@ -159,6 +213,22 @@ export const TOOL_REGISTRY = defineToolRegistry([
 ] as const);
 
 export type ToolId = (typeof TOOL_REGISTRY)[number]["id"];
+
+export const LOCAL_TOOL_IDS = [
+  "quick-calculator",
+  "word-counter",
+  "character-counter",
+  "sentence-counter",
+  "reading-time",
+  "case-converter",
+  "text-cleaner",
+] as const;
+
+export type LocalToolId = (typeof LOCAL_TOOL_IDS)[number];
+
+export function isLocalToolId(id: string): id is LocalToolId {
+  return (LOCAL_TOOL_IDS as readonly string[]).includes(id);
+}
 
 export const TOOL_CATEGORIES = [
   { id: "all", label: "All tools", categories: "all" },
