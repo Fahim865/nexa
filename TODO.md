@@ -93,3 +93,11 @@
 
 - [x] Desktop preview-এ AI Translator, JSON Formatter ও Premium pricing UI সঠিক Orbit Studio surface-এ render হয়েছে; compatibility alias যোগের আগে শুধু obsolete `/tools/word-counter` URL 404 দেখিয়েছিল।
 - [x] 375px mobile preview-এ `/tools/word-counter` compatibility alias এবং canonical `/tools/text/word-counter` উভয়ই কার্যকর local tool দেখিয়েছে; FREE AI CTA ও Premium page-এর price, credit, warning copy overflow ছাড়াই দেখা গেছে।
+
+## Billing provider abstraction verification phase
+
+- [x] `server/billing/provider.ts` উপস্থিতি, imports ও existing contract/test compatibility যাচাই করা।
+- [x] Provider-neutral error, registration, checkout, verification, cancellation, portal ও signed webhook verification boundary পর্যালোচনা করা।
+- [x] Server-only billing configuration এবং missing-credential `BILLING_NOT_CONFIGURED` behavior যাচাই করা।
+- [x] প্রয়োজনে implementation বা regression coverage সংশোধন করে TypeScript, test ও production build চালানো।
+- [x] Current checkout, cancellation, portal ও webhook methods `BillingProvider` interface-এ এবং unconfigured provider rejection `requireBillingProvider`-এ বিদ্যমান; নতুন implementation প্রয়োজন হয়নি।
