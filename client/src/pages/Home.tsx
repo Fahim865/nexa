@@ -38,7 +38,6 @@ import {
   Search,
   Sparkles,
   Sun,
-  TimerReset,
   Wand2,
   X,
 } from "lucide-react";
@@ -391,7 +390,7 @@ export default function Home() {
             <div className="plans-intro">
               <p className="section-index"><span /> 06 — CLEAR CAPACITY</p>
               <h2>A useful free start.<br /><span>A deliberate upgrade.</span></h2>
-              <p>Credits make cost and capacity understandable. The plans below describe the intended product configuration; checkout is intentionally not connected in this frontend preview.</p>
+              <p>Credits make cost and capacity understandable. Premium access is activated only after a verified server-side subscription event.</p>
             </div>
             <div className="plans-grid">
               <article className="plan-card free-plan">
@@ -404,8 +403,8 @@ export default function Home() {
                 <div className="pro-orbit" aria-hidden="true" />
                 <div><span className="micro-label">{PLAN_CONFIG.premium.name.toUpperCase()}</span><h3>{PLAN_CONFIG.premium.priceLabel}<small>{PLAN_CONFIG.premium.cadence}</small></h3><p>{PLAN_CONFIG.premium.creditsLabel}</p></div>
                 <p className="plan-detail">{PLAN_CONFIG.premium.detail}</p>
-                <ul><li><Check size={15} /> Server-verified access to protected AI routes</li><li><Check size={15} /> AI provider requests remain server-only</li><li><Check size={15} /> Monthly credit allocation arrives next</li></ul>
-                <button className="primary-button w-full" onClick={() => toast.message("Premium billing setup is coming soon. No upgrade has been applied.")}>Premium billing setup coming soon <TimerReset size={16} /></button>
+                <ul><li><Check size={15} /> Server-verified access to protected AI routes</li><li><Check size={15} /> AI provider requests remain server-only</li><li><Check size={15} /> 5,000 server-accounted AI credits each subscription period</li></ul>
+                <button className="primary-button w-full" onClick={() => setLocation("/premium")}>View Premium details <ArrowUpRight size={16} /></button>
               </article>
             </div>
           </div>

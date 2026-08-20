@@ -92,7 +92,7 @@ export const PLAN_CONFIG = {
     priceLabel: "$10",
     cadence: "/ month",
     creditsLabel: "Secure AI execution",
-    detail: "A server-verified plan for protected AI requests. Monthly credits arrive in the next release.",
+    detail: "A server-verified plan with 5,000 AI credits for protected monthly AI requests.",
   },
 } as const;
 

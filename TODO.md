@@ -64,3 +64,14 @@
 - [x] `server/credits/service.ts`-এর উপস্থিতি, imports, API contract ও test expectations যাচাই করা।
 - [x] Atomic reserve, success, refund, status ও subscription-period resetসহ missing credit service পুনঃস্থাপন করা।
 - [x] Router integration, TypeScript, full test suite, production build ও workspace rendering যাচাই করা।
+
+## Premium billing architecture phase
+
+- [x] বর্তমান Premium entitlement ও credit reset-এর সঙ্গে মিলিয়ে provider-neutral billing contracts এবং server service তৈরি করা।
+- [x] Verified event ছাড়া Premium activate না করে checkout, verification, status, cancellation, portal ও webhook server routes তৈরি করা।
+- [x] Verified subscription start, cancellation ও expiry lifecycle-এ plan, period ও 5,000 credits সঠিকভাবে update করা।
+- [x] $10/month Premium pricing, credit benefit, upgrade action ও truthful loading/error/payment-state UI তৈরি করা।
+- [x] Billing tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।
+- [x] Homepage Premium CTA ও credit benefit copy-কে dedicated billing page-এর সঙ্গে সামঞ্জস্যপূর্ণ করা।
+- [x] Billing service-এর price metadata-কে server-owned Premium catalog থেকে নেওয়া নিশ্চিত করা।
+- [x] `/premium` page-এর desktop ও 375px mobile preview-এ Orbit Studio layout, $10 মূল্য, 5,000 credit benefit, disabled truthful checkout CTA এবং FREE billing state responsiveভাবে যাচাই করা।

@@ -15,6 +15,18 @@ import { systemRouter } from "./_core/systemRouter";
 import { premiumProcedure, publicProcedure, router } from "./_core/trpc";
 import { getPremiumCatalog } from "./subscriptions/config";
 import type { User } from "../drizzle/schema";
+import { protectedProcedure } from "./_core/trpc";
+import { billingCheckoutInputSchema, billingPortalInputSchema, billingSessionInputSchema } from "./billing/contracts";
+import { BillingProviderError } from "./billing/provider";
+import { cancelSubscriptionForUser, createCheckoutForUser, createPortalForUser, getBillingStatusForUser, verifyCheckoutForUser } from "./billing/service";
+
+function toBillingTrpcError(error: unknown): never {
+  if (error instanceof BillingProviderError) {
+    const code = error.code === "BILLING_NOT_CONFIGURED" ? "PRECONDITION_FAILED" : "BAD_REQUEST";
+    throw new TRPCError({ code, message: error.message, cause: error });
+  }
+  throw error;
+}
 
 async function executeAiRequest(user: User, input: unknown) {
   const request = parseAiRequest(input);
@@ -63,6 +75,22 @@ export const appRouter = router({
     /** Public display metadata only; this endpoint never grants entitlement. */
     catalog: publicProcedure.query(() => getPremiumCatalog()),
     creditStatus: premiumProcedure.query(({ ctx }) => getCreditStatusForUser(ctx.user.id)),
+  }),
+
+  billing: router({
+    status: protectedProcedure.query(({ ctx }) => getBillingStatusForUser(ctx.user.id)),
+    createCheckoutSession: protectedProcedure.input(billingCheckoutInputSchema).mutation(async ({ ctx, input }) => {
+      try { return await createCheckoutForUser(ctx.user, input); } catch (error) { return toBillingTrpcError(error); }
+    }),
+    verifyCheckoutSession: protectedProcedure.input(billingSessionInputSchema).mutation(async ({ ctx, input }) => {
+      try { return await verifyCheckoutForUser(ctx.user.id, input.sessionId); } catch (error) { return toBillingTrpcError(error); }
+    }),
+    cancelSubscription: protectedProcedure.mutation(async ({ ctx }) => {
+      try { return await cancelSubscriptionForUser(ctx.user); } catch (error) { return toBillingTrpcError(error); }
+    }),
+    createPortalSession: protectedProcedure.input(billingPortalInputSchema).mutation(async ({ ctx, input }) => {
+      try { return await createPortalForUser(ctx.user, input.returnUrl); } catch (error) { return toBillingTrpcError(error); }
+    }),
   }),
 
   // Premium authorization runs before input validation and provider dispatch.

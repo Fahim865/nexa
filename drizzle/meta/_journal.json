@@ -15,6 +15,13 @@
       "when": 1787226527959,
       "tag": "0001_free_gravity",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1787228831488,
+      "tag": "0002_reflective_patch",
+      "breakpoints": true
     }
   ]
 }

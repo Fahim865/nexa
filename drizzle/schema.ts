@@ -1,4 +1,4 @@
-import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,6 +25,8 @@ export const users = mysqlTable("users", {
   paymentProvider: varchar("paymentProvider", { length: 64 }),
   providerCustomerId: varchar("providerCustomerId", { length: 255 }),
   providerSubscriptionId: varchar("providerSubscriptionId", { length: 255 }),
+  /** A verified provider cancellation can retain access through the paid period. */
+  cancelAtPeriodEnd: boolean("cancelAtPeriodEnd").default(false).notNull(),
   /** Server-owned allowance copied into each eligible subscription period. */
   monthlyCreditAllowance: int("monthlyCreditAllowance").default(5000).notNull(),
   /** Mutable balance; it is only written through the credit service transaction. */
@@ -62,3 +64,25 @@ export const aiCreditTransactions = mysqlTable(
 );
 
 export type AiCreditTransaction = typeof aiCreditTransactions.$inferSelect;
+
+/** Idempotency and audit record for provider-verified billing events only. */
+export const billingEvents = mysqlTable(
+  "billingEvents",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    provider: varchar("provider", { length: 64 }).notNull(),
+    eventId: varchar("eventId", { length: 255 }).notNull(),
+    eventType: varchar("eventType", { length: 64 }).notNull(),
+    userId: int("userId").references(() => users.id),
+    providerCustomerId: varchar("providerCustomerId", { length: 255 }),
+    providerSubscriptionId: varchar("providerSubscriptionId", { length: 255 }),
+    status: mysqlEnum("status", ["RECEIVED", "APPLIED", "IGNORED", "FAILED"]).default("RECEIVED").notNull(),
+    failureReason: text("failureReason"),
+    occurredAt: timestamp("occurredAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("billing_events_provider_event_idx").on(table.provider, table.eventId),
+    index("billing_events_user_created_idx").on(table.userId, table.createdAt),
+  ],
+);
