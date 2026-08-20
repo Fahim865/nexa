@@ -4,4 +4,4 @@
 - [x] Register the PDF, Markdown, JSON, encoding, QR, and password tools with direct routes.
 - [x] Build reusable browser-local document and utility tool components.
 - [x] Replace relevant placeholders with functional pages without affecting text or image tools.
-- [ ] Verify routes, responsive behavior, TypeScript, and production build.
+- [x] Verify routes, responsive behavior, TypeScript, and production build.
