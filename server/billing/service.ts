@@ -85,6 +85,9 @@ export async function verifyCheckoutForUser(userId: number, sessionId: string) {
   const provider = requireBillingProvider();
   const event = await provider.verifyCheckoutSession(sessionId, userId);
   if (!event) return { verified: false as const, status: await getBillingStatusForUser(userId) };
+  if (event.applicationUserId !== userId) {
+    throw new BillingProviderError("The verified checkout session does not belong to this account.", "BILLING_INVALID_EVENT");
+  }
   const status = await applyVerifiedBillingEvent(event, userId);
   return { verified: true as const, status };
 }

@@ -75,3 +75,21 @@
 - [x] Homepage Premium CTA ও credit benefit copy-কে dedicated billing page-এর সঙ্গে সামঞ্জস্যপূর্ণ করা।
 - [x] Billing service-এর price metadata-কে server-owned Premium catalog থেকে নেওয়া নিশ্চিত করা।
 - [x] `/premium` page-এর desktop ও 375px mobile preview-এ Orbit Studio layout, $10 মূল্য, 5,000 credit benefit, disabled truthful checkout CTA এবং FREE billing state responsiveভাবে যাচাই করা।
+
+## Production-readiness audit phase
+
+- [x] TypeScript, full test suite, production build ও dev-server diagnostics পর্যালোচনা করা।
+- [x] AI endpoint authorization, FREE-user bypass resistance, provider-secret isolation ও request validation পর্যালোচনা করা।
+- [x] Credit reserve/refund, non-negative balance, monthly reset এবং concurrent duplicate-spend resistance পর্যালোচনা করা।
+- [x] Billing verified-event boundary, fake-payment resistance, webhook verification ও subscription expiry lifecycle পর্যালোচনা করা।
+- [x] Registered routes, browser-local tools এবং desktop/mobile UI regression পর্যালোচনা করা।
+- [x] পাওয়া production-readiness issues সংশোধন করে পুনরায় পূর্ণ validation চালানো।
+- [x] Registry-এর `/tools/word-counter` local-tool route 404 হওয়ার কারণ সংশোধন করে registry-to-router consistency পুনঃস্থাপন করা।
+- [x] AI workspace-এর FREE-user upgrade CTA-কে পুরোনো `/#pricing` hash-এর বদলে dedicated `/premium` route-এ পাঠানো।
+- [x] Client checkout verification-এ provider-returned application user identity বর্তমান authenticated user-এর সঙ্গে মিলিয়ে cross-account entitlement activation প্রতিরোধ করা।
+- [x] Production build-এর oversized initial JavaScript chunk warning কমাতে non-home route page-গুলো lazy load করা।
+
+### Audit verification notes
+
+- [x] Desktop preview-এ AI Translator, JSON Formatter ও Premium pricing UI সঠিক Orbit Studio surface-এ render হয়েছে; compatibility alias যোগের আগে শুধু obsolete `/tools/word-counter` URL 404 দেখিয়েছিল।
+- [x] 375px mobile preview-এ `/tools/word-counter` compatibility alias এবং canonical `/tools/text/word-counter` উভয়ই কার্যকর local tool দেখিয়েছে; FREE AI CTA ও Premium page-এর price, credit, warning copy overflow ছাড়াই দেখা গেছে।

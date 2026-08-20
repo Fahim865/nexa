@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getDb } = vi.hoisted(() => ({ getDb: vi.fn() }));
+const { getDb, requireBillingProvider } = vi.hoisted(() => ({ getDb: vi.fn(), requireBillingProvider: vi.fn() }));
 
 vi.mock("../db", () => ({ getDb }));
+vi.mock("./provider", async importOriginal => {
+  const actual = await importOriginal<typeof import("./provider")>();
+  return { ...actual, requireBillingProvider };
+});
 
-import { applyVerifiedBillingEvent } from "./service";
+import { applyVerifiedBillingEvent, verifyCheckoutForUser } from "./service";
 
 const baseUser = {
   id: 41,
@@ -54,6 +58,8 @@ function createTransaction(updatedUser: Record<string, unknown>) {
 describe("verified billing lifecycle", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    getDb.mockReset();
+    requireBillingProvider.mockReset();
     vi.stubEnv("PREMIUM_MONTHLY_CREDITS", "5000");
   });
 
@@ -124,5 +130,24 @@ describe("verified billing lifecycle", () => {
     expect(status.subscriptionStatus).toBe("ACTIVE");
     expect(status.cancelAtPeriodEnd).toBe(true);
     expect(status.remainingCredits).toBe(4810);
+  });
+
+  it("rejects a verified checkout event whose application user metadata does not match the requester", async () => {
+    requireBillingProvider.mockReturnValue({
+      verifyCheckoutSession: vi.fn().mockResolvedValue({
+        provider: "provider-adapter",
+        eventId: "evt_wrong_user_123",
+        type: "subscription_activated",
+        occurredAt: new Date("2026-08-01T00:00:00.000Z"),
+        applicationUserId: 999,
+        providerCustomerId: "cus_other",
+        providerSubscriptionId: "sub_other",
+      }),
+    });
+
+    await expect(verifyCheckoutForUser(baseUser.id, "checkout_session_123")).rejects.toMatchObject({
+      code: "BILLING_INVALID_EVENT",
+    });
+    expect(getDb).not.toHaveBeenCalled();
   });
 });
