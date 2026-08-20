@@ -5,7 +5,8 @@ import { aiRunInputSchema, aiToolSchemas } from "./ai/contracts";
 import { runAiRequest } from "./ai/service";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { premiumProcedure, publicProcedure, router } from "./_core/trpc";
+import { getPremiumCatalog } from "./subscriptions/config";
 
 async function executeAiRequest(input: unknown) {
   try {
@@ -32,17 +33,22 @@ export const appRouter = router({
     }),
   }),
 
-  // Public by product requirement. A future rate-limit / billing layer can wrap this router without changing tool contracts.
+  subscription: router({
+    /** Public display metadata only; this endpoint never grants entitlement. */
+    catalog: publicProcedure.query(() => getPremiumCatalog()),
+  }),
+
+  // Premium authorization runs before input validation and provider dispatch.
   ai: router({
-    run: publicProcedure.input(aiRunInputSchema).mutation(({ input }) => executeAiRequest(input)),
-    translator: publicProcedure.input(aiToolSchemas["ai-translator"]).mutation(({ input }) => executeAiRequest(input)),
-    hashtagGenerator: publicProcedure.input(aiToolSchemas["ai-hashtag-generator"]).mutation(({ input }) => executeAiRequest(input)),
-    descriptionGenerator: publicProcedure.input(aiToolSchemas["ai-description-generator"]).mutation(({ input }) => executeAiRequest(input)),
-    stockMetadataGenerator: publicProcedure.input(aiToolSchemas["ai-stock-metadata-generator"]).mutation(({ input }) => executeAiRequest(input)),
-    youtubeSeoAssistant: publicProcedure.input(aiToolSchemas["ai-youtube-seo-assistant"]).mutation(({ input }) => executeAiRequest(input)),
-    subtitleGenerator: publicProcedure.input(aiToolSchemas["ai-subtitle-generator"]).mutation(({ input }) => executeAiRequest(input)),
-    videoAnalyzer: publicProcedure.input(aiToolSchemas["ai-video-analyzer"]).mutation(({ input }) => executeAiRequest(input)),
-    videoClipPlanner: publicProcedure.input(aiToolSchemas["ai-video-clip-planner"]).mutation(({ input }) => executeAiRequest(input)),
+    run: premiumProcedure.input(aiRunInputSchema).mutation(({ input }) => executeAiRequest(input)),
+    translator: premiumProcedure.input(aiToolSchemas["ai-translator"]).mutation(({ input }) => executeAiRequest(input)),
+    hashtagGenerator: premiumProcedure.input(aiToolSchemas["ai-hashtag-generator"]).mutation(({ input }) => executeAiRequest(input)),
+    descriptionGenerator: premiumProcedure.input(aiToolSchemas["ai-description-generator"]).mutation(({ input }) => executeAiRequest(input)),
+    stockMetadataGenerator: premiumProcedure.input(aiToolSchemas["ai-stock-metadata-generator"]).mutation(({ input }) => executeAiRequest(input)),
+    youtubeSeoAssistant: premiumProcedure.input(aiToolSchemas["ai-youtube-seo-assistant"]).mutation(({ input }) => executeAiRequest(input)),
+    subtitleGenerator: premiumProcedure.input(aiToolSchemas["ai-subtitle-generator"]).mutation(({ input }) => executeAiRequest(input)),
+    videoAnalyzer: premiumProcedure.input(aiToolSchemas["ai-video-analyzer"]).mutation(({ input }) => executeAiRequest(input)),
+    videoClipPlanner: premiumProcedure.input(aiToolSchemas["ai-video-clip-planner"]).mutation(({ input }) => executeAiRequest(input)),
   }),
 
   // TODO: add feature routers here, e.g.

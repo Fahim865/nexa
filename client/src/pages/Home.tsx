@@ -397,15 +397,15 @@ export default function Home() {
               <article className="plan-card free-plan">
                 <div><span className="micro-label">{PLAN_CONFIG.free.name.toUpperCase()}</span><h3>{PLAN_CONFIG.free.priceLabel}</h3><p>{PLAN_CONFIG.free.creditsLabel}</p></div>
                 <p className="plan-detail">{PLAN_CONFIG.free.detail}</p>
-                <ul><li><Check size={15} /> Practical everyday utilities</li><li><Check size={15} /> Basic AI access when connected</li><li><Check size={15} /> Daily allowance resets</li></ul>
+                <ul><li><Check size={15} /> Practical everyday utilities</li><li><Check size={15} /> Browse every protected AI workflow</li><li><Check size={15} /> View tool information and request settings</li></ul>
                 <button className="secondary-button w-full" onClick={() => scrollToId("tool-index")}>Explore tools <ArrowUpRight size={16} /></button>
               </article>
               <article className="plan-card pro-plan">
                 <div className="pro-orbit" aria-hidden="true" />
-                <div><span className="micro-label">{PLAN_CONFIG.pro.name.toUpperCase()}</span><h3>{PLAN_CONFIG.pro.priceLabel}<small>{PLAN_CONFIG.pro.cadence}</small></h3><p>{PLAN_CONFIG.pro.creditsLabel}</p></div>
-                <p className="plan-detail">{PLAN_CONFIG.pro.detail}</p>
-                <ul><li><Check size={15} /> No 100-credit daily limit</li><li><Check size={15} /> Higher tool and AI capacity</li><li><Check size={15} /> Priority access to new capabilities</li></ul>
-                <button className="primary-button w-full" onClick={() => toast.message("Payments are coming soon. No upgrade has been applied.")}>Payments coming soon <TimerReset size={16} /></button>
+                <div><span className="micro-label">{PLAN_CONFIG.premium.name.toUpperCase()}</span><h3>{PLAN_CONFIG.premium.priceLabel}<small>{PLAN_CONFIG.premium.cadence}</small></h3><p>{PLAN_CONFIG.premium.creditsLabel}</p></div>
+                <p className="plan-detail">{PLAN_CONFIG.premium.detail}</p>
+                <ul><li><Check size={15} /> Server-verified access to protected AI routes</li><li><Check size={15} /> AI provider requests remain server-only</li><li><Check size={15} /> Monthly credit allocation arrives next</li></ul>
+                <button className="primary-button w-full" onClick={() => toast.message("Premium billing setup is coming soon. No upgrade has been applied.")}>Premium billing setup coming soon <TimerReset size={16} /></button>
               </article>
             </div>
           </div>

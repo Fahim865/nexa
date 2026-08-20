@@ -40,3 +40,11 @@
 - [x] Translator, hashtag, description, stock metadata ও YouTube SEO-এর জন্য structured model output parsing সংযুক্ত করা।
 - [x] Subtitle, video analyzer ও clip planner-কে truthful media-backend-required state-এ রাখা।
 - [x] Provider unit tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।
+
+## Premium subscription access-control phase
+
+- [x] FREE ও PREMIUM plan state এবং future subscription metadata schema যোগ করা।
+- [x] Reusable server-side Premium authorization helper ও `$10/month` price configuration যোগ করা।
+- [x] সব current AI tRPC endpoint-এ authentication ও Premium guard প্রয়োগ করা; provider call-এর আগে server-side reject নিশ্চিত করা।
+- [x] Free-user upgrade CTA, disabled execution control ও Premium-aware tool status UI বাস্তবায়ন করা।
+- [x] Schema migration, authorization tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।

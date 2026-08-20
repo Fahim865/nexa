@@ -84,15 +84,15 @@ export const PLAN_CONFIG = {
   free: {
     name: "NEXA Free",
     priceLabel: "$0",
-    creditsLabel: "100 credits / day",
-    detail: "A daily workspace allowance for useful, repeatable tasks.",
+    creditsLabel: "Browse all AI workflows",
+    detail: "Explore every AI tool and its secure request workspace before upgrading.",
   },
-  pro: {
-    name: "NEXA Pro",
-    priceLabel: "$15",
+  premium: {
+    name: "NEXA Premium",
+    priceLabel: "$10",
     cadence: "/ month",
-    creditsLabel: "15,000 credits / billing cycle",
-    detail: "More capacity for deeper work—without pretending usage is unlimited.",
+    creditsLabel: "Secure AI execution",
+    detail: "A server-verified plan for protected AI requests. Monthly credits arrive in the next release.",
   },
 } as const;
 
