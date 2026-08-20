@@ -38,7 +38,7 @@ export const aiToolSchemas = {
   "ai-translator": textRequest.extend({ toolId: z.literal("ai-translator") }),
   "ai-hashtag-generator": textRequest.extend({ toolId: z.literal("ai-hashtag-generator") }),
   "ai-description-generator": textRequest.extend({ toolId: z.literal("ai-description-generator") }),
-  "ai-stock-metadata-generator": mediaRequest.extend({
+  "ai-stock-metadata-generator": textRequest.extend({
     toolId: z.literal("ai-stock-metadata-generator"),
     source: z.string().trim().min(1).max(24_000),
     shortInput: z.string().trim().min(1).max(1_000),
@@ -74,7 +74,6 @@ export const AI_OUTPUT_KEYS: Record<AiToolId, readonly string[]> = {
 };
 
 export const MEDIA_AI_TOOL_IDS = new Set<AiToolId>([
-  "ai-stock-metadata-generator",
   "ai-subtitle-generator",
   "ai-video-analyzer",
   "ai-video-clip-planner",

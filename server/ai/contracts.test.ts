@@ -11,6 +11,15 @@ describe("AI request contracts", () => {
     })).toMatchObject({ toolId: "ai-youtube-seo-assistant" });
   });
 
+  it("accepts stock metadata from text context without requiring an image upload", () => {
+    expect(parseAiRequest({
+      toolId: "ai-stock-metadata-generator",
+      source: "Sunlit electric tram moving through a sustainable European city centre.",
+      shortInput: "Sustainable urban transport",
+      options: { marketplace: "Adobe Stock" },
+    })).toMatchObject({ toolId: "ai-stock-metadata-generator" });
+  });
+
   it("requires a secure asset reference for media tools", () => {
     expect(() => parseAiRequest({
       toolId: "ai-subtitle-generator",

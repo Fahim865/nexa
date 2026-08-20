@@ -33,3 +33,10 @@
 - [x] Client bootstrap-এ duplicate `createRoot` initialization-এর কারণ নির্ণয় করা।
 - [x] একক React root initialization প্রয়োগ করে homepage rendering error দূর করা।
 - [x] Browser console, TypeScript ও production build যাচাই করে checkpoint তৈরি করা।
+
+## OpenAI-compatible AI provider phase
+
+- [x] Server-only OpenAI-compatible provider module, environment contract ও secret-free setup guide তৈরি করা; platform policy সরাসরি `.env.example` edit অনুমোদন করে না।
+- [x] Translator, hashtag, description, stock metadata ও YouTube SEO-এর জন্য structured model output parsing সংযুক্ত করা।
+- [x] Subtitle, video analyzer ও clip planner-কে truthful media-backend-required state-এ রাখা।
+- [x] Provider unit tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।

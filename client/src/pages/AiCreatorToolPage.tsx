@@ -1,6 +1,6 @@
 /**
  * Orbit Studio design reminder: this is a composed AI request workspace, not a faux result screen.
- * Signal Azure marks connection boundaries; every output remains visibly unavailable until a backend API exists.
+ * Signal Azure marks the server boundary; outputs appear only after a configured provider returns a validated response.
  */
 import { NexaMark } from "@/components/NexaMark";
 import { isAiCreatorToolId, type AiCreatorToolId, type ToolDefinition } from "@/data/nexa";
@@ -52,6 +52,7 @@ export default function AiCreatorToolPage({ tool }: Props) {
   const [, setLocation] = useLocation();
   const toolId: AiCreatorToolId = isAiCreatorToolId(tool.id) ? tool.id : "ai-translator";
   const config = getAiCreatorConfig(toolId);
+  const requiresMediaPipeline = Boolean(config.assetInput);
   const Icon = tool.icon;
   const [source, setSource] = useState("");
   const [settings, setSettings] = useState(() => createInitialSettings(toolId));
@@ -108,13 +109,13 @@ export default function AiCreatorToolPage({ tool }: Props) {
     <header className="nexa-nav tool-route-nav"><a href="/" aria-label="Return to NEXA home"><NexaMark /></a><a className="secondary-button tool-route-home" href="/#tool-index"><ArrowLeft size={16} /> Tool index</a></header>
     <main className="local-tool-main ai-creator-main">
       <section className="local-tool-hero ai-creator-hero">
-        <div className="ai-hero-copy"><p className="section-index"><span /> AI CREATOR TOOLS / API-READY WORKSPACE</p><div className="tool-route-icon"><Icon size={28} /></div><h1><span>{tool.name}</span><em>{config.promise}</em></h1><AiHeroProof toolId={toolId} /><p>{config.detail}<span className="ai-hero-locality">AI API REQUIRED · NO REQUESTS ARE SENT</span></p></div>
+        <div className="ai-hero-copy"><p className="section-index"><span /> AI CREATOR TOOLS / SERVER-SIDE WORKSPACE</p><div className="tool-route-icon"><Icon size={28} /></div><h1><span>{tool.name}</span><em>{config.promise}</em></h1><AiHeroProof toolId={toolId} /><p>{config.detail}<span className="ai-hero-locality">{requiresMediaPipeline ? "MEDIA PIPELINE REQUIRED · NO CLIENT KEYS" : "SERVER-SIDE AI · NO CLIENT KEYS"}</span></p></div>
         <div className={`ai-creator-orbit ai-orbit-${toolId}`} aria-hidden="true"><i /><i /><span className="ai-orbit-axis" /><span className="ai-orbit-node ai-orbit-node-a" /><span className="ai-orbit-node ai-orbit-node-b" /><b><NexaMark withWordmark={false} className="ai-orbit-mark" imageClassName="!h-5 !w-5" /></b><AiProofMotif toolId={toolId} /><p>N/O AXIS · {config.eyebrow}</p></div>
       </section>
 
       <section className="local-tool-workspace ai-creator-workspace">
-        <div className="local-tool-meta ai-creator-meta"><span>AI REQUEST SURFACE / SECURE SERVER ROUTE</span><span className="ai-connection-state"><i /> PROVIDER CONFIGURATION REQUIRED</span><button onClick={() => setLocation("/#tool-index")}><ArrowLeft size={15} /> All tools</button></div>
-        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>Server route is ready; provider access is intentionally gated.</strong><p>Requests are validated and sent only to a server-side provider. Media tools additionally require a secure upload reference before analysis.</p></div></div>
+        <div className="local-tool-meta ai-creator-meta"><span>AI REQUEST SURFACE / SECURE SERVER ROUTE</span><span className="ai-connection-state"><i /> {requiresMediaPipeline ? "MEDIA BACKEND REQUIRED" : "SERVER PROVIDER REQUIRED"}</span><button onClick={() => setLocation("/#tool-index")}><ArrowLeft size={15} /> All tools</button></div>
+        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>{requiresMediaPipeline ? "This tool needs secure upload and asynchronous media processing." : "Text requests run only through a configured server-side provider."}</strong><p>{requiresMediaPipeline ? "No media is sent from this browser yet. Audio and video analysis stay unavailable until NEXA adds secure storage, media-aware inference, and durable job status." : "No provider secret is sent to this browser. Audio and video tools remain unavailable until secure upload and asynchronous media processing are implemented."}</p></div></div>
 
         <div className="ai-creator-grid">
           <section className="ai-creator-panel ai-input-panel">
@@ -125,14 +126,14 @@ export default function AiCreatorToolPage({ tool }: Props) {
             <div className="local-input-footer"><span>{config.showSourceText === false ? (assetFileName ? "Asset selected" : "No asset selected") : `${source.length.toLocaleString()} characters`}</span><span>{config.inputHint}</span></div>
 
             <div className="ai-settings-wrap"><div className="ai-settings-heading"><span><SlidersHorizontal size={15} /> REQUEST SETTINGS</span><small>Sent as API options later</small></div><div className="ai-settings-grid">{config.settings.map((setting) => <label key={setting.id} className="local-select-label"><span>{setting.label}</span><select value={settings[setting.id] ?? setting.defaultValue} onChange={(event) => { setSettings((current) => ({ ...current, [setting.id]: event.target.value })); setContractPrepared(false); }}>{setting.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>)}</div></div>
-            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract} disabled={runAi.isPending}><Cable size={17} /> {runAi.isPending ? "Sending secure request…" : "Send secure AI request"}</button><button className="secondary-button" onClick={resetWorkspace} disabled={runAi.isPending}><RefreshCw size={16} /> Reset</button></div>
+            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract} disabled={runAi.isPending || requiresMediaPipeline} title={requiresMediaPipeline ? "Secure media processing is not implemented yet." : undefined}><Cable size={17} /> {requiresMediaPipeline ? "Media backend required" : runAi.isPending ? "Sending secure request…" : "Send secure AI request"}</button><button className="secondary-button" onClick={resetWorkspace} disabled={runAi.isPending}><RefreshCw size={16} /> Reset</button></div>
           </section>
 
           <aside className="ai-creator-panel ai-output-panel">
             <div className="local-panel-heading"><div><span>AI OUTPUT</span><h2>{runAi.isPending ? "Generating securely." : contractPrepared ? "Response received." : apiError ? "Connection needs attention." : "Awaiting connection."}</h2></div><Sparkles size={18} className="ai-output-spark" /></div>
             {apiError ? <div className="ai-api-error" role="alert"><ShieldAlert size={15} /><span>{apiError}</span></div> : null}
             <div className="ai-output-stack">{config.outputs.map((output) => { const value = generatedOutputs[outputKey(output.label)]; return <div className="ai-output-slot" key={output.label}><span>{output.label}</span><strong>{value || (runAi.isPending ? "Generating…" : "Not generated")}</strong><p>{value ? "Returned by the configured server-side provider." : output.hint}</p></div>; })}</div>
-            <div className="ai-api-contract"><div><span>SERVER CAPABILITY</span><strong>{config.apiCapability}</strong></div><div><span>CLIENT PAYLOAD</span><code>{config.assetInput ? "toolId · assetRef · source · options" : "toolId · source · options"}</code></div><div><span>SERVER RESPONSE</span><code>outputs[] · metadata</code></div></div>
+            <div className="ai-api-contract"><div><span>SERVER CAPABILITY</span><strong>{config.apiCapability}</strong></div><div><span>CLIENT PAYLOAD</span><code>{config.assetInput ? "toolId · assetRef · source · options" : config.shortInput ? "toolId · source · shortInput · options" : "toolId · source · options"}</code></div><div><span>SERVER RESPONSE</span><code>outputs[] · metadata</code></div></div>
             <div className="ai-no-request"><X size={15} /><span>{runAi.isPending ? "A secure AI request is in progress." : contractPrepared ? "Response returned through the secure server route." : "No AI request has been sent from this page."}</span></div>
           </aside>
         </div>

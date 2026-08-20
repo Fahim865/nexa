@@ -3,6 +3,9 @@ import { AI_OUTPUT_KEYS, MEDIA_AI_TOOL_IDS, type AiRequest } from "./contracts";
 
 type ProviderErrorCode = "PRECONDITION_FAILED" | "NOT_IMPLEMENTED" | "BAD_GATEWAY";
 
+const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
+const DEFAULT_TIMEOUT_MS = 30_000;
+
 export class AiServiceError extends Error {
   constructor(
     message: string,
@@ -25,10 +28,19 @@ export type AiProvider = {
 };
 
 export type AiProviderConfig = {
-  provider: string;
-  apiKey: string;
-  baseUrl: string;
-  model: string;
+  provider?: string;
+  apiKey?: string;
+  baseUrl?: string;
+  model?: string;
+  timeoutMs?: number;
+};
+
+type ChatCompletionPayload = {
+  choices?: Array<{
+    message?: {
+      content?: unknown;
+    };
+  }>;
 };
 
 function extractJson(content: string) {
@@ -41,7 +53,7 @@ function extractJson(content: string) {
   }
 }
 
-function normalizeOutputs(request: AiRequest, content: string) {
+export function normalizeAiOutputs(request: AiRequest, content: string) {
   const parsed = extractJson(content);
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
     throw new AiServiceError("The configured AI provider returned an invalid output shape.", "BAD_GATEWAY");
@@ -74,32 +86,56 @@ function createPrompt(request: AiRequest) {
   };
 }
 
+function getOpenAiCompatibleBaseUrl(baseUrl?: string) {
+  return (baseUrl?.trim() || DEFAULT_OPENAI_BASE_URL).replace(/\/$/, "");
+}
+
+function getTimeoutMs(timeoutMs?: number) {
+  if (!Number.isFinite(timeoutMs) || !timeoutMs || timeoutMs <= 0) return DEFAULT_TIMEOUT_MS;
+  return Math.floor(timeoutMs);
+}
+
+function ensureProviderIsReady(config: AiProviderConfig) {
+  if (config.provider?.trim().toLowerCase() !== "openai-compatible") {
+    throw new AiServiceError("AI provider is not configured. Set NEXA_AI_PROVIDER=openai-compatible before sending requests.", "PRECONDITION_FAILED");
+  }
+
+  const apiKey = config.apiKey?.trim();
+  if (!apiKey) {
+    throw new AiServiceError("AI provider API key is missing. Set NEXA_AI_PROVIDER_API_KEY on the server before sending requests.", "PRECONDITION_FAILED");
+  }
+
+  const model = config.model?.trim();
+  if (!model) {
+    throw new AiServiceError("AI provider model is missing. Set NEXA_AI_MODEL on the server before sending requests.", "PRECONDITION_FAILED");
+  }
+
+  return { apiKey, model };
+}
+
 export function createAiProvider(config: AiProviderConfig, fetchImpl: typeof fetch = fetch): AiProvider {
   return {
     async generate(request) {
-      if (config.provider !== "openai-compatible") {
-        throw new AiServiceError("AI provider is not configured. Set NEXA_AI_PROVIDER and server-only provider variables before sending requests.", "PRECONDITION_FAILED");
-      }
-
-      if (!config.apiKey || !config.baseUrl || !config.model) {
-        throw new AiServiceError("The configured AI provider is incomplete. Set NEXA_AI_PROVIDER_API_KEY, NEXA_AI_PROVIDER_BASE_URL, and NEXA_AI_MODEL on the server.", "PRECONDITION_FAILED");
-      }
-
       if (MEDIA_AI_TOOL_IDS.has(request.toolId)) {
         throw new AiServiceError("This tool requires the secure media-upload and asynchronous media-processing pipeline before an AI provider can receive the asset.", "NOT_IMPLEMENTED");
       }
 
+      const readyConfig = ensureProviderIsReady(config);
+
       const prompt = createPrompt(request);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), getTimeoutMs(config.timeoutMs));
       let response: Response;
       try {
-        response = await fetchImpl(`${config.baseUrl.replace(/\/$/, "")}/chat/completions`, {
+        response = await fetchImpl(`${getOpenAiCompatibleBaseUrl(config.baseUrl)}/chat/completions`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${config.apiKey}`,
+            Authorization: `Bearer ${readyConfig.apiKey}`,
             "Content-Type": "application/json",
           },
+          signal: controller.signal,
           body: JSON.stringify({
-            model: config.model,
+            model: readyConfig.model,
             temperature: 0.4,
             messages: [
               { role: "system", content: prompt.system },
@@ -120,15 +156,25 @@ export function createAiProvider(config: AiProviderConfig, fetchImpl: typeof fet
             },
           }),
         });
-      } catch {
+      } catch (error) {
+        if (controller.signal.aborted || (error instanceof DOMException && error.name === "AbortError")) {
+          throw new AiServiceError("The AI provider request timed out. Please try again shortly.", "BAD_GATEWAY");
+        }
         throw new AiServiceError("The AI provider could not be reached. Check the server-side provider base URL and network access.", "BAD_GATEWAY");
+      } finally {
+        clearTimeout(timeout);
       }
 
       if (!response.ok) {
         throw new AiServiceError("The AI provider rejected the request. Check the server-side credentials, selected model, and provider configuration.", "BAD_GATEWAY");
       }
 
-      const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
+      let payload: ChatCompletionPayload;
+      try {
+        payload = (await response.json()) as ChatCompletionPayload;
+      } catch {
+        throw new AiServiceError("The AI provider returned an unreadable response.", "BAD_GATEWAY");
+      }
       const content = payload.choices?.[0]?.message?.content;
       if (typeof content !== "string") {
         throw new AiServiceError("The AI provider returned no usable completion content.", "BAD_GATEWAY");
@@ -136,9 +182,9 @@ export function createAiProvider(config: AiProviderConfig, fetchImpl: typeof fet
 
       return {
         toolId: request.toolId,
-        outputs: normalizeOutputs(request, content),
-        provider: config.provider,
-        model: config.model,
+        outputs: normalizeAiOutputs(request, content),
+        provider: "openai-compatible",
+        model: readyConfig.model,
       };
     },
   };
