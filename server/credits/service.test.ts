@@ -7,7 +7,9 @@ vi.mock("../db", () => ({ getDb: getDbMock }));
 
 import {
   CreditServiceError,
+  getCreditStatusForUser,
   getCurrentCreditPeriodStart,
+  markAiCreditRequestSucceeded,
   refundAiCreditReservation,
   reserveAiCredits,
 } from "./service";
@@ -108,6 +110,55 @@ describe("Premium AI credit service", () => {
     });
     expect(fixture.updates).toEqual([]);
     expect(fixture.inserts).toContainEqual(expect.objectContaining({ status: "REJECTED" }));
+  });
+
+  it("verifies the stored Premium subscription before reserving a credit", async () => {
+    const user = createPremiumUser({ plan: "FREE", subscriptionStatus: "INACTIVE" });
+    const fixture = createReservationDatabase(user);
+    getDbMock.mockResolvedValue(fixture.db);
+
+    await expect(reserveAiCredits(user.id, "ai-translator")).rejects.toMatchObject<Partial<CreditServiceError>>({
+      code: "PRECONDITION_FAILED",
+      message: expect.stringContaining("Premium subscription required"),
+    });
+    expect(fixture.updates).toEqual([]);
+    expect(fixture.inserts).toEqual([]);
+  });
+
+  it("returns stored plan and subscription information alongside the current credit balance", async () => {
+    const user = createPremiumUser({ remainingCredits: 4997 });
+    const fixture = createReservationDatabase(user);
+    getDbMock.mockResolvedValue(fixture.db);
+
+    await expect(getCreditStatusForUser(user.id)).resolves.toMatchObject({
+      plan: "PREMIUM",
+      subscriptionStatus: "ACTIVE",
+      monthlyCreditAllowance: 5000,
+      remainingCredits: 4997,
+    });
+  });
+
+  it("marks only a RESERVED request as succeeded with provider and model metadata", async () => {
+    const updates: unknown[] = [];
+    getDbMock.mockResolvedValue({
+      update: () => ({
+        set: (value: unknown) => ({
+          where: async () => { updates.push(value); },
+        }),
+      }),
+    });
+
+    await markAiCreditRequestSucceeded(
+      { requestId: "request-2", userId: 7, toolId: "ai-translator", credits: 1, remainingCredits: 4999 },
+      "openai-compatible",
+      "gpt-test",
+    );
+
+    expect(updates).toContainEqual(expect.objectContaining({
+      status: "SUCCEEDED",
+      provider: "openai-compatible",
+      model: "gpt-test",
+    }));
   });
 
   it("refunds a reserved request exactly once when its provider call fails", async () => {

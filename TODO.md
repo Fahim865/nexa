@@ -58,3 +58,9 @@
 - [x] সব AI endpoint-এ credit guard প্রয়োগ এবং Premium credit status/insufficient-credit UI যোগ করা।
 - [x] Migration, concurrency/refund/reset tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।
 - [x] Registry-defined AI tool routesে credit-aware workspace rendering যাচাই ও কোনো route mismatch সংশোধন করা।
+
+## Credit service recovery phase
+
+- [x] `server/credits/service.ts`-এর উপস্থিতি, imports, API contract ও test expectations যাচাই করা।
+- [x] Atomic reserve, success, refund, status ও subscription-period resetসহ missing credit service পুনঃস্থাপন করা।
+- [x] Router integration, TypeScript, full test suite, production build ও workspace rendering যাচাই করা।

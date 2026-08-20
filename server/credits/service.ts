@@ -26,6 +26,10 @@ export type CreditReservation = {
 };
 
 export type CreditStatus = {
+  plan: User["plan"];
+  subscriptionStatus: User["subscriptionStatus"];
+  subscriptionStartDate: Date | null;
+  subscriptionEndDate: Date | null;
   monthlyCreditAllowance: number;
   remainingCredits: number;
   lastCreditResetDate: Date;
@@ -62,6 +66,10 @@ export function getCurrentCreditPeriodStart(user: Pick<User, "subscriptionStartD
 function toStatus(user: User, now: Date): CreditStatus {
   const periodStart = user.lastCreditResetDate ?? getCurrentCreditPeriodStart(user, now);
   return {
+    plan: user.plan,
+    subscriptionStatus: user.subscriptionStatus,
+    subscriptionStartDate: user.subscriptionStartDate,
+    subscriptionEndDate: user.subscriptionEndDate,
     monthlyCreditAllowance: user.monthlyCreditAllowance,
     remainingCredits: user.remainingCredits,
     lastCreditResetDate: periodStart,
@@ -103,12 +111,28 @@ async function lockUser(tx: any, userId: number) {
   return user as User;
 }
 
+/**
+ * The tRPC layer performs the same check before reaching this module. Keeping
+ * it here makes direct server-side callers safe too and prevents a future
+ * router regression from spending credits for a non-entitled account.
+ */
+function requireActivePremiumSubscription(user: User, now: Date) {
+  const subscriptionIsActive = user.subscriptionStatus === "ACTIVE" || user.subscriptionStatus === "TRIALING";
+  const subscriptionHasNotEnded = !user.subscriptionEndDate || user.subscriptionEndDate.getTime() > now.getTime();
+
+  if (user.plan !== "PREMIUM" || !subscriptionIsActive || !subscriptionHasNotEnded) {
+    throw new CreditServiceError("Premium subscription required for AI credit usage.", "PRECONDITION_FAILED");
+  }
+}
+
 export async function getCreditStatusForUser(userId: number): Promise<CreditStatus> {
   const db = await requireDatabase();
   return db.transaction(async tx => {
     const user = await lockUser(tx, userId);
-    const refreshedUser = await resetDueCredits(tx, user, new Date());
-    return toStatus(refreshedUser, new Date());
+    const now = new Date();
+    requireActivePremiumSubscription(user, now);
+    const refreshedUser = await resetDueCredits(tx, user, now);
+    return toStatus(refreshedUser, now);
   });
 }
 
@@ -119,6 +143,7 @@ export async function reserveAiCredits(userId: number, toolId: AiToolId): Promis
   const requestId = crypto.randomUUID();
   const outcome = await db.transaction(async tx => {
     const lockedUser = await lockUser(tx, userId);
+    requireActivePremiumSubscription(lockedUser, now);
     const user = await resetDueCredits(tx, lockedUser, now);
     const oneMinuteAgo = new Date(now.getTime() - 60_000);
     const [recentUsage] = await tx.select({ requestCount: count() }).from(aiCreditTransactions).where(and(
