@@ -52,13 +52,18 @@ function AiCapabilityMap({ toolId }: { toolId: AiCreatorToolId }) {
 export default function AiCreatorToolPage({ tool }: Props) {
   const [, setLocation] = useLocation();
   const { user, loading: authLoading } = useAuth();
+  const trpcUtils = trpc.useUtils();
   const toolId: AiCreatorToolId = isAiCreatorToolId(tool.id) ? tool.id : "ai-translator";
   const config = getAiCreatorConfig(toolId);
   const requiresMediaPipeline = Boolean(config.assetInput);
   const subscriptionIsCurrent = !user?.subscriptionEndDate || new Date(user.subscriptionEndDate).getTime() > Date.now();
   const hasPremiumAccess = user?.plan === "PREMIUM" && (user.subscriptionStatus === "ACTIVE" || user.subscriptionStatus === "TRIALING") && subscriptionIsCurrent;
+  const catalog = trpc.subscription.catalog.useQuery();
+  const creditStatus = trpc.subscription.creditStatus.useQuery(undefined, { enabled: hasPremiumAccess && !requiresMediaPipeline });
+  const toolCreditCost = catalog.data?.toolCreditCosts[toolId] ?? 0;
+  const hasEnoughCredits = !hasPremiumAccess || requiresMediaPipeline || Boolean(creditStatus.data && creditStatus.data.remainingCredits >= toolCreditCost);
   const requiresPremiumUpgrade = !authLoading && !hasPremiumAccess;
-  const canExecuteAi = hasPremiumAccess && !requiresMediaPipeline;
+  const canExecuteAi = hasPremiumAccess && !requiresMediaPipeline && hasEnoughCredits && !creditStatus.isLoading;
   const accessLabel = requiresMediaPipeline ? "MEDIA BACKEND REQUIRED" : authLoading ? "VERIFYING PLAN" : hasPremiumAccess ? "PREMIUM VERIFIED" : "PREMIUM REQUIRED";
   const Icon = tool.icon;
   const [source, setSource] = useState("");
@@ -73,6 +78,7 @@ export default function AiCreatorToolPage({ tool }: Props) {
       setGeneratedOutputs(result.outputs);
       setContractPrepared(true);
       setApiError("");
+      void trpcUtils.subscription.creditStatus.invalidate();
       toast.success("Secure AI response received from the configured server provider.");
     },
     onError: (error) => {
@@ -96,6 +102,12 @@ export default function AiCreatorToolPage({ tool }: Props) {
   const prepareContract = () => {
     if (!hasPremiumAccess) {
       const message = user ? "Premium subscription required. Upgrade to execute protected AI requests." : "Sign in and upgrade to Premium to execute protected AI requests.";
+      setApiError(message);
+      toast.error(message);
+      return;
+    }
+    if (!requiresMediaPipeline && !hasEnoughCredits) {
+      const message = "Insufficient Premium AI credits for this request. Your balance will reset at the next subscription period.";
       setApiError(message);
       toast.error(message);
       return;
@@ -129,7 +141,8 @@ export default function AiCreatorToolPage({ tool }: Props) {
       <section className="local-tool-workspace ai-creator-workspace">
         <div className="local-tool-meta ai-creator-meta"><span>AI REQUEST SURFACE / SECURE SERVER ROUTE</span><span className={`ai-connection-state ${hasPremiumAccess ? "is-premium" : "is-locked"}`}><i /> {accessLabel}</span><button onClick={() => setLocation("/#tool-index")}><ArrowLeft size={15} /> All tools</button></div>
         {requiresPremiumUpgrade ? <div className="ai-premium-banner" role="status"><Crown size={18} /><div><strong>{user ? "Premium is required to execute this protected AI tool." : "Sign in and upgrade to Premium to execute protected AI tools."}</strong><p>You can review every tool workflow for free. AI/API requests remain blocked in the browser and are verified again on the server before any provider call.</p><a className="primary-button ai-upgrade-button" href="/#pricing"><Crown size={15} /> Upgrade to Premium · $10 / month</a></div></div> : null}
-        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>{requiresMediaPipeline ? "This tool needs secure upload and asynchronous media processing." : hasPremiumAccess ? "Your active Premium plan can request the configured server-side provider." : "Text requests require an active, server-verified Premium plan."}</strong><p>{requiresMediaPipeline ? "No media is sent from this browser yet. Audio and video analysis stay unavailable until NEXA adds secure storage, media-aware inference, and durable job status." : "No provider secret is sent to this browser. Subscription access is verified server-side before any provider request is allowed."}</p></div></div>
+        <div className="ai-connection-banner" role="status"><ShieldAlert size={18} /><div><strong>{requiresMediaPipeline ? "This tool needs secure upload and asynchronous media processing." : hasPremiumAccess ? "Your active Premium plan can request the configured server-side provider." : "Text requests require an active, server-verified Premium plan."}</strong><p>{requiresMediaPipeline ? "No media is sent from this browser yet. Audio and video analysis stay unavailable until NEXA adds secure storage, media-aware inference, and durable job status." : "No provider secret is sent to this browser. Subscription access and credit balance are verified server-side before any provider request is allowed."}</p></div></div>
+        {hasPremiumAccess && !requiresMediaPipeline ? <div className="ai-premium-banner" role="status"><Crown size={18} /><div><strong>{creditStatus.isLoading ? "Loading your server-verified AI credit balance…" : `${creditStatus.data?.remainingCredits ?? 0} / ${creditStatus.data?.monthlyCreditAllowance ?? 0} AI credits available`}</strong><p>This tool costs <b>{toolCreditCost}</b> credit{toolCreditCost === 1 ? "" : "s"} per successful server request. Unused credits reset at your next subscription period and never carry over.</p></div></div> : null}
 
         <div className="ai-creator-grid">
           <section className="ai-creator-panel ai-input-panel">
@@ -140,7 +153,7 @@ export default function AiCreatorToolPage({ tool }: Props) {
             <div className="local-input-footer"><span>{config.showSourceText === false ? (assetFileName ? "Asset selected" : "No asset selected") : `${source.length.toLocaleString()} characters`}</span><span>{config.inputHint}</span></div>
 
             <div className="ai-settings-wrap"><div className="ai-settings-heading"><span><SlidersHorizontal size={15} /> REQUEST SETTINGS</span><small>Sent as API options later</small></div><div className="ai-settings-grid">{config.settings.map((setting) => <label key={setting.id} className="local-select-label"><span>{setting.label}</span><select value={settings[setting.id] ?? setting.defaultValue} onChange={(event) => { setSettings((current) => ({ ...current, [setting.id]: event.target.value })); setContractPrepared(false); }}>{setting.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>)}</div></div>
-            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract} disabled={runAi.isPending || !canExecuteAi} title={requiresMediaPipeline ? "Secure media processing is not implemented yet." : requiresPremiumUpgrade ? "Premium subscription required to execute AI requests." : undefined}><Cable size={17} /> {requiresMediaPipeline ? "Media backend required" : authLoading ? "Verifying Premium access…" : requiresPremiumUpgrade ? "Premium required" : runAi.isPending ? "Sending secure request…" : "Send secure AI request"}</button><button className="secondary-button" onClick={resetWorkspace} disabled={runAi.isPending}><RefreshCw size={16} /> Reset</button></div>
+            <div className="local-tool-actions"><button className="primary-button" onClick={prepareContract} disabled={runAi.isPending || !canExecuteAi} title={requiresMediaPipeline ? "Secure media processing is not implemented yet." : requiresPremiumUpgrade ? "Premium subscription required to execute AI requests." : creditStatus.isLoading ? "Loading your server-verified AI credit balance." : !hasEnoughCredits ? "Insufficient Premium AI credits for this request." : undefined}><Cable size={17} /> {requiresMediaPipeline ? "Media backend required" : authLoading ? "Verifying Premium access…" : requiresPremiumUpgrade ? "Premium required" : creditStatus.isLoading ? "Loading credit balance…" : !hasEnoughCredits ? "Insufficient credits" : runAi.isPending ? "Sending secure request…" : `Send secure AI request · ${toolCreditCost} credit${toolCreditCost === 1 ? "" : "s"}`}</button><button className="secondary-button" onClick={resetWorkspace} disabled={runAi.isPending}><RefreshCw size={16} /> Reset</button></div>
           </section>
 
           <aside className="ai-creator-panel ai-output-panel">

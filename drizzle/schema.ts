@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { index, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,6 +25,12 @@ export const users = mysqlTable("users", {
   paymentProvider: varchar("paymentProvider", { length: 64 }),
   providerCustomerId: varchar("providerCustomerId", { length: 255 }),
   providerSubscriptionId: varchar("providerSubscriptionId", { length: 255 }),
+  /** Server-owned allowance copied into each eligible subscription period. */
+  monthlyCreditAllowance: int("monthlyCreditAllowance").default(5000).notNull(),
+  /** Mutable balance; it is only written through the credit service transaction. */
+  remainingCredits: int("remainingCredits").default(0).notNull(),
+  /** Start time of the subscription period for which the current balance was issued. */
+  lastCreditResetDate: timestamp("lastCreditResetDate"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -33,4 +39,26 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/** Immutable-ish audit ledger for every charged, refunded, or rejected AI request. */
+export const aiCreditTransactions = mysqlTable(
+  "aiCreditTransactions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    requestId: varchar("requestId", { length: 64 }).notNull().unique(),
+    userId: int("userId").notNull().references(() => users.id),
+    toolId: varchar("toolId", { length: 64 }).notNull(),
+    credits: int("credits").notNull(),
+    status: mysqlEnum("status", ["RESERVED", "SUCCEEDED", "REFUNDED", "REJECTED"]).notNull(),
+    provider: varchar("provider", { length: 64 }),
+    model: varchar("model", { length: 255 }),
+    failureReason: text("failureReason"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    finalizedAt: timestamp("finalizedAt"),
+  },
+  table => [
+    index("ai_credit_transactions_user_created_idx").on(table.userId, table.createdAt),
+    index("ai_credit_transactions_request_status_idx").on(table.requestId, table.status),
+  ],
+);
+
+export type AiCreditTransaction = typeof aiCreditTransactions.$inferSelect;

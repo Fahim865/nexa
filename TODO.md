@@ -48,3 +48,13 @@
 - [x] সব current AI tRPC endpoint-এ authentication ও Premium guard প্রয়োগ করা; provider call-এর আগে server-side reject নিশ্চিত করা।
 - [x] Free-user upgrade CTA, disabled execution control ও Premium-aware tool status UI বাস্তবায়ন করা।
 - [x] Schema migration, authorization tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।
+
+## Premium AI credit-system phase
+
+- [x] 5,000 monthly allowance, remaining balance, last reset date ও AI credit ledger-এর database schema যোগ করা।
+- [x] Server-only monthly credit configuration এবং প্রতিটি AI tool-এর centralized cost map যোগ করা।
+- [x] Atomic credit reservation, provider-failure refund, transaction status tracking ও race-condition protection বাস্তবায়ন করা।
+- [x] Active subscription period অনুযায়ী reliable monthly reset এবং per-user request rate limit বাস্তবায়ন করা।
+- [x] সব AI endpoint-এ credit guard প্রয়োগ এবং Premium credit status/insufficient-credit UI যোগ করা।
+- [x] Migration, concurrency/refund/reset tests, TypeScript, full test suite, production build ও responsive UI যাচাই করা।
+- [x] Registry-defined AI tool routesে credit-aware workspace rendering যাচাই ও কোনো route mismatch সংশোধন করা।

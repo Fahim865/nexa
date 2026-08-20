@@ -8,6 +8,13 @@
       "when": 1787225241765,
       "tag": "0000_gray_khan",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1787226527959,
+      "tag": "0001_free_gravity",
+      "breakpoints": true
     }
   ]
 }

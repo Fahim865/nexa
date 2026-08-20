@@ -12,4 +12,6 @@ export const ENV = {
   nexaAiProviderApiKey: process.env.NEXA_AI_PROVIDER_API_KEY ?? "",
   nexaAiProviderBaseUrl: process.env.NEXA_AI_PROVIDER_BASE_URL ?? "",
   nexaAiModel: process.env.NEXA_AI_MODEL ?? "",
+  premiumPriceUsd: process.env.PREMIUM_PRICE_USD ?? "",
+  premiumMonthlyCredits: process.env.PREMIUM_MONTHLY_CREDITS ?? "",
 };
