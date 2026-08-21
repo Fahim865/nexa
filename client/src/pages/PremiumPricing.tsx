@@ -30,7 +30,7 @@ export default function PremiumPricing() {
     }
     checkout.mutate({
       plan,
-      successUrl: `${window.location.origin}/premium?checkout=return`,
+      successUrl: `${window.location.origin}/welcome`,
       cancelUrl: `${window.location.origin}/premium?checkout=cancel`,
     });
   };

@@ -18,4 +18,8 @@ describe("PremiumPricing checkout access", () => {
     expect(premiumPricingSource).toContain("checkout.mutate({");
     expect(premiumPricingSource).toContain("plan,");
   });
+
+  it("returns from provider checkout to the dedicated truthful welcome page", () => {
+    expect(premiumPricingSource).toContain("successUrl: `${window.location.origin}/welcome`");
+  });
 });

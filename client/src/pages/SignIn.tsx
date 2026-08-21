@@ -14,12 +14,17 @@ const errorMessages: Record<string, string> = {
 export default function SignIn() {
   const [location, setLocation] = useLocation();
   const googleStatus = trpc.auth.googleStatus.useQuery();
-  const error = new URLSearchParams(location.split("?")[1] ?? "").get("google");
+  const query = new URLSearchParams(location.split("?")[1] ?? "");
+  const error = query.get("google");
+  const requestedReturnTo = query.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//") && !requestedReturnTo.includes("\\")
+    ? requestedReturnTo
+    : "/tools";
   const googleEnabled = googleStatus.data?.enabled === true;
 
   const continueWithGoogle = () => {
     if (!googleEnabled) return;
-    window.location.assign("/api/auth/google/start?returnTo=%2Ftools");
+    window.location.assign(`/api/auth/google/start?returnTo=${encodeURIComponent(returnTo)}`);
   };
 
   return (

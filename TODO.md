@@ -212,3 +212,20 @@
 - [ ] Production Google sign-in button, OAuth start redirect, callback state এবং `/tools` destination independently reproduce করা।
 - [ ] Production Premium checkout UI ও authenticated checkout requestে configured Paddle provider error independently reproduce করা।
 - [ ] Browser, network ও server logs থেকে exact failure causes নথিভুক্ত করে minimal fix বা required external configuration নির্ধারণ করা।
+
+## Three-tier localized Paddle checkout
+
+- [ ] Existing single-Premium entitlement assumptions এবং current Paddle price IDs audit করে Starter, Pro ও Advanced tier migration constraints নথিভুক্ত করা।
+- [ ] Editable `Tier` catalogে Starter, Pro ও Advanced-এর monthly/annual server-owned Price ID contract তৈরি করা।
+- [ ] Server-side country detectionসহ Paddle `PricePreview`-এর জন্য safe client configuration ও no-country fallback তৈরি করা।
+- [ ] Monthly/yearly toggle ও Paddle-returned `formattedTotals` ব্যবহার করে localized three-tier pricing UI তৈরি করা।
+- [ ] `@paddle/paddle-js` দিয়ে sandbox one-page overlay checkout, signed-in email prefill ও `/welcome` success redirect implement করা।
+- [ ] Public-safe Paddle client token এবং server-only API key/environment separation `.env.example`-এ নথিভুক্ত করা।
+- [ ] Sandbox checkout launch, completion, redirect, verified entitlement ও regressions পরীক্ষা করা।
+
+## Single Premium monthly/annual verification
+
+- [x] User-confirmed scope অনুযায়ী তিন-tier pricing request স্থগিত রেখে existing single Premium monthly/annual price mapping অপরিবর্তিত আছে নিশ্চিত করা।
+- [ ] Production Google sign-in, authenticated `/tools` rendering এবং existing Premium checkout handoff independently verify করা।
+- [x] Premium checkout sign-in handoff-এর `returnTo` query Google OAuth start route-এ preserve করে authentication শেষে `/premium`-এ নিরাপদে ফিরিয়ে আনা।
+- [ ] কেবল confirmed defect থাকলে minimal fix, regression coverage, TypeScript, tests ও production build চালিয়ে published checkpoint তৈরি করা।
