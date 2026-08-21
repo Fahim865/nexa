@@ -199,3 +199,9 @@
 - [ ] Renewal, cancellation, payment failure, expiry এবং duplicate/cross-account events-এর regression coverage যোগ করা।
 - [ ] Exact Paddle Dashboard webhook configuration ও server-only secret/price requirements সম্পন্ন করা।
 - [ ] Google-authenticated accountে sandbox checkout ও post-callback `/tools` production render end-to-end যাচাই করা।
+
+## Urgent production access and checkout repair
+
+- [x] Production Google sign-in start/callback/session এবং authenticated `/tools` route পুনরুৎপাদন করে error root cause নির্ণয় করা।
+- [ ] Existing server-side Paddle checkout route-এ exact configured-provider failure নির্ণয় ও minimal fix করা।
+- [ ] কোনো design, pricing, entitlement rule বা unrelated feature না বদলে focused production path validation সম্পন্ন করা।

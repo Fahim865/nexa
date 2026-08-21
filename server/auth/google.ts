@@ -83,8 +83,14 @@ function getConfiguredOAuthStartUrl(returnTo: string) {
 function isRequestOnConfiguredOAuthHost(req: Request) {
   try {
     const callbackUrl = new URL(ENV.googleRedirectUri);
-    const requestHost = (req.get("host") ?? "").trim().toLowerCase();
-    return requestHost === callbackUrl.host.toLowerCase();
+    // Production traffic reaches Express through a reverse proxy. In that case
+    // `Host` can be the internal service host, while `X-Forwarded-Host` retains
+    // the browser-facing origin that owns the host-only OAuth state cookie.
+    const requestHosts = [req.get("x-forwarded-host"), req.get("host")]
+      .flatMap((value) => (value ?? "").split(","))
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean);
+    return requestHosts.includes(callbackUrl.host.toLowerCase());
   } catch {
     return false;
   }
