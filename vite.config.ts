@@ -167,23 +167,6 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("pdfjs-dist")) return "pdf-engine";
-          if (id.includes("streamdown")) return "markdown-renderer";
-          if (id.includes("qrcode")) return "qr-generator";
-          if (id.includes("react-dom") || id.includes("/react/") || id.includes("scheduler")) return "react-vendor";
-          if (id.includes("@radix-ui") || id.includes("cmdk")) return "ui-vendor";
-          if (id.includes("lucide-react")) return "icon-vendor";
-          if (id.includes("@tanstack") || id.includes("@trpc") || id.includes("superjson")) return "data-vendor";
-          if (id.includes("framer-motion")) return "motion-vendor";
-          if (id.includes("react-hook-form") || id.includes("@hookform") || id.includes("zod")) return "form-vendor";
-          return "vendor";
-        },
-      },
-    },
   },
   server: {
     host: true,

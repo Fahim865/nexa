@@ -167,3 +167,9 @@
 - [x] Google OAuth callback-এর পরে authenticated `/tools` route blank/`@@` render হওয়ার root cause নির্ণয় করা।
 - [x] Authenticated session, account plan, subscription, credit ও Tool Index data dependency crash ছাড়া load নিশ্চিত করা।
 - [ ] Minimal root-cause fix এবং regression test যোগ করে TypeScript, test, build ও production flow যাচাই করা।
+
+## Production bundle graph repair
+
+- [x] Production-only `ui-vendor` React export mismatch দূর করতে unsafe manual chunking configuration সংশোধন করা।
+- [x] Rebuilt production runtime-এ `/tools` route-এর React bootstrap regression যাচাই করা।
+- [ ] Published public `/tools` route-এ new automatic chunking artifact render যাচাই করা।
