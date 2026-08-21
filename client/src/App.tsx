@@ -15,6 +15,7 @@ const LocalToolPage = lazy(() => import("@/pages/LocalToolPage"));
 const MediaToolPage = lazy(() => import("@/pages/MediaToolPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PremiumPricing = lazy(() => import("@/pages/PremiumPricing"));
+const LegalPage = lazy(() => import("@/pages/LegalPage"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const ToolPlaceholder = lazy(() => import("@/pages/ToolPlaceholder"));
 const ToolIndex = lazy(() => import("@/pages/ToolIndex"));
@@ -111,6 +112,14 @@ function AllToolsRoute() {
   return <ToolIndex mode="all" />;
 }
 
+function PrivacyPolicyRoute() {
+  return <LegalPage kind="privacy" />;
+}
+
+function TermsOfServiceRoute() {
+  return <LegalPage kind="terms" />;
+}
+
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -121,6 +130,8 @@ function Router() {
         <Route path="/tools" component={ToolIndexRoute} />
         <Route path="/sign-in" component={SignIn} />
         <Route path="/premium" component={PremiumPricing} />
+        <Route path="/privacy" component={PrivacyPolicyRoute} />
+        <Route path="/terms" component={TermsOfServiceRoute} />
         {imageToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={ImageToolRoute} />)}
         {mediaToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={MediaToolRoute} />)}
         {mediaToolAliasRoutes.map((tool) => <Route key={`${tool.id}-alias`} path={`/tools/${tool.id}`} component={MediaToolRoute} />)}

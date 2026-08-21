@@ -22,8 +22,10 @@ describe("application tool routing", () => {
     expect(appSource).toContain("{mediaToolAliasRoutes.map((tool) => <Route key={`${tool.id}-alias`} path={`/tools/${tool.id}`} component={MediaToolRoute} />)}");
   });
 
-  it("keeps dedicated discovery and sign-in routes available", () => {
+  it("keeps dedicated discovery, sign-in, and public legal routes available", () => {
     expect(appSource).toContain('path="/tools/all"');
     expect(appSource).toContain('path="/sign-in"');
+    expect(appSource).toContain('path="/privacy"');
+    expect(appSource).toContain('path="/terms"');
   });
 });

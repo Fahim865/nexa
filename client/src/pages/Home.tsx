@@ -374,7 +374,7 @@ export default function Home() {
       <footer className="nexa-footer">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 py-12 lg:flex-row lg:items-end lg:justify-between lg:px-10">
           <div><NexaMark /><p className="mt-5 max-w-xs text-sm leading-6 text-white/48">Everything you need. One intelligent workspace.</p></div>
-          <div className="footer-links"><a href="#tool-index">Tools</a><a href="#plans">Plans</a><button onClick={() => toast.message("Privacy information will be available with the connected product services.")}>Privacy</button><button onClick={() => toast.message("Help centre is planned for the production product.")}>Help</button></div>
+          <div className="footer-links"><a href="#tool-index">Tools</a><a href="#plans">Plans</a><button onClick={() => setLocation("/privacy")}>Privacy</button><button onClick={() => setLocation("/terms")}>Terms</button></div>
           <p className="text-xs text-white/35">© 2026 NEXA. Product experience preview.</p>
         </div>
       </footer>

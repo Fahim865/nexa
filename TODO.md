@@ -146,3 +146,11 @@
 
 - [x] Docker build context-এ pnpm patched dependency file (`patches/wouter@3.7.1.patch`) উপলব্ধ করে deployment install failure সমাধান ও container build যাচাই করা।
 - [x] Existing functionality অপরিবর্তিত রেখে check, test, build validate করে publish-ready checkpoint তৈরি করা।
+
+## Public legal pages
+
+- [x] Existing public navigation, footer pattern এবং public route conventions পর্যালোচনা করা।
+- [x] NEXA Privacy Policy page-এ account, Google sign-in, cookies/local storage, AI tools, usage history, third-party services এবং user data practices-এর clear, non-fabricated language যোগ করা।
+- [x] NEXA Terms of Service page-এ FREE/PREMIUM, $10/month, 5,000 monthly credits, subscriptions, AI tools, acceptable use এবং user responsibilities-এর clear, non-fabricated language যোগ করা।
+- [x] `/privacy` ও `/terms` public routes এবং existing footer/navigation links যোগ করা।
+- [x] Responsive rendering, route regression tests, TypeScript, test suite, production build এবং public URL availability যাচাই করা।
