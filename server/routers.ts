@@ -20,6 +20,7 @@ import { billingCheckoutInputSchema, billingPortalInputSchema, billingSessionInp
 import { BillingProviderError } from "./billing/provider";
 import { cancelSubscriptionForUser, createCheckoutForUser, createPortalForUser, getBillingStatusForUser, verifyCheckoutForUser } from "./billing/service";
 import { getMediaProcessingCapability } from "./media/service";
+import { getGoogleAuthPublicStatus } from "./auth/google";
 
 function toBillingTrpcError(error: unknown): never {
   if (error instanceof BillingProviderError) {
@@ -63,6 +64,7 @@ export const appRouter = router({
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    googleStatus: publicProcedure.query(() => getGoogleAuthPublicStatus()),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

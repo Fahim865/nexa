@@ -22,6 +22,13 @@
       "when": 1787228831488,
       "tag": "0002_reflective_patch",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1787304283158,
+      "tag": "0003_brainy_paibok",
+      "breakpoints": true
     }
   ]
 }

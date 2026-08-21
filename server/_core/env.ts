@@ -19,4 +19,8 @@ export const ENV = {
   nexaMediaProcessingEnabled: process.env.NEXA_MEDIA_PROCESSING_ENABLED === "true",
   premiumPriceUsd: process.env.PREMIUM_PRICE_USD ?? "",
   premiumMonthlyCredits: process.env.PREMIUM_MONTHLY_CREDITS ?? "",
+  // Google OAuth / OIDC credentials are server-only. Never add a VITE_ prefix.
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+  googleRedirectUri: process.env.GOOGLE_REDIRECT_URI ?? "",
 };

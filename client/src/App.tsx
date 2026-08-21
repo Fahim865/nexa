@@ -15,6 +15,7 @@ const LocalToolPage = lazy(() => import("@/pages/LocalToolPage"));
 const MediaToolPage = lazy(() => import("@/pages/MediaToolPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PremiumPricing = lazy(() => import("@/pages/PremiumPricing"));
+const SignIn = lazy(() => import("@/pages/SignIn"));
 const ToolPlaceholder = lazy(() => import("@/pages/ToolPlaceholder"));
 const ToolIndex = lazy(() => import("@/pages/ToolIndex"));
 
@@ -118,6 +119,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/tools/all" component={AllToolsRoute} />
         <Route path="/tools" component={ToolIndexRoute} />
+        <Route path="/sign-in" component={SignIn} />
         <Route path="/premium" component={PremiumPricing} />
         {imageToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={ImageToolRoute} />)}
         {mediaToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={MediaToolRoute} />)}

@@ -136,9 +136,10 @@
 - [x] AI, Image, Video, Audio, PDF, Document, Archive, Text, Developer, Calculator & Converter এবং Creator categories ও useful subcategory metadata তৈরি করা।
 - [x] Prominent global search, keyword search, category filters, Popular, Recently Used ও Featured AI sectionsসহ redesigned Tool Index তৈরি করা।
 - [x] Search/filter-capable View All Tools page, category-distinct cards ও registry-driven direct navigation যোগ করা।
-- [ ] Secure server-side Google OAuth configuration, state/PKCE protection, callback/account-linking boundary ও user plan/credit continuity architecture যোগ করা।
-- [ ] Continue with Google UI এবং existing email/password fallback availabilityকে truthful state-এ উপস্থাপন করা; fake Google login না করা।
-- [ ] Existing local tools, server-side Premium protection, credits ও billing অপরিবর্তিত রেখে tests, TypeScript, build এবং responsive UI যাচাই করা।
+- [x] Secure server-side Google OAuth configuration, state/PKCE protection, callback/account-linking boundary ও user plan/credit continuity architecture যোগ করা।
+- [x] Continue with Google UI এবং existing email/password fallback availabilityকে truthful state-এ উপস্থাপন করা; fake Google login না করা।
+- [x] Existing local tools, server-side Premium protection, credits ও billing অপরিবর্তিত রেখে tests, TypeScript, build এবং responsive UI যাচাই করা।
+- [ ] Published callback URL ব্যবহার করে Google OAuth configuration activation, account continuity ও sign-in callback verification সম্পন্ন করা।
 
 ## Deployment repair
 

@@ -30,6 +30,7 @@ import {
   FileText,
   Heart,
   ImageIcon,
+  LockKeyhole,
   Menu,
   Moon,
   Play,
@@ -150,8 +151,8 @@ export default function Home() {
               <span>Search</span>
               <kbd><Command size={11} /> K</kbd>
             </button>
-            <button className="nav-cta" onClick={() => setLocation("/tools")}>
-              Open NEXA <ArrowUpRight size={16} />
+            <button className="nav-cta" onClick={() => setLocation("/sign-in")}>
+              Sign in <ArrowUpRight size={16} />
             </button>
           </div>
 
@@ -166,6 +167,9 @@ export default function Home() {
             ))}
             <button onClick={() => { setMenuOpen(false); setSearchOpen(true); }}>
               <Search size={16} /> Search tools
+            </button>
+            <button onClick={() => { setMenuOpen(false); setLocation("/sign-in"); }}>
+              <LockKeyhole size={16} /> Sign in
             </button>
           </div>
         ) : null}
