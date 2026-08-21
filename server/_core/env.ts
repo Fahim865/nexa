@@ -19,6 +19,14 @@ export const ENV = {
   nexaMediaProcessingEnabled: process.env.NEXA_MEDIA_PROCESSING_ENABLED === "true",
   premiumPriceUsd: process.env.PREMIUM_PRICE_USD ?? "",
   premiumMonthlyCredits: process.env.PREMIUM_MONTHLY_CREDITS ?? "",
+  // Paddle Billing values are server-only. Never expose provider credentials or price IDs via VITE_ variables.
+  nexaBillingProvider: process.env.NEXA_BILLING_PROVIDER ?? "none",
+  paddleEnvironment: process.env.PADDLE_ENVIRONMENT ?? "",
+  paddleApiKey: process.env.PADDLE_API_KEY ?? "",
+  paddleMonthlyPriceId: process.env.PADDLE_MONTHLY_PRICE_ID ?? "",
+  paddleAnnualPriceId: process.env.PADDLE_ANNUAL_PRICE_ID ?? "",
+  paddleWebhookSecret: process.env.PADDLE_WEBHOOK_SECRET ?? "",
+  paddleAppUrl: process.env.PADDLE_APP_URL ?? "",
   // Google OAuth / OIDC credentials are server-only. Never add a VITE_ prefix.
   googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",

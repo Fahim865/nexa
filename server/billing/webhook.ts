@@ -11,7 +11,7 @@ export function registerBillingWebhookRoutes(app: Express) {
     try {
       const provider = requireBillingProvider();
       const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from("");
-      const event = await provider.verifyWebhook({ rawBody, signature: req.header("payment-signature") ?? undefined, headers: req.headers });
+      const event = await provider.verifyWebhook({ rawBody, signature: req.header("paddle-signature") ?? undefined, headers: req.headers });
       await applyVerifiedBillingEvent(event);
       res.status(200).json({ received: true });
     } catch (error) {

@@ -132,6 +132,60 @@ describe("verified billing lifecycle", () => {
     expect(status.remainingCredits).toBe(4810);
   });
 
+  it("refreshes the configured 5,000-credit allowance only after a verified subscription renewal", async () => {
+    const renewalStart = new Date("2026-09-01T00:00:00.000Z");
+    const renewalEnd = new Date("2026-10-01T00:00:00.000Z");
+    const updatedUser = {
+      ...baseUser,
+      plan: "PREMIUM",
+      subscriptionStatus: "ACTIVE",
+      subscriptionStartDate: renewalStart,
+      subscriptionEndDate: renewalEnd,
+      paymentProvider: "paddle",
+      providerCustomerId: "ctm_123",
+      providerSubscriptionId: "sub_123",
+      monthlyCreditAllowance: 5000,
+      remainingCredits: 5000,
+      lastCreditResetDate: renewalStart,
+    };
+    const tx = createTransaction(updatedUser);
+    getDb.mockResolvedValue({ transaction: async (callback: (transaction: typeof tx) => Promise<unknown>) => callback(tx) });
+
+    const status = await applyVerifiedBillingEvent({
+      provider: "paddle", eventId: "evt_renewed_123", type: "subscription_renewed", occurredAt: renewalStart,
+      applicationUserId: baseUser.id, providerCustomerId: "ctm_123", providerSubscriptionId: "sub_123",
+      subscriptionStartDate: renewalStart, subscriptionEndDate: renewalEnd,
+    });
+
+    expect(status.plan).toBe("PREMIUM");
+    expect(status.subscriptionStatus).toBe("ACTIVE");
+    expect(status.monthlyCreditAllowance).toBe(5000);
+    expect(status.remainingCredits).toBe(5000);
+  });
+
+  it("removes AI entitlement only after a verified Paddle payment-failure event", async () => {
+    const updatedUser = {
+      ...baseUser,
+      plan: "FREE",
+      subscriptionStatus: "PAST_DUE",
+      paymentProvider: "paddle",
+      providerCustomerId: "ctm_123",
+      providerSubscriptionId: "sub_123",
+      remainingCredits: 0,
+    };
+    const tx = createTransaction(updatedUser);
+    getDb.mockResolvedValue({ transaction: async (callback: (transaction: typeof tx) => Promise<unknown>) => callback(tx) });
+
+    const status = await applyVerifiedBillingEvent({
+      provider: "paddle", eventId: "evt_payment_failed_123", type: "payment_failed", occurredAt: new Date("2026-09-01T00:00:00.000Z"),
+      applicationUserId: baseUser.id, providerCustomerId: "ctm_123", providerSubscriptionId: "sub_123",
+    });
+
+    expect(status.plan).toBe("FREE");
+    expect(status.subscriptionStatus).toBe("PAST_DUE");
+    expect(status.remainingCredits).toBe(0);
+  });
+
   it("rejects a verified checkout event whose application user metadata does not match the requester", async () => {
     requireBillingProvider.mockReturnValue({
       verifyCheckoutSession: vi.fn().mockResolvedValue({
