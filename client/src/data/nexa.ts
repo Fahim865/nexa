@@ -824,3 +824,150 @@ export const FEATURED_TOOL_IDS = [
   "quick-calculator",
   "notes",
 ] as const;
+
+/**
+ * Discovery taxonomy intentionally lives beside the canonical registry. It never
+ * duplicates tools or routes; it only groups the registered definitions for a
+ * focused browsing experience.
+ */
+export type ToolDiscoveryCategoryId =
+  | "all"
+  | "ai"
+  | "image"
+  | "video"
+  | "audio"
+  | "pdf"
+  | "document"
+  | "archive"
+  | "text"
+  | "developer"
+  | "calculator-converter"
+  | "creator";
+
+export type ToolDiscoveryCategory = {
+  id: ToolDiscoveryCategoryId;
+  label: string;
+  description: string;
+  accent: string;
+  categories?: readonly ToolDefinition["category"][];
+  toolIds?: readonly ToolId[];
+  match?: (tool: ToolDefinition) => boolean;
+};
+
+export const TOOL_DISCOVERY_CATEGORIES: readonly ToolDiscoveryCategory[] = [
+  { id: "all", label: "All tools", description: "Every registered NEXA workspace", accent: "#59B5FF" },
+  { id: "ai", label: "AI Tools", description: "General-purpose protected intelligence", accent: "#8B8CFF", categories: ["AI"] },
+  { id: "image", label: "Image Tools", description: "Local image preparation and inspection", accent: "#54D6C2", categories: ["Image Tools"] },
+  { id: "video", label: "Video Tools", description: "Browser-local and secure media workflows", accent: "#FF9F76", match: (tool) => tool.category === "Video & Audio Tools" && tool.route.startsWith("/tools/video/") },
+  { id: "audio", label: "Audio Tools", description: "Local audio cutting and conversion workspaces", accent: "#E0A5FF", match: (tool) => tool.category === "Video & Audio Tools" && tool.route.startsWith("/tools/audio/") },
+  { id: "pdf", label: "PDF Tools", description: "Document-specific utilities", accent: "#F1BA62", toolIds: ["pdf-studio", "pdf-page-counter"] },
+  { id: "document", label: "Document Tools", description: "Readable formats and document utilities", accent: "#7CC4FF", toolIds: ["markdown-previewer", "markdown-to-html"] },
+  { id: "archive", label: "Archive Tools", description: "File and archive conversion surfaces", accent: "#A7B1C9", toolIds: ["file-converter"] },
+  { id: "text", label: "Text Tools", description: "Everyday writing, cleanup, and measurement", accent: "#87D88D", categories: ["Text"] },
+  { id: "developer", label: "Developer Tools", description: "JSON, encodings, and URL utilities", accent: "#62C5F7", toolIds: ["json-formatter", "json-validator", "json-minifier", "base64-encoder", "base64-decoder", "url-encoder", "url-decoder"] },
+  { id: "calculator-converter", label: "Calculator & Converter", description: "Quick calculations and browser-side utilities", accent: "#FFC969", toolIds: ["quick-calculator", "qr-code-generator", "password-generator"] },
+  { id: "creator", label: "Creator Tools", description: "Publishing, planning, and AI creator workflows", accent: "#FA8ECA", categories: ["AI Creator Tools", "Productivity"] },
+] as const;
+
+export const POPULAR_TOOL_IDS = [
+  "image-compressor",
+  "word-counter",
+  "json-formatter",
+  "video-to-gif",
+  "quick-calculator",
+  "pdf-page-counter",
+] as const satisfies readonly ToolId[];
+
+export const FEATURED_AI_TOOL_IDS = [
+  "ai-translator",
+  "ai-hashtag-generator",
+  "ai-description-generator",
+  "ai-youtube-seo-assistant",
+] as const satisfies readonly ToolId[];
+
+const TOOL_SEARCH_KEYWORDS: Partial<Record<ToolId, readonly string[]>> = {
+  "ai-summarizer": ["summary", "summarize", "brief", "writing", "notes"],
+  "ai-translator": ["translate", "translation", "language", "localization"],
+  "ai-hashtag-generator": ["social", "instagram", "tiktok", "tags", "keywords"],
+  "ai-description-generator": ["caption", "copywriting", "social", "marketing"],
+  "ai-video-analyzer": ["video", "title", "description", "hashtags"],
+  "ai-video-clip-planner": ["clips", "shorts", "reels", "timestamps", "podcast"],
+  "ai-stock-metadata-generator": ["stock", "marketplace", "seo", "keywords"],
+  "ai-youtube-seo-assistant": ["youtube", "seo", "tags", "channel"],
+  "ai-subtitle-generator": ["subtitle", "captions", "transcript", "srt"],
+  "image-compressor": ["photo", "picture", "jpg", "png", "webp", "optimize"],
+  "image-upscaler": ["photo", "picture", "resolution", "sharpen", "enhance"],
+  "image-resizer": ["photo", "picture", "dimensions", "width", "height"],
+  "image-cropper": ["photo", "picture", "crop", "social", "aspect ratio"],
+  "image-converter": ["jpg", "jpeg", "png", "webp", "gif", "bmp", "photo"],
+  "image-rotator": ["photo", "flip", "rotate", "orientation"],
+  "image-metadata": ["photo", "dimensions", "exif", "file info"],
+  "video-to-gif": ["mp4", "gif", "animation", "short video"],
+  "mp4-to-gif": ["mp4", "gif", "animation", "short video"],
+  "video-trimmer": ["trim", "cut", "clip", "webm"],
+  "video-cropper": ["crop", "clip", "frame", "webm"],
+  "video-rotator": ["rotate", "orientation", "webm"],
+  "video-resizer": ["resize", "dimensions", "webm"],
+  "mp3-to-wav": ["mp3", "wav", "audio", "sound"],
+  "audio-cutter": ["audio", "sound", "cut", "trim", "wav"],
+  "audio-trimmer": ["audio", "sound", "cut", "trim", "wav"],
+  "audio-converter": ["audio", "sound", "wav", "format"],
+  "pdf-page-counter": ["pdf", "document", "pages"],
+  "markdown-previewer": ["markdown", "md", "render", "documentation"],
+  "markdown-to-html": ["markdown", "md", "html", "documentation"],
+  "json-formatter": ["json", "api", "code", "pretty print"],
+  "json-validator": ["json", "api", "syntax", "validate"],
+  "json-minifier": ["json", "api", "compress", "minify"],
+  "base64-encoder": ["base64", "encode", "developer", "text"],
+  "base64-decoder": ["base64", "decode", "developer", "text"],
+  "url-encoder": ["url", "encode", "uri", "developer"],
+  "url-decoder": ["url", "decode", "uri", "developer"],
+  "qr-code-generator": ["qr", "barcode", "link", "url"],
+  "password-generator": ["password", "security", "random", "credentials"],
+  "word-counter": ["words", "writing", "essay", "count"],
+  "character-counter": ["characters", "letters", "social", "count"],
+  "sentence-counter": ["sentences", "writing", "count"],
+  "reading-time": ["reading", "readability", "words", "minutes"],
+  "case-converter": ["uppercase", "lowercase", "title case", "writing"],
+  "text-cleaner": ["clean", "whitespace", "format", "writing"],
+};
+
+export function getToolsForDiscoveryCategory(categoryId: ToolDiscoveryCategoryId) {
+  const category = TOOL_DISCOVERY_CATEGORIES.find((item) => item.id === categoryId) ?? TOOL_DISCOVERY_CATEGORIES[0];
+
+  if (category.id === "all") return TOOL_REGISTRY;
+
+  return TOOL_REGISTRY.filter((tool) =>
+    Boolean(
+      category.categories?.includes(tool.category) ||
+        category.toolIds?.includes(tool.id as ToolId) ||
+        category.match?.(tool),
+    ),
+  );
+}
+
+export function getToolDiscoveryCategory(tool: ToolDefinition) {
+  return TOOL_DISCOVERY_CATEGORIES.find((category) => category.id !== "all" && getToolsForDiscoveryCategory(category.id).some((candidate) => candidate.id === tool.id))
+    ?? TOOL_DISCOVERY_CATEGORIES[0];
+}
+
+export function getToolSearchTerms(tool: ToolDefinition) {
+  return [
+    tool.id,
+    tool.name,
+    tool.description,
+    tool.category,
+    tool.route,
+    getToolDiscoveryCategory(tool).label,
+    ...(TOOL_SEARCH_KEYWORDS[tool.id as ToolId] ?? []),
+  ];
+}
+
+export function searchToolsForDiscovery(query: string, categoryId: ToolDiscoveryCategoryId = "all") {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const sourceTools = getToolsForDiscoveryCategory(categoryId);
+
+  if (!normalizedQuery) return sourceTools;
+
+  return sourceTools.filter((tool) => getToolSearchTerms(tool).some((term) => term.toLocaleLowerCase().includes(normalizedQuery)));
+}

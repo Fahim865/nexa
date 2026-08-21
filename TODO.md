@@ -129,3 +129,18 @@
 - [x] 375px viewport-এ Video Rotator ও Audio Trimmer-এর local upload/download workspaces এবং MP4 Converter-এর no-fabrication FFmpeg-unavailable state overflow ছাড়া যাচাই করা।
 - [x] FFmpeg-required MediaToolPage-এর generic “locally” descriptor-কে truthful server-side processing copy-এ সংশোধন করা।
 - [x] Unimplemented remote FFmpeg worker configurationকে processing-available না দেখিয়ে server action-এর সঙ্গে capability state সঙ্গতিপূর্ণ করা।
+
+## Tool discovery and Google sign-in phase
+
+- [x] বর্তমান Tool Index, registry metadata, route structure এবং Manus OAuth integration পর্যালোচনা করা।
+- [x] AI, Image, Video, Audio, PDF, Document, Archive, Text, Developer, Calculator & Converter এবং Creator categories ও useful subcategory metadata তৈরি করা।
+- [x] Prominent global search, keyword search, category filters, Popular, Recently Used ও Featured AI sectionsসহ redesigned Tool Index তৈরি করা।
+- [x] Search/filter-capable View All Tools page, category-distinct cards ও registry-driven direct navigation যোগ করা।
+- [ ] Secure server-side Google OAuth configuration, state/PKCE protection, callback/account-linking boundary ও user plan/credit continuity architecture যোগ করা।
+- [ ] Continue with Google UI এবং existing email/password fallback availabilityকে truthful state-এ উপস্থাপন করা; fake Google login না করা।
+- [ ] Existing local tools, server-side Premium protection, credits ও billing অপরিবর্তিত রেখে tests, TypeScript, build এবং responsive UI যাচাই করা।
+
+## Deployment repair
+
+- [x] Docker build context-এ pnpm patched dependency file (`patches/wouter@3.7.1.patch`) উপলব্ধ করে deployment install failure সমাধান ও container build যাচাই করা।
+- [x] Existing functionality অপরিবর্তিত রেখে check, test, build validate করে publish-ready checkpoint তৈরি করা।

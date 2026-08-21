@@ -17,9 +17,7 @@ import {
   getToolById,
   PLAN_CONFIG,
   searchToolRegistry,
-  TOOL_CATEGORIES,
   TOOL_REGISTRY,
-  type ToolCategoryId,
   type ToolId,
 } from "@/data/nexa";
 import {
@@ -46,7 +44,7 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 
 const navItems = [
-  { label: "Tool index", href: "#tool-index" },
+  { label: "Tool index", href: "/tools" },
   { label: "Workspace", href: "#workspace" },
   { label: "How it works", href: "#why-nexa" },
   { label: "Plans", href: "#plans" },
@@ -56,19 +54,12 @@ function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function StatusPill({ status }: { status: "available" | "beta" | "coming-soon" }) {
-  const label = status === "coming-soon" ? "Coming soon" : status === "beta" ? "Beta" : "Ready";
-  return <span className={`status-pill status-${status}`}>{label}</span>;
-}
-
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [, setLocation] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<ToolId>("ai-summarizer");
-  const [activeCategoryId, setActiveCategoryId] = useState<ToolCategoryId>("all");
-  const [toolIndexQuery, setToolIndexQuery] = useState("");
   const [toolSearchQuery, setToolSearchQuery] = useState("");
   const [calcLeft, setCalcLeft] = useState("24");
   const [calcRight, setCalcRight] = useState("16");
@@ -86,10 +77,6 @@ export default function Home() {
       return tool ? [tool] : [];
     }),
     [],
-  );
-  const visibleTools = useMemo(
-    () => searchToolRegistry(toolIndexQuery, activeCategoryId),
-    [activeCategoryId, toolIndexQuery],
   );
   const commandSearchResults = useMemo(() => searchToolRegistry(toolSearchQuery), [toolSearchQuery]);
   const wordCount = words.trim() ? words.trim().split(/\s+/).length : 0;
@@ -163,7 +150,7 @@ export default function Home() {
               <span>Search</span>
               <kbd><Command size={11} /> K</kbd>
             </button>
-            <button className="nav-cta" onClick={() => scrollToId("tool-index")}>
+            <button className="nav-cta" onClick={() => setLocation("/tools")}>
               Open NEXA <ArrowUpRight size={16} />
             </button>
           </div>
@@ -195,7 +182,7 @@ export default function Home() {
               <h1>Your tools, <em>finally</em><br />in one orbit.</h1>
               <p className="hero-subcopy">NEXA brings everyday utility, creative momentum, and thoughtful AI workflows into one composed workspace—so your next useful action is already close.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <button className="primary-button" onClick={() => scrollToId("tool-index")}>
+                <button className="primary-button" onClick={() => setLocation("/tools")}>
                   Explore the tool index <ArrowDownRight size={18} />
                 </button>
                 <button className="secondary-button" onClick={() => chooseTool("ai-summarizer")}>
@@ -248,50 +235,9 @@ export default function Home() {
             <p className="section-lede">Browse an ecosystem designed around useful outcomes. Each tool makes its cost and readiness visible before you begin.</p>
           </div>
 
-          <div className="tool-index-layout">
-            <aside className="tool-rail" aria-label="Tool categories">
-              <span className="micro-label">CATEGORIES</span>
-              {TOOL_CATEGORIES.map((category, index) => (
-                <button key={category.id} className={activeCategoryId === category.id ? "active" : ""} onClick={() => setActiveCategoryId(category.id)}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>{category.label}<ChevronRight size={15} />
-                </button>
-              ))}
-            </aside>
-            <div className="tool-index-results">
-              <div className="tool-index-toolbar">
-                <label className="tool-index-search">
-                  <Search size={16} aria-hidden="true" />
-                  <input
-                    type="search"
-                    value={toolIndexQuery}
-                    onChange={(event) => setToolIndexQuery(event.target.value)}
-                    placeholder="Search the tool index"
-                    aria-label="Search the tool index"
-                  />
-                </label>
-                <p>{visibleTools.length} of {TOOL_REGISTRY.length} tools</p>
-              </div>
-              <div className="tool-grid">
-                {visibleTools.map((tool, index) => {
-                  const Icon = tool.icon;
-                  return (
-                    <button key={tool.id} className={`nexa-tool-card tool-card-${index + 1}`} onClick={() => openToolRoute(tool.route)}>
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="tool-icon"><Icon size={21} /></span>
-                        <StatusPill status={tool.status} />
-                      </div>
-                      <div>
-                        <p className="tool-category">{tool.category}</p>
-                        <h3>{tool.name}</h3>
-                        <p>{tool.description}</p>
-                      </div>
-                      <div className="tool-card-footer"><span>{tool.creditCost === 0 ? "Free local" : `${tool.creditCost} credit${tool.creditCost > 1 ? "s" : ""}`}</span><ArrowUpRight size={17} /></div>
-                    </button>
-                  );
-                })}
-              </div>
-              {visibleTools.length === 0 ? <p className="tool-index-empty">No registered tool matches this category and search.</p> : null}
-            </div>
+          <div className="homepage-discovery-bridge">
+            <div><span className="micro-label">CATEGORY-LED CATALOG</span><strong>{TOOL_REGISTRY.length} registered tools, arranged around your next task.</strong><p>Search by name, workflow, format, or common keywords. Browse curated starting points, private recent history, and a full category-aware catalog.</p></div>
+            <button className="primary-button" onClick={() => setLocation("/tools")}>Browse every category <ArrowUpRight size={17} /></button>
           </div>
         </section>
 
