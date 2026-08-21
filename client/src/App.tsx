@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { getToolByRoute, isAiCreatorToolId, isDocumentUtilityToolId, isImageToolId, isLocalToolId, TOOL_REGISTRY } from "@/data/nexa";
+import { getToolByRoute, isAiCreatorToolId, isDocumentUtilityToolId, isImageToolId, isLocalToolId, isMediaToolId, TOOL_REGISTRY } from "@/data/nexa";
 import { Route, Switch, useLocation } from "wouter";
 import { lazy, Suspense } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -11,17 +11,20 @@ const AiCreatorToolPage = lazy(() => import("@/pages/AiCreatorToolPage"));
 const DocumentUtilityToolPage = lazy(() => import("@/pages/DocumentUtilityToolPage"));
 const ImageToolPage = lazy(() => import("@/pages/ImageToolPage"));
 const LocalToolPage = lazy(() => import("@/pages/LocalToolPage"));
+const MediaToolPage = lazy(() => import("@/pages/MediaToolPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PremiumPricing = lazy(() => import("@/pages/PremiumPricing"));
 const ToolPlaceholder = lazy(() => import("@/pages/ToolPlaceholder"));
 
 /** Orbit Studio design reminder: NEXA is a dark-first, switchable product experience. */
 const imageToolRoutes = TOOL_REGISTRY.filter((tool) => isImageToolId(tool.id));
+const mediaToolRoutes = TOOL_REGISTRY.filter((tool) => isMediaToolId(tool.id));
+const mediaToolAliasRoutes = mediaToolRoutes.filter((tool) => tool.route !== `/tools/${tool.id}`);
 const documentUtilityToolRoutes = TOOL_REGISTRY.filter((tool) => isDocumentUtilityToolId(tool.id));
 const aiCreatorToolRoutes = TOOL_REGISTRY.filter((tool) => isAiCreatorToolId(tool.id));
 const localToolRoutes = TOOL_REGISTRY.filter((tool) => isLocalToolId(tool.id));
 const localToolAliasRoutes = localToolRoutes.filter((tool) => tool.route !== `/tools/${tool.id}`);
-const remainingToolRoutes = TOOL_REGISTRY.filter((tool) => !isImageToolId(tool.id) && !isDocumentUtilityToolId(tool.id) && !isAiCreatorToolId(tool.id) && !isLocalToolId(tool.id));
+const remainingToolRoutes = TOOL_REGISTRY.filter((tool) => !isImageToolId(tool.id) && !isMediaToolId(tool.id) && !isDocumentUtilityToolId(tool.id) && !isAiCreatorToolId(tool.id) && !isLocalToolId(tool.id));
 
 function ImageToolRoute() {
   const [location] = useLocation();
@@ -32,6 +35,17 @@ function ImageToolRoute() {
   }
 
   return <ImageToolPage tool={tool} />;
+}
+
+function MediaToolRoute() {
+  const [location] = useLocation();
+  const tool = getToolByRoute(location) ?? mediaToolAliasRoutes.find((candidate) => location === `/tools/${candidate.id}`);
+
+  if (!tool || !isMediaToolId(tool.id)) {
+    return <NotFound />;
+  }
+
+  return <MediaToolPage tool={tool} />;
 }
 
 function DocumentUtilityToolRoute() {
@@ -76,6 +90,8 @@ function Router() {
         <Route path="/tools" component={Home} />
         <Route path="/premium" component={PremiumPricing} />
         {imageToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={ImageToolRoute} />)}
+        {mediaToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={MediaToolRoute} />)}
+        {mediaToolAliasRoutes.map((tool) => <Route key={`${tool.id}-alias`} path={`/tools/${tool.id}`} component={MediaToolRoute} />)}
         {documentUtilityToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={DocumentUtilityToolRoute} />)}
         {aiCreatorToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={AiCreatorToolRoute} />)}
         {localToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={LocalToolRoute} />)}

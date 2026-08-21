@@ -12,4 +12,13 @@ describe("application tool routing", () => {
     expect(appSource).toContain("const localToolAliasRoutes = localToolRoutes.filter((tool) => tool.route !== `/tools/${tool.id}`);");
     expect(appSource).toContain("{localToolAliasRoutes.map((tool) => <Route key={`${tool.id}-alias`} path={`/tools/${tool.id}`} component={LocalToolRoute} />)}");
   });
+
+  it("routes every registered Video & Audio Tool to the lazy-loaded MediaToolPage workspace", () => {
+    expect(appSource).toContain('const MediaToolPage = lazy(() => import("@/pages/MediaToolPage"));');
+    expect(appSource).toContain("const mediaToolRoutes = TOOL_REGISTRY.filter((tool) => isMediaToolId(tool.id));");
+    expect(appSource).toContain("const mediaToolAliasRoutes = mediaToolRoutes.filter((tool) => tool.route !== `/tools/${tool.id}`);");
+    expect(appSource).toContain("return <MediaToolPage tool={tool} />;");
+    expect(appSource).toContain("{mediaToolRoutes.map((tool) => <Route key={tool.id} path={tool.route} component={MediaToolRoute} />)}");
+    expect(appSource).toContain("{mediaToolAliasRoutes.map((tool) => <Route key={`${tool.id}-alias`} path={`/tools/${tool.id}`} component={MediaToolRoute} />)}");
+  });
 });

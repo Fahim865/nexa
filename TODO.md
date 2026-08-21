@@ -101,3 +101,16 @@
 - [x] Server-only billing configuration এবং missing-credential `BILLING_NOT_CONFIGURED` behavior যাচাই করা।
 - [x] প্রয়োজনে implementation বা regression coverage সংশোধন করে TypeScript, test ও production build চালানো।
 - [x] Current checkout, cancellation, portal ও webhook methods `BillingProvider` interface-এ এবং unconfigured provider rejection `requireBillingProvider`-এ বিদ্যমান; নতুন implementation প্রয়োজন হয়নি।
+
+## Video & Audio Tools phase
+
+- [x] বিদ্যমান registry, route, image-tool এবং local-processing component architecture পর্যালোচনা করা।
+- [x] Video & Audio Tools category-তে MP4 converter, MOV/WebM to MP4, video/MP4 to MP3, video/MP4 to GIF, video compressor, trimmer ও cropper registry entries এবং routes যোগ করা।
+- [x] MP3/WAV converter, MP3 to WAV, MP3 to OGG, audio compressor ও cutter registry entries এবং routes যোগ করা।
+- [x] Browser-localভাবে বাস্তবসম্মত metadata inspection, video frame/GIF extraction, video trim/crop preview এবং AudioContext-based WAV export/cutter বাস্তবায়ন করা।
+- [x] MP4/WebM/MOV transcoding, MP3/OGG encoding, video compression ও file-format conversions-এর জন্য fake result ছাড়া secure FFmpeg server-processing readiness boundary তৈরি করা।
+- [x] Drag/drop upload, file validation, progress, error, preview এবং download UX-কে Orbit Studio responsive design-এ বাস্তবায়ন করা।
+- [x] Existing tools regression coverageসহ TypeScript, tests, production build এবং desktop/mobile rendering যাচাই করা।
+- [x] `/tools/video-to-gif`, `/tools/mp3-to-wav` ও `/tools/mp4-converter`-এর rendered 404 report নির্ণয় করা: registry-এর canonical grouped paths (`/tools/video/*`, `/tools/audio/*`) সঠিকভাবে render করে; flat URLs registered ছিল না।
+- [x] Canonical Video to GIF, MP3 to WAV ও MP4 Converter desktop previews-এ যথাক্রমে real local-processing workspace, real PCM WAV export workspace এবং truthful FFmpeg-required no-fabrication state যাচাই করা।
+- [x] Flat compatibility URLs `/tools/video-to-gif`, `/tools/mp3-to-wav` ও `/tools/mp4-converter`-এ একই media tools খুলতে alias routes যোগ করা এবং 375px mobile preview-এ no-overflow upload, output ও FFmpeg-required state যাচাই করা।

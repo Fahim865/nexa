@@ -19,6 +19,7 @@ import { protectedProcedure } from "./_core/trpc";
 import { billingCheckoutInputSchema, billingPortalInputSchema, billingSessionInputSchema } from "./billing/contracts";
 import { BillingProviderError } from "./billing/provider";
 import { cancelSubscriptionForUser, createCheckoutForUser, createPortalForUser, getBillingStatusForUser, verifyCheckoutForUser } from "./billing/service";
+import { getMediaProcessingCapability } from "./media/service";
 
 function toBillingTrpcError(error: unknown): never {
   if (error instanceof BillingProviderError) {
@@ -75,6 +76,11 @@ export const appRouter = router({
     /** Public display metadata only; this endpoint never grants entitlement. */
     catalog: publicProcedure.query(() => getPremiumCatalog()),
     creditStatus: premiumProcedure.query(({ ctx }) => getCreditStatusForUser(ctx.user.id)),
+  }),
+
+  /** Public, credential-free capability display. It never creates or accepts a media job. */
+  media: router({
+    processingCapability: publicProcedure.query(() => getMediaProcessingCapability()),
   }),
 
   billing: router({

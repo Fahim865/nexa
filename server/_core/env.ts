@@ -12,6 +12,10 @@ export const ENV = {
   nexaAiProviderApiKey: process.env.NEXA_AI_PROVIDER_API_KEY ?? "",
   nexaAiProviderBaseUrl: process.env.NEXA_AI_PROVIDER_BASE_URL ?? "",
   nexaAiModel: process.env.NEXA_AI_MODEL ?? "",
+  // Media worker configuration is server-only. The client can query capability, never credentials.
+  nexaMediaProcessor: process.env.NEXA_MEDIA_PROCESSOR ?? "disabled",
+  nexaMediaWorkerUrl: process.env.NEXA_MEDIA_WORKER_URL ?? "",
+  nexaMediaWebhookSecret: process.env.NEXA_MEDIA_WEBHOOK_SECRET ?? "",
   premiumPriceUsd: process.env.PREMIUM_PRICE_USD ?? "",
   premiumMonthlyCredits: process.env.PREMIUM_MONTHLY_CREDITS ?? "",
 };
