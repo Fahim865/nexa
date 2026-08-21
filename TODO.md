@@ -228,4 +228,4 @@
 - [x] User-confirmed scope অনুযায়ী তিন-tier pricing request স্থগিত রেখে existing single Premium monthly/annual price mapping অপরিবর্তিত আছে নিশ্চিত করা।
 - [ ] Production Google sign-in, authenticated `/tools` rendering এবং existing Premium checkout handoff independently verify করা।
 - [x] Premium checkout sign-in handoff-এর `returnTo` query Google OAuth start route-এ preserve করে authentication শেষে `/premium`-এ নিরাপদে ফিরিয়ে আনা।
-- [ ] কেবল confirmed defect থাকলে minimal fix, regression coverage, TypeScript, tests ও production build চালিয়ে published checkpoint তৈরি করা।
+- [x] কেবল confirmed defect থাকলে minimal fix, regression coverage, TypeScript, tests ও production build চালিয়ে published checkpoint তৈরি করা।
