@@ -69,7 +69,10 @@ export async function getBillingStatusForUser(userId: number) {
   return toBillingStatus(user);
 }
 
-export async function createCheckoutForUser(user: User, input: { successUrl: string; cancelUrl: string }) {
+export async function createCheckoutForUser(
+  user: User,
+  input: { plan: "monthly" | "annual"; successUrl: string; cancelUrl: string },
+) {
   const provider = requireBillingProvider();
   const catalog = getPremiumCatalog();
   return provider.createCheckoutSession({

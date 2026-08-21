@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useState } from "react";
 import { ArrowLeft, Check, CreditCard, Crown, Loader2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -8,6 +9,7 @@ const includedTools = ["AI Translator", "AI Hashtag Generator", "AI Description 
 
 export default function PremiumPricing() {
   const { user, isAuthenticated, loading } = useAuth();
+  const [plan, setPlan] = useState<"monthly" | "annual">("monthly");
   const catalog = trpc.subscription.catalog.useQuery();
   const billing = trpc.billing.status.useQuery(undefined, { enabled: Boolean(isAuthenticated) });
   const checkout = trpc.billing.createCheckoutSession.useMutation({
@@ -25,7 +27,11 @@ export default function PremiumPricing() {
       toast.error("Sign in is required before starting a secure checkout.");
       return;
     }
-    checkout.mutate({ successUrl: `${window.location.origin}/premium?checkout=return`, cancelUrl: `${window.location.origin}/premium?checkout=cancel` });
+    checkout.mutate({
+      plan,
+      successUrl: `${window.location.origin}/premium?checkout=return`,
+      cancelUrl: `${window.location.origin}/premium?checkout=cancel`,
+    });
   };
 
   return <main className="premium-pricing-page">
@@ -43,10 +49,23 @@ export default function PremiumPricing() {
           <div className="premium-plan-card__top"><Crown size={22} /><span>PREMIUM</span></div>
           <div className="premium-price"><strong>${price}</strong><span>USD / month</span></div>
           <p className="premium-credit-highlight"><b>{allowance.toLocaleString()}</b> AI credits per subscription period</p>
+          <fieldset className="premium-plan-selector" disabled={loading || checkout.isPending || isPremium}>
+            <legend>Billing cadence</legend>
+            <div className="premium-plan-selector__choices">
+              <label className={plan === "monthly" ? "is-selected" : ""}>
+                <input type="radio" name="premium-plan" value="monthly" checked={plan === "monthly"} onChange={() => setPlan("monthly")} />
+                <span><b>Monthly</b><small>${price} USD / month</small></span>
+              </label>
+              <label className={plan === "annual" ? "is-selected" : ""}>
+                <input type="radio" name="premium-plan" value="annual" checked={plan === "annual"} onChange={() => setPlan("annual")} />
+                <span><b>Annual</b><small>Configured Paddle price shown at checkout</small></span>
+              </label>
+            </div>
+          </fieldset>
           <button type="button" className="premium-checkout-button" onClick={startUpgrade} disabled={loading || checkout.isPending || isPremium}>
             {checkout.isPending ? <><Loader2 size={17} className="spin" /> Opening secure checkout…</> : isPremium ? <><ShieldCheck size={17} /> Premium is active</> : <><CreditCard size={17} /> Upgrade to Premium</>}
           </button>
-          <p className="premium-disclosure">Checkout is only available after a secure payment provider is configured. Pressing this button never changes your plan.</p>
+          <p className="premium-disclosure">Your selected cadence is mapped to a server-only Paddle price. Checkout is only available after secure provider configuration, and pressing this button never changes your plan.</p>
         </article>
 
         <div className="premium-benefits-panel">

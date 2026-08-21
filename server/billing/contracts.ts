@@ -1,9 +1,17 @@
 import { z } from "zod";
 
+export const billingPlanSchema = z.enum(["monthly", "annual"]);
+export type BillingPlan = z.infer<typeof billingPlanSchema>;
+
+/**
+ * The browser may select a billing cadence, but never a provider price identifier.
+ * Each provider adapter maps this enum to its own server-only configured price.
+ */
 export const billingCheckoutInputSchema = z.object({
+  plan: billingPlanSchema,
   successUrl: z.string().url().max(2_000),
   cancelUrl: z.string().url().max(2_000),
-});
+}).strict();
 
 export const billingSessionInputSchema = z.object({
   sessionId: z.string().trim().min(1).max(255),

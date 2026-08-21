@@ -173,3 +173,19 @@
 - [x] Production-only `ui-vendor` React export mismatch দূর করতে unsafe manual chunking configuration সংশোধন করা।
 - [x] Rebuilt production runtime-এ `/tools` route-এর React bootstrap regression যাচাই করা।
 - [ ] Published public `/tools` route-এ new automatic chunking artifact render যাচাই করা।
+
+## Final production completion — Google Auth and Paddle billing
+
+- [ ] Public production artifact ও authenticated Google callback → `/tools` end-to-end route যাচাই ও স্থিতিশীল করা।
+- [ ] Existing provider-neutral billing contracts, lifecycle service, webhook boundary ও frontend billing UI-র সাথে Paddle adapter design align করা।
+- [ ] Server-only Paddle checkout, verification, portal, cancellation এবং signed webhook adapter implement করা।
+- [ ] Verified Paddle subscription events থেকে existing Premium entitlement ও 5,000-credit lifecycle নিরাপদে apply করা।
+- [ ] Required Paddle environment variables ও Dashboard-provided price/webhook values নিরাপদভাবে configure করা।
+- [ ] FREE/PREMIUM, cross-account event rejection, idempotency, renewal, payment failure, cancellation ও expiry test coverage যোগ করা।
+- [ ] TypeScript, full test suite, production build, real configured sandbox/production payment lifecycle ও published production flow যাচাই করা।
+
+## Paddle monthly and annual price selection
+
+- [x] Provider-neutral checkout requestে trusted monthly/annual plan selection যোগ করা; client-provided Paddle price ID গ্রহণ না করা।
+- [x] Paddle adapterে monthly planকে `PADDLE_MONTHLY_PRICE_ID` এবং annual planকে `PADDLE_ANNUAL_PRICE_ID` দিয়ে server-side map করার contract প্রস্তুত করা।
+- [x] Pricing UI, tRPC validation ও regression testsে monthly/annual selection সঠিকভাবে reflect করা।

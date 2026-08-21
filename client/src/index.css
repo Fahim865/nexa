@@ -252,3 +252,18 @@
   @media (min-width: 820px) { .premium-pricing-grid { grid-template-columns: minmax(0, 1.07fr) minmax(320px, 0.93fr); }.premium-benefits-panel { min-height: 100%; } }
   @media (max-width: 620px) { .premium-pricing-shell { width: min(100% - 1.25rem, 1120px); padding-top: 6rem; }.premium-pricing-header { margin-top: 1.7rem; }.premium-plan-card, .premium-benefits-panel { border-radius: 0.9rem; padding: 1.15rem; } }
 }
+
+@layer components {
+  .premium-plan-selector { margin: 1.35rem 0 0; border: 0; padding: 0; }
+  .premium-plan-selector legend { margin-bottom: 0.7rem; color: rgb(220 240 255 / 0.58); font: 600 0.62rem "Space Grotesk", Arial, sans-serif; letter-spacing: 0.13em; text-transform: uppercase; }
+  .premium-plan-selector__choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+  .premium-plan-selector__choices label { display: flex; min-width: 0; align-items: flex-start; gap: 0.55rem; border: 1px solid rgb(168 217 255 / 0.18); border-radius: 0.7rem; padding: 0.72rem; color: #eff9ff; background: rgb(3 16 29 / 0.32); cursor: pointer; transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out), transform 160ms var(--ease-out); }
+  .premium-plan-selector__choices label:hover, .premium-plan-selector__choices label.is-selected { border-color: rgb(89 181 255 / 0.75); background: rgb(89 181 255 / 0.13); }
+  .premium-plan-selector__choices label:active { transform: scale(0.98); }
+  .premium-plan-selector__choices input { margin-top: 0.18rem; accent-color: #59B5FF; }
+  .premium-plan-selector__choices span { display: grid; min-width: 0; gap: 0.18rem; }
+  .premium-plan-selector__choices b { font-size: 0.83rem; }
+  .premium-plan-selector__choices small { color: rgb(210 235 255 / 0.57); font-size: 0.65rem; line-height: 1.35; }
+  .premium-plan-selector:disabled label { cursor: not-allowed; opacity: 0.58; }
+  @media (max-width: 620px) { .premium-plan-selector__choices { grid-template-columns: 1fr; } }
+}
