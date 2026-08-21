@@ -161,3 +161,9 @@
 - [x] Callback requestে state cookie preservation নিশ্চিত করে missing/mismatched state handling fix করা, OAuth security checks বজায় রেখে।
 - [x] Google callbackে persistent NEXA session cookie issuance ও safe local redirect regression coverage যোগ করা।
 - [ ] TypeScript, full tests, production build এবং published production authorization flow যাচাই করা।
+
+## Authenticated Tool Index rendering fix
+
+- [x] Google OAuth callback-এর পরে authenticated `/tools` route blank/`@@` render হওয়ার root cause নির্ণয় করা।
+- [x] Authenticated session, account plan, subscription, credit ও Tool Index data dependency crash ছাড়া load নিশ্চিত করা।
+- [ ] Minimal root-cause fix এবং regression test যোগ করে TypeScript, test, build ও production flow যাচাই করা।
