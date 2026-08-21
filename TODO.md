@@ -205,3 +205,10 @@
 - [x] Production Google sign-in start/callback/session এবং authenticated `/tools` route পুনরুৎপাদন করে error root cause নির্ণয় করা।
 - [ ] Existing server-side Paddle checkout route-এ exact configured-provider failure নির্ণয় ও minimal fix করা।
 - [ ] কোনো design, pricing, entitlement rule বা unrelated feature না বদলে focused production path validation সম্পন্ন করা।
+- [x] Unauthenticated Upgrade actionকে toast-only state থেকে existing secure Google sign-in handoffে পাঠানো।
+
+## Independent production access diagnosis
+
+- [ ] Production Google sign-in button, OAuth start redirect, callback state এবং `/tools` destination independently reproduce করা।
+- [ ] Production Premium checkout UI ও authenticated checkout requestে configured Paddle provider error independently reproduce করা।
+- [ ] Browser, network ও server logs থেকে exact failure causes নথিভুক্ত করে minimal fix বা required external configuration নির্ধারণ করা।

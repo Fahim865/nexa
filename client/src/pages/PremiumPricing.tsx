@@ -24,7 +24,8 @@ export default function PremiumPricing() {
 
   const startUpgrade = () => {
     if (!isAuthenticated) {
-      toast.error("Sign in is required before starting a secure checkout.");
+      const returnTo = encodeURIComponent("/premium?checkout=sign-in");
+      window.location.assign(`/sign-in?returnTo=${returnTo}`);
       return;
     }
     checkout.mutate({
