@@ -140,6 +140,7 @@
 - [x] Continue with Google UI এবং existing email/password fallback availabilityকে truthful state-এ উপস্থাপন করা; fake Google login না করা।
 - [x] Existing local tools, server-side Premium protection, credits ও billing অপরিবর্তিত রেখে tests, TypeScript, build এবং responsive UI যাচাই করা।
 - [ ] Published callback URL ব্যবহার করে Google OAuth configuration activation, account continuity ও sign-in callback verification সম্পন্ন করা।
+- [ ] Stored server-only Google credentials এবং `https://nexapremium-mpo86vkq.manus.space/api/auth/google/callback` callback value দিয়ে production authorization route enabled ও frontend-safe থাকার বিষয়টি যাচাই করা।
 
 ## Deployment repair
 
