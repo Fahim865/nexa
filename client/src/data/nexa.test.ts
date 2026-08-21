@@ -7,15 +7,19 @@ const LOCAL_MEDIA_TOOL_IDS = [
   "video-compressor",
   "video-trimmer",
   "video-cropper",
+  "video-rotator",
+  "video-resizer",
   "mp3-to-wav",
   "audio-cutter",
+  "audio-trimmer",
+  "audio-converter",
 ] as const;
 
 describe("Video & Audio Tools registry", () => {
   it("registers all requested media tools with unique canonical routes", () => {
     const mediaTools = TOOL_REGISTRY.filter((tool) => tool.category === "Video & Audio Tools");
 
-    expect(mediaTools).toHaveLength(16);
+    expect(mediaTools).toHaveLength(20);
     expect(mediaTools.map((tool) => tool.id)).toEqual(MEDIA_TOOL_IDS);
     expect(new Set(mediaTools.map((tool) => tool.route)).size).toBe(mediaTools.length);
     expect(mediaTools.every((tool) => tool.route.startsWith("/tools/"))).toBe(true);

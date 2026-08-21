@@ -1,6 +1,7 @@
 import { NexaMark } from "@/components/NexaMark";
 import type { MediaToolId, ToolDefinition } from "@/data/nexa";
 import { isMediaToolId } from "@/data/nexa";
+import { trpc } from "@/lib/trpc";
 import "./media-tool.css";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Download, Film, FolderUp, Gauge, Loader2, Music2, Play, Scissors, ShieldCheck, Sparkles, Video, Volume2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
@@ -10,8 +11,8 @@ type MediaToolProps = { tool: ToolDefinition };
 type MediaKind = "video" | "audio";
 type MediaOutput = { blob: Blob; fileName: string; label: string; detail: string };
 
-const LOCAL_VIDEO_IDS: readonly MediaToolId[] = ["video-to-gif", "mp4-to-gif", "video-compressor", "video-trimmer", "video-cropper"];
-const LOCAL_AUDIO_IDS: readonly MediaToolId[] = ["mp3-to-wav", "audio-cutter"];
+const LOCAL_VIDEO_IDS: readonly MediaToolId[] = ["video-to-gif", "mp4-to-gif", "video-compressor", "video-trimmer", "video-cropper", "video-rotator", "video-resizer"];
+const LOCAL_AUDIO_IDS: readonly MediaToolId[] = ["mp3-to-wav", "audio-cutter", "audio-trimmer", "audio-converter"];
 const MAX_VIDEO_BYTES = 250 * 1024 * 1024;
 const MAX_AUDIO_BYTES = 125 * 1024 * 1024;
 const LOCAL_GIF_MAX_SECONDS = 8;
@@ -124,7 +125,7 @@ function MediaToolPage({ tool }: MediaToolProps) {
   if (!isMediaToolId(tool.id)) return null;
   const toolId = tool.id;
   const kind: MediaKind = isVideoTool(toolId) ? "video" : "audio";
-  const local = isLocallyAvailable(toolId);
+  const localOnly = isLocallyAvailable(toolId);
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -133,10 +134,16 @@ function MediaToolPage({ tool }: MediaToolProps) {
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(0);
+  const [rotation, setRotation] = useState<0 | 90 | 180 | 270>(0);
+  const [resizeWidth, setResizeWidth] = useState(0);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [output, setOutput] = useState<MediaOutput | null>(null);
+  const mediaCapability = trpc.media.processingCapability.useQuery(undefined, { staleTime: 30_000 });
+  const serverCanProcess = !localOnly && mediaCapability.data?.mode === "ffmpeg_local";
+  const local = localOnly || serverCanProcess || Boolean(output);
+  const capabilityLabel = localOnly ? "LOCAL PROCESSING" : serverCanProcess ? "SERVER FFMPEG" : "FFMPEG REQUIRED";
 
   useEffect(() => () => {
     if (sourceUrl) URL.revokeObjectURL(sourceUrl);
@@ -150,13 +157,13 @@ function MediaToolPage({ tool }: MediaToolProps) {
     const looksLikeVideo = /\.(mp4|mov|webm|m4v|avi)$/i.test(candidate.name) || candidate.type.startsWith("video/");
     const looksLikeAudio = /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(candidate.name) || candidate.type.startsWith("audio/");
     const valid = kind === "video" ? looksLikeVideo : looksLikeAudio;
-    const maxBytes = kind === "video" ? MAX_VIDEO_BYTES : MAX_AUDIO_BYTES;
+    const maxBytes = localOnly ? (kind === "video" ? MAX_VIDEO_BYTES : MAX_AUDIO_BYTES) : 45 * 1024 * 1024;
     if (!valid) {
       setError(`Choose a supported ${kind} file for ${tool.name}.`);
       return;
     }
     if (candidate.size > maxBytes) {
-      setError(`${tool.name} supports local ${kind} files up to ${formatBytes(maxBytes)}.`);
+      setError(`${tool.name} supports ${localOnly ? "local" : "server"} ${kind} files up to ${formatBytes(maxBytes)}.`);
       return;
     }
     setError(null);
@@ -236,7 +243,7 @@ function MediaToolPage({ tool }: MediaToolProps) {
     } finally { setBusy(false); }
   };
 
-  const recordVideo = async (mode: "compress" | "trim" | "crop") => {
+  const recordVideo = async (mode: "compress" | "trim" | "crop" | "rotate" | "resize") => {
     const video = videoRef.current;
     if (!video || !file || !rangeIsValid()) return;
     if (typeof MediaRecorder === "undefined") { setError("This browser cannot locally re-encode video with MediaRecorder."); return; }
@@ -244,11 +251,24 @@ function MediaToolPage({ tool }: MediaToolProps) {
     const originalStream = captureVideo.captureStream?.() ?? captureVideo.mozCaptureStream?.();
     if (!originalStream) { setError("This browser does not expose video capture for local re-encoding. Try a current Chromium browser."); return; }
     const clipDuration = Math.min(end - start, 30);
-    const targetWidth = mode === "compress" ? Math.max(320, Math.floor(video.videoWidth * 0.65 / 2) * 2) : video.videoWidth;
-    const targetHeight = mode === "compress" ? Math.max(180, Math.floor(video.videoHeight * 0.65 / 2) * 2) : video.videoHeight;
+    const requestedWidth = resizeWidth || video.videoWidth;
+    const targetWidth = mode === "compress"
+      ? Math.max(320, Math.floor(video.videoWidth * 0.65 / 2) * 2)
+      : mode === "resize"
+        ? Math.max(160, Math.min(1920, Math.floor(requestedWidth / 2) * 2))
+        : video.videoWidth;
+    const targetHeight = mode === "compress"
+      ? Math.max(180, Math.floor(video.videoHeight * 0.65 / 2) * 2)
+      : mode === "resize"
+        ? Math.max(2, Math.floor((video.videoHeight * targetWidth) / video.videoWidth / 2) * 2)
+        : video.videoHeight;
     const canvas = document.createElement("canvas");
-    canvas.width = mode === "crop" ? Math.max(2, Math.floor(targetWidth * 0.78 / 2) * 2) : targetWidth;
-    canvas.height = mode === "crop" ? Math.max(2, Math.floor(targetHeight * 0.78 / 2) * 2) : targetHeight;
+    canvas.width = mode === "rotate" && (rotation === 90 || rotation === 270)
+      ? targetHeight
+      : mode === "crop" ? Math.max(2, Math.floor(targetWidth * 0.78 / 2) * 2) : targetWidth;
+    canvas.height = mode === "rotate" && (rotation === 90 || rotation === 270)
+      ? targetWidth
+      : mode === "crop" ? Math.max(2, Math.floor(targetHeight * 0.78 / 2) * 2) : targetHeight;
     const canvasContext = canvas.getContext("2d");
     if (!canvasContext) { setError("Canvas video processing is unavailable in this browser."); return; }
     setBusy(true); setError(null); setOutput(null); setProgress(0);
@@ -267,7 +287,21 @@ function MediaToolPage({ tool }: MediaToolProps) {
       const draw = () => {
         const sourceWidth = video.videoWidth;
         const sourceHeight = video.videoHeight;
-        if (mode === "crop") {
+        if (mode === "rotate") {
+          canvasContext.save();
+          if (rotation === 90) {
+            canvasContext.translate(canvas.width, 0);
+            canvasContext.rotate(Math.PI / 2);
+          } else if (rotation === 180) {
+            canvasContext.translate(canvas.width, canvas.height);
+            canvasContext.rotate(Math.PI);
+          } else if (rotation === 270) {
+            canvasContext.translate(0, canvas.height);
+            canvasContext.rotate(-Math.PI / 2);
+          }
+          canvasContext.drawImage(video, 0, 0, targetWidth, targetHeight);
+          canvasContext.restore();
+        } else if (mode === "crop") {
           const cropWidth = Math.min(sourceWidth, sourceHeight * (canvas.width / canvas.height));
           const cropHeight = Math.min(sourceHeight, sourceWidth * (canvas.height / canvas.width));
           canvasContext.drawImage(video, (sourceWidth - cropWidth) / 2, (sourceHeight - cropHeight) / 2, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
@@ -286,8 +320,9 @@ function MediaToolPage({ tool }: MediaToolProps) {
       draw();
       const blob = await recorded;
       setProgress(100);
-      const suffix = mode === "compress" ? "compressed" : mode === "crop" ? "cropped" : "trimmed";
-      setOutput({ blob, fileName: `${normalizeName(file.name)}-${suffix}.webm`, label: `${mode === "compress" ? "Smaller" : "Edited"} WebM ready`, detail: `${canvas.width}×${canvas.height} browser-recorded WebM · ${formatTime(clipDuration)} clip` });
+      const suffix = mode === "compress" ? "compressed" : mode === "crop" ? "cropped" : mode === "rotate" ? `rotated-${rotation}` : mode === "resize" ? "resized" : "trimmed";
+      const label = mode === "compress" ? "Smaller WebM ready" : mode === "rotate" ? "Rotated WebM ready" : mode === "resize" ? "Resized WebM ready" : "Edited WebM ready";
+      setOutput({ blob, fileName: `${normalizeName(file.name)}-${suffix}.webm`, label, detail: `${canvas.width}×${canvas.height} browser-recorded WebM · ${formatTime(clipDuration)} clip` });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Local video processing could not complete.");
     } finally { cancelAnimationFrame(animationFrame); setBusy(false); }
@@ -295,13 +330,13 @@ function MediaToolPage({ tool }: MediaToolProps) {
 
   const runAudio = async () => {
     if (!file) return;
-    if (toolId === "audio-cutter" && !rangeIsValid()) return;
-    setBusy(true); setError(null); setOutput(null); setProgress(15);
+    const trimmed = toolId === "audio-cutter" || toolId === "audio-trimmer";
+    if (trimmed && !rangeIsValid()) return;
+    setBusy(true); setError(null); setOutput(null); setProgress(0);
     try {
       const decoded = await decodeAudio(file);
-      setProgress(55);
       let outputBuffer = decoded;
-      if (toolId === "audio-cutter") {
+      if (trimmed) {
         const firstFrame = Math.floor(start * decoded.sampleRate);
         const frameLength = Math.floor((end - start) * decoded.sampleRate);
         const AudioContextConstructor = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -317,38 +352,84 @@ function MediaToolPage({ tool }: MediaToolProps) {
         } finally { await context.close(); }
       }
       const blob = audioBufferToWav(outputBuffer);
-      setProgress(100);
-      const trimmed = toolId === "audio-cutter";
-      setOutput({ blob, fileName: `${normalizeName(file.name)}${trimmed ? "-cut" : ""}.wav`, label: trimmed ? "WAV clip ready" : "WAV conversion ready", detail: `${outputBuffer.numberOfChannels === 1 ? "Mono" : "Stereo"} PCM WAV · ${formatTime(outputBuffer.duration)}` });
+      setOutput({ blob, fileName: `${normalizeName(file.name)}${trimmed ? "-trimmed" : ""}.wav`, label: trimmed ? "WAV clip ready" : "WAV conversion ready", detail: `${outputBuffer.numberOfChannels === 1 ? "Mono" : "Stereo"} PCM WAV · ${formatTime(outputBuffer.duration)}` });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Local audio processing could not complete.");
     } finally { setBusy(false); }
   };
 
   const runLocalTool = () => {
+    if (!localOnly) {
+      void runServerTool();
+      return;
+    }
     if (toolId === "video-to-gif" || toolId === "mp4-to-gif") void runGif();
     else if (toolId === "video-compressor") void recordVideo("compress");
     else if (toolId === "video-trimmer") void recordVideo("trim");
     else if (toolId === "video-cropper") void recordVideo("crop");
+    else if (toolId === "video-rotator") void recordVideo("rotate");
+    else if (toolId === "video-resizer") void recordVideo("resize");
     else void runAudio();
   };
 
-  const actionCopy = toolId.includes("gif") ? "Create GIF" : toolId === "video-compressor" ? "Create smaller WebM" : toolId === "video-cropper" ? "Crop & export WebM" : toolId === "video-trimmer" ? "Trim & export WebM" : toolId === "audio-cutter" ? "Cut & export WAV" : "Convert to WAV";
-  const showRange = local && (toolId.includes("gif") || toolId.includes("trimmer") || toolId.includes("cropper") || toolId.includes("cutter") || toolId.includes("compressor"));
-  const titleAccent = kind === "video" ? "Motion, locally." : "Sound, locally.";
+  const runServerTool = async () => {
+    if (!file) return;
+    if (!serverCanProcess) {
+      setError(mediaCapability.data?.message ?? "Server-side FFmpeg processing is not configured for this environment.");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    setOutput(null);
+    try {
+      const response = await fetch("/api/media/process", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+          "x-nexa-media-tool": toolId,
+        },
+        body: file,
+      });
+      const payload = await response.json().catch(() => null) as { url?: string; fileName?: string; contentType?: string; message?: string } | null;
+      if (!response.ok || !payload?.url || !payload.fileName || !payload.contentType) {
+        throw new Error(payload?.message ?? "The server media processor did not return a downloadable result.");
+      }
+      const generatedFile = await fetch(payload.url, { credentials: "omit" });
+      if (!generatedFile.ok) throw new Error("The processed file could not be downloaded from secure storage.");
+      const blob = await generatedFile.blob();
+      if (!blob.size) throw new Error("The media processor returned an empty output file.");
+      setOutput({ blob, fileName: payload.fileName, label: "Server-processed file ready", detail: "Processed by the authenticated FFmpeg service and stored for safe download." });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Server media processing could not complete.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const actionCopy = toolId.includes("gif") ? "Create GIF" : toolId === "video-compressor" ? "Create smaller WebM" : toolId === "video-cropper" ? "Crop & export WebM" : toolId === "video-trimmer" ? "Trim & export WebM" : toolId === "video-rotator" ? "Rotate & export WebM" : toolId === "video-resizer" ? "Resize & export WebM" : toolId === "audio-cutter" || toolId === "audio-trimmer" ? "Trim & export WAV" : "Convert to WAV";
+  const runActionCopy = localOnly ? actionCopy : "Process with FFmpeg";
+  const showRange = localOnly && (toolId.includes("gif") || toolId.includes("trimmer") || toolId.includes("cropper") || toolId.includes("cutter") || toolId.includes("compressor"));
+  const titleAccent = localOnly ? (kind === "video" ? "Motion, locally." : "Sound, locally.") : (kind === "video" ? "Motion, server-side." : "Sound, server-side.");
 
   return <main className="media-tool-page min-h-screen overflow-hidden bg-[#06101d] text-white">
     <header className="nexa-nav"><div className="section-shell flex h-16 items-center justify-between"><Link href="/"><NexaMark withWordmark={false} imageClassName="h-9 w-9" /></Link><Link href="/tools" className="media-back-link"><ArrowLeft size={15} /> All tools</Link></div></header>
-    <section className="media-tool-hero section-shell pt-30"><div className="media-tool-kicker"><span /> VIDEO & AUDIO / LOCAL STUDIO</div><div className="media-hero-grid"><div><h1>{tool.name}<em>{titleAccent}</em></h1><p>{tool.description}</p><div className="media-hero-proof"><ShieldCheck size={15} /> {local ? "Processed locally — your source stays in this browser." : "FFmpeg processing is not configured — no conversion will be simulated."}</div></div><div className="media-orbit" aria-hidden="true"><i /><i /><b>{kind === "video" ? <Film size={24} /> : <Music2 size={24} />}</b><span /></div></div></section>
+    <section className="media-tool-hero section-shell pt-30"><div className="media-tool-kicker"><span /> VIDEO & AUDIO / {localOnly ? "LOCAL STUDIO" : "SERVER MEDIA"}</div><div className="media-hero-grid"><div><h1>{tool.name}<em>{titleAccent}</em></h1><p>{tool.description}</p><div className="media-hero-proof"><ShieldCheck size={15} /> {localOnly ? "Processed locally — your source stays in this browser." : serverCanProcess ? "Processed by the authenticated FFmpeg service — no browser-side conversion is simulated." : "FFmpeg processing is not configured — no conversion will be simulated."}</div></div><div className="media-orbit" aria-hidden="true"><i /><i /><b>{kind === "video" ? <Film size={24} /> : <Music2 size={24} />}</b><span /></div></div></section>
     <section className="section-shell pb-20"><div className="media-workspace">
-      <div className="media-workspace-top"><div><span className="micro-label">01 / SOURCE</span><h2>Bring in a {kind} file.</h2></div><span className={`media-capability ${local ? "is-local" : "is-server"}`}>{local ? "LOCAL PROCESSING" : "FFMPEG REQUIRED"}</span></div>
+      <div className="media-workspace-top"><div><span className="micro-label">01 / SOURCE</span><h2>Bring in a {kind} file.</h2></div><span className={`media-capability ${localOnly ? "is-local" : "is-server"}`}>{capabilityLabel}</span></div>
       <div className="media-tool-grid">
         <section className="media-panel">
           {!file ? <div className="media-dropzone" onDrop={(event: DragEvent<HTMLDivElement>) => { event.preventDefault(); selectFile(event.dataTransfer.files[0]); }} onDragOver={(event) => event.preventDefault()}><FolderUp size={28} /><strong>Drop a {kind} file here</strong><p>{kind === "video" ? "MP4, MOV or WebM" : "MP3, WAV, OGG, M4A, AAC or FLAC"} · up to {formatBytes(kind === "video" ? MAX_VIDEO_BYTES : MAX_AUDIO_BYTES)}</p><button type="button" className="secondary-button" onClick={() => inputRef.current?.click()}>Choose file</button><input ref={inputRef} type="file" accept={kind === "video" ? "video/*,.mov" : "audio/*"} onChange={(event) => selectFile(event.target.files?.[0])} /></div> : <div className="media-source-card"><div className="media-source-head"><div className="media-source-icon">{kind === "video" ? <Video size={19} /> : <Volume2 size={19} />}</div><div><strong>{file.name}</strong><p>{formatBytes(file.size)} · {file.type || "Local media file"}</p></div><button type="button" aria-label="Remove selected file" onClick={clearSource}><X size={16} /></button></div>{kind === "video" && sourceUrl ? <video ref={videoRef} className="media-preview" src={sourceUrl} controls preload="metadata" onLoadedMetadata={(event) => setMetadata(event.currentTarget)} /> : null}{kind === "audio" && sourceUrl ? <audio className="media-audio" src={sourceUrl} controls preload="metadata" onLoadedMetadata={(event) => setMetadata(event.currentTarget)} /> : null}<div className="media-source-stats"><span>{duration ? `${formatTime(duration)} duration` : "Reading metadata…"}</span>{dimensions ? <span>{dimensions.width}×{dimensions.height}</span> : null}<span>{kind.toUpperCase()}</span></div></div>}
           {file && showRange ? <div className="media-range"><div className="media-range-heading"><span className="micro-label">02 / RANGE</span><small>{toolId.includes("gif") ? `Maximum ${LOCAL_GIF_MAX_SECONDS}s GIF clip` : "Maximum 30-second browser export"}</small></div><div className="media-range-grid"><label>Start <input type="number" min="0" max={Math.max(0, duration - 0.1)} step="0.1" value={Number.isFinite(start) ? start : 0} onChange={(event) => setStart(Math.max(0, Number(event.target.value)))} /></label><label>End <input type="number" min="0.1" max={duration || undefined} step="0.1" value={Number.isFinite(end) ? end : 0} onChange={(event) => setEnd(Math.min(duration || Number(event.target.value), Number(event.target.value)))} /></label></div><input className="media-range-slider" type="range" min="0" max={duration || 1} step="0.1" value={start} onChange={(event) => setStart(Math.min(Number(event.target.value), end - 0.1))} /><input className="media-range-slider" type="range" min="0" max={duration || 1} step="0.1" value={end} onChange={(event) => setEnd(Math.max(Number(event.target.value), start + 0.1))} /></div> : null}
+          {file && toolId === "video-rotator" ? <div className="media-range"><div className="media-range-heading"><span className="micro-label">02 / ROTATION</span><small>The source is redrawn and recorded as WebM.</small></div><label>Angle <select value={rotation} onChange={(event) => setRotation(Number(event.target.value) as 0 | 90 | 180 | 270)}><option value={0}>0° — Keep orientation</option><option value={90}>90° clockwise</option><option value={180}>180°</option><option value={270}>270° clockwise</option></select></label></div> : null}
+          {file && toolId === "video-resizer" ? <div className="media-range"><div className="media-range-heading"><span className="micro-label">02 / DIMENSIONS</span><small>Aspect ratio is preserved. Browser recording exports WebM.</small></div><label>Output width <input type="number" min="160" max="1920" step="2" value={resizeWidth || dimensions?.width || 0} onChange={(event) => setResizeWidth(Number(event.target.value))} /></label></div> : null}
           {error ? <div className="media-error"><AlertTriangle size={16} /><span>{error}</span></div> : null}
         </section>
-        <aside className="media-panel media-result-panel"><div className="media-result-heading"><div><span className="micro-label">03 / OUTPUT</span><h2>{local ? "Create a real local file." : "Server media pipeline required."}</h2></div>{local ? <Sparkles size={20} /> : <Gauge size={20} />}</div>{!local ? <div className="media-server-note"><AlertTriangle size={19} /><div><strong>No result will be fabricated.</strong><p>This operation needs a configured FFmpeg worker, trusted upload storage and a signed completion callback. Your selected file remains only in this browser.</p></div></div> : output ? <div className="media-output"><CheckCircle2 size={22} /><strong>{output.label}</strong><p>{output.detail}</p>{outputUrl && output.blob.type.startsWith("image/") ? <img className="media-output-image" src={outputUrl} alt="Generated GIF preview" /> : null}{outputUrl && output.blob.type.startsWith("video/") ? <video className="media-output-video" src={outputUrl} controls /> : null}{outputUrl && output.blob.type.startsWith("audio/") ? <audio className="media-audio" src={outputUrl} controls /> : null}<button type="button" className="primary-button" onClick={() => createDownload(output.blob, output.fileName)}><Download size={16} /> Download {output.fileName.split(".").pop()?.toUpperCase()}</button></div> : <div className="media-empty"><Play size={24} /><strong>Ready when you are.</strong><p>Select a file, adjust the clip range when needed, then create a real local output.</p></div>}{local ? <div className="media-run-area"><button type="button" className="primary-button" disabled={!file || busy || !duration} onClick={runLocalTool}>{busy ? <><Loader2 className="animate-spin" size={16} /> Processing {progress}%</> : <><Scissors size={16} /> {actionCopy}</>}</button>{busy ? <div className="media-progress"><span style={{ width: `${progress}%` }} /></div> : null}<small>{toolId.includes("gif") ? "GIF exports are limited to 8 seconds and 640px wide for stable in-browser processing." : "Local browser exports may produce WebM or PCM WAV rather than a source-matching container."}</small></div> : <div className="media-server-footer"><ShieldCheck size={15} /> A configured worker may accept server-stored sources only after signed job authorization.</div>}</aside>
+        <aside className="media-panel media-result-panel">
+          <div className="media-result-heading"><div><span className="micro-label">03 / OUTPUT</span><h2>{localOnly ? "Create a real local file." : serverCanProcess ? "Create a verified server file." : "Server media pipeline required."}</h2></div>{localOnly ? <Sparkles size={20} /> : <Gauge size={20} />}</div>
+          {output ? <div className="media-output"><CheckCircle2 size={22} /><strong>{output.label}</strong><p>{output.detail}</p>{outputUrl && output.blob.type.startsWith("image/") ? <img className="media-output-image" src={outputUrl} alt="Generated GIF preview" /> : null}{outputUrl && output.blob.type.startsWith("video/") ? <video className="media-output-video" src={outputUrl} controls /> : null}{outputUrl && output.blob.type.startsWith("audio/") ? <audio className="media-audio" src={outputUrl} controls /> : null}<button type="button" className="primary-button" onClick={() => createDownload(output.blob, output.fileName)}><Download size={16} /> Download {output.fileName.split(".").pop()?.toUpperCase()}</button></div> : !localOnly && !serverCanProcess ? <div className="media-server-note"><AlertTriangle size={19} /><div><strong>No result will be fabricated.</strong><p>This operation needs a configured FFmpeg worker, trusted upload storage and a signed completion callback. Your selected file remains only in this browser.</p></div></div> : <div className="media-empty"><Play size={24} /><strong>Ready when you are.</strong><p>{localOnly ? (showRange ? "Select a file, choose the required range, then create a real local output." : "Select a file, choose your transform settings, then create a real local output.") : "Select a source file to submit one authenticated, fixed-operation FFmpeg request."}</p></div>}
+          {localOnly || serverCanProcess ? <div className="media-run-area"><button type="button" className="primary-button" disabled={!file || busy || !duration} onClick={runLocalTool}>{busy ? <><Loader2 className="animate-spin" size={16} /> {localOnly ? `Processing ${progress}%` : "Processing on server…"}</> : <><Scissors size={16} /> {runActionCopy}</>}</button>{busy && localOnly ? <div className="media-progress"><span style={{ width: `${progress}%` }} /></div> : null}<small>{localOnly ? (toolId.includes("gif") ? "GIF exports are limited to 8 seconds and 640px wide for stable in-browser processing." : "Local browser exports may produce WebM or PCM WAV rather than a source-matching container.") : "Processing uses a fixed, server-owned FFmpeg operation. No server progress percentage is displayed until verified job progress is available."}</small></div> : <div className="media-server-footer"><ShieldCheck size={15} /> A configured worker may accept server-stored sources only after signed job authorization.</div>}
+        </aside>
       </div>
     </div></section>
   </main>;

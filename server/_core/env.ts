@@ -16,6 +16,7 @@ export const ENV = {
   nexaMediaProcessor: process.env.NEXA_MEDIA_PROCESSOR ?? "disabled",
   nexaMediaWorkerUrl: process.env.NEXA_MEDIA_WORKER_URL ?? "",
   nexaMediaWebhookSecret: process.env.NEXA_MEDIA_WEBHOOK_SECRET ?? "",
+  nexaMediaProcessingEnabled: process.env.NEXA_MEDIA_PROCESSING_ENABLED === "true",
   premiumPriceUsd: process.env.PREMIUM_PRICE_USD ?? "",
   premiumMonthlyCredits: process.env.PREMIUM_MONTHLY_CREDITS ?? "",
 };

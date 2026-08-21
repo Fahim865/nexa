@@ -360,6 +360,26 @@ export const TOOL_REGISTRY = defineToolRegistry([
     route: "/tools/video/video-cropper",
   },
   {
+    id: "video-rotator",
+    name: "Video Rotator",
+    category: "Video & Audio Tools",
+    description: "Rotate a short local video and export a browser-recorded WebM file.",
+    creditCost: 0,
+    status: "available",
+    icon: RotateCw,
+    route: "/tools/video/video-rotator",
+  },
+  {
+    id: "video-resizer",
+    name: "Video Resizer",
+    category: "Video & Audio Tools",
+    description: "Resize a short local video and export a browser-recorded WebM file.",
+    creditCost: 0,
+    status: "available",
+    icon: Expand,
+    route: "/tools/video/video-resizer",
+  },
+  {
     id: "mp3-converter",
     name: "MP3 Converter",
     category: "Video & Audio Tools",
@@ -418,6 +438,26 @@ export const TOOL_REGISTRY = defineToolRegistry([
     status: "available",
     icon: Scissors,
     route: "/tools/audio/audio-cutter",
+  },
+  {
+    id: "audio-trimmer",
+    name: "Audio Trimmer",
+    category: "Video & Audio Tools",
+    description: "Trim an audio range locally and download a real PCM WAV clip.",
+    creditCost: 0,
+    status: "available",
+    icon: Scissors,
+    route: "/tools/audio/audio-trimmer",
+  },
+  {
+    id: "audio-converter",
+    name: "Audio Converter",
+    category: "Video & Audio Tools",
+    description: "Convert browser-decodable audio to a real PCM WAV file locally.",
+    creditCost: 0,
+    status: "available",
+    icon: RefreshCw,
+    route: "/tools/audio/audio-converter",
   },
   {
     id: "quick-calculator",
@@ -686,7 +726,7 @@ export function isImageToolId(id: string): id is ImageToolId {
 }
 
 export const MEDIA_TOOL_IDS = [
-  "mp4-converter", "mov-to-mp4", "webm-to-mp4", "video-to-mp3", "mp4-to-mp3", "video-to-gif", "mp4-to-gif", "video-compressor", "video-trimmer", "video-cropper", "mp3-converter", "wav-converter", "mp3-to-wav", "mp3-to-ogg", "audio-compressor", "audio-cutter",
+  "mp4-converter", "mov-to-mp4", "webm-to-mp4", "video-to-mp3", "mp4-to-mp3", "video-to-gif", "mp4-to-gif", "video-compressor", "video-trimmer", "video-cropper", "video-rotator", "video-resizer", "mp3-converter", "wav-converter", "mp3-to-wav", "mp3-to-ogg", "audio-compressor", "audio-cutter", "audio-trimmer", "audio-converter",
 ] as const;
 
 export type MediaToolId = (typeof MEDIA_TOOL_IDS)[number];

@@ -114,3 +114,18 @@
 - [x] `/tools/video-to-gif`, `/tools/mp3-to-wav` ও `/tools/mp4-converter`-এর rendered 404 report নির্ণয় করা: registry-এর canonical grouped paths (`/tools/video/*`, `/tools/audio/*`) সঠিকভাবে render করে; flat URLs registered ছিল না।
 - [x] Canonical Video to GIF, MP3 to WAV ও MP4 Converter desktop previews-এ যথাক্রমে real local-processing workspace, real PCM WAV export workspace এবং truthful FFmpeg-required no-fabrication state যাচাই করা।
 - [x] Flat compatibility URLs `/tools/video-to-gif`, `/tools/mp3-to-wav` ও `/tools/mp4-converter`-এ একই media tools খুলতে alias routes যোগ করা এবং 375px mobile preview-এ no-overflow upload, output ও FFmpeg-required state যাচাই করা।
+
+## Video & Audio Tools expansion phase
+
+- [x] বর্তমান 16টি media tool, server capability boundary, storage pattern ও FFmpeg deployment constraints পর্যালোচনা করা।
+- [x] Video Rotator, Video Resizer, Audio Trimmer ও Audio Converter-কে central registry, route guards এবং compatibility aliases-এ যোগ করা।
+- [x] Video Rotator/Resizer এবং Audio Trimmer-এর সত্যিকার browser-local processing, preview, error ও download flow বাস্তবায়ন করা।
+- [x] Audio Converter এবং existing FFmpeg-required transcode tools-এর জন্য file validation, safe server processing architecture ও no-fabrication lifecycle প্রস্তুত করা।
+- [x] Upload security, temporary-file cleanup policy, arbitrary-command prevention ও generated-file delivery boundary নথিভুক্ত ও পরীক্ষা করা।
+- [x] All requested media routes, responsive UI, TypeScript, tests ও production build যাচাই করা।
+
+- [x] FFmpeg runtime container-এ application process non-root `node` user-এ চালানো।
+
+- [x] 375px viewport-এ Video Rotator ও Audio Trimmer-এর local upload/download workspaces এবং MP4 Converter-এর no-fabrication FFmpeg-unavailable state overflow ছাড়া যাচাই করা।
+- [x] FFmpeg-required MediaToolPage-এর generic “locally” descriptor-কে truthful server-side processing copy-এ সংশোধন করা।
+- [x] Unimplemented remote FFmpeg worker configurationকে processing-available না দেখিয়ে server action-এর সঙ্গে capability state সঙ্গতিপূর্ণ করা।
