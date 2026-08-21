@@ -154,3 +154,10 @@
 - [x] NEXA Terms of Service page-এ FREE/PREMIUM, $10/month, 5,000 monthly credits, subscriptions, AI tools, acceptable use এবং user responsibilities-এর clear, non-fabricated language যোগ করা।
 - [x] `/privacy` ও `/terms` public routes এবং existing footer/navigation links যোগ করা।
 - [x] Responsive rendering, route regression tests, TypeScript, test suite, production build এবং public URL availability যাচাই করা।
+
+## Production Google OAuth state repair
+
+- [x] Production `/api/auth/google/start` থেকে same-host OAuth state cookie issuance, secure attributes এবং exact redirect URI inspect করা।
+- [x] Callback requestে state cookie preservation নিশ্চিত করে missing/mismatched state handling fix করা, OAuth security checks বজায় রেখে।
+- [x] Google callbackে persistent NEXA session cookie issuance ও safe local redirect regression coverage যোগ করা।
+- [ ] TypeScript, full tests, production build এবং published production authorization flow যাচাই করা।

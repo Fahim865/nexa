@@ -73,6 +73,23 @@ function isValidRedirectUri(value: string) {
   }
 }
 
+function getConfiguredOAuthStartUrl(returnTo: string) {
+  const callbackUrl = new URL(ENV.googleRedirectUri);
+  const startUrl = new URL("/api/auth/google/start", callbackUrl.origin);
+  startUrl.searchParams.set("returnTo", returnTo);
+  return startUrl.toString();
+}
+
+function isRequestOnConfiguredOAuthHost(req: Request) {
+  try {
+    const callbackUrl = new URL(ENV.googleRedirectUri);
+    const requestHost = (req.get("host") ?? "").trim().toLowerCase();
+    return requestHost === callbackUrl.host.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
 export function getGoogleAuthPublicStatus() {
   const enabled = Boolean(ENV.googleClientId && ENV.googleClientSecret && isValidRedirectUri(ENV.googleRedirectUri));
   return {
@@ -157,6 +174,14 @@ export function registerGoogleAuthRoutes(app: Express) {
       return;
     }
 
+    // The callback is registered to one configured origin. A preview host cannot
+    // set a host-only cookie that the production callback will receive, so send
+    // the browser to that exact origin before generating state or PKCE material.
+    if (!isRequestOnConfiguredOAuthHost(req)) {
+      res.redirect(302, getConfiguredOAuthStartUrl(getReturnTo(req)));
+      return;
+    }
+
     const state = base64Url(randomBytes(32));
     const codeVerifier = base64Url(randomBytes(48));
     const nonce = base64Url(randomBytes(32));
@@ -193,11 +218,15 @@ export function registerGoogleAuthRoutes(app: Express) {
     const verification = decodeOAuthCookie(getCookie(req, GOOGLE_OAUTH_COOKIE));
     res.clearCookie(GOOGLE_OAUTH_COOKIE, { ...getCookieOptions(req), maxAge: -1 });
 
+    if (!returnedState || !verification || Date.now() - verification.startedAt > OAUTH_MAX_AGE_MS || !safeEquals(returnedState, verification.state)) {
+      redirectToSignInError(res, "invalid");
+      return;
+    }
     if (providerError) {
       redirectToSignInError(res, "denied");
       return;
     }
-    if (!code || !returnedState || !verification || Date.now() - verification.startedAt > OAUTH_MAX_AGE_MS || !safeEquals(returnedState, verification.state)) {
+    if (!code) {
       redirectToSignInError(res, "invalid");
       return;
     }
