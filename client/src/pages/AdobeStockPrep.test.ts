@@ -20,6 +20,15 @@ describe("Adobe Stock Prep local workflow", () => {
     expect(prepSource).toContain("nexa-adobe-stock-technical-report.csv");
   });
 
+  it("keeps metadata templates, duplicate detection and batch category actions browser-local", () => {
+    expect(prepSource).toContain('const TEMPLATE_STORAGE_KEY = "nexa:adobe-stock-metadata-templates"');
+    expect(prepSource).toContain("function findDuplicateKeywords(value: string)");
+    expect(prepSource).toContain("Duplicate keyword");
+    expect(prepSource).toContain("LOCAL METADATA TEMPLATES");
+    expect(prepSource).toContain("BATCH CATEGORY PRESETS");
+    expect(prepSource).toContain("Apply selected");
+  });
+
   it("registers the workspace as an Image Tool at its direct route", () => {
     expect(registrySource).toContain('id: "adobe-stock-prep"');
     expect(registrySource).toContain('route: "/tools/adobe-stock-prep"');

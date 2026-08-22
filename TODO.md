@@ -280,3 +280,11 @@
 - [x] Browser-local Adobe submission guideline checker যোগ করে only deterministic technical/content readiness guidance দেখানো।
 - [x] Existing server-protected AI provider দিয়ে Premium-only title ও keyword assist যোগ করে FREE state এবং failure state truthful রাখা।
 - [x] Focused tests, responsive validation, check/test/build ও production checkpoint release সম্পন্ন করা।
+
+## Adobe Stock metadata workflow enhancements
+
+- [x] Existing metadata editor state, browser-local persistence এবং CSV export data flow audit করা।
+- [x] Browser-local metadata template save, select, apply ও delete workflow যোগ করা।
+- [x] Case-insensitive duplicate-keyword detector যোগ করে per-item metadata review-এ clear feedback দেখানো।
+- [x] Batch category presets যোগ করে selected files বা full batch-এ category apply করা।
+- [x] Focused tests, responsive validation, check/test/build ও production checkpoint release সম্পন্ন করা।
