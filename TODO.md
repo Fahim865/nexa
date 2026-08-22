@@ -229,3 +229,9 @@
 - [ ] Production Google sign-in, authenticated `/tools` rendering এবং existing Premium checkout handoff independently verify করা।
 - [x] Premium checkout sign-in handoff-এর `returnTo` query Google OAuth start route-এ preserve করে authentication শেষে `/premium`-এ নিরাপদে ফিরিয়ে আনা।
 - [x] কেবল confirmed defect থাকলে minimal fix, regression coverage, TypeScript, tests ও production build চালিয়ে published checkpoint তৈরি করা।
+
+## Uploaded fixed project reconciliation and production verification
+- [x] Uploaded `nexa-premium-site-v2-fixed.zip` ও `pasted_content_2.txt` active project-এর সঙ্গে তুলনা করে source of truth নির্ধারণ করা।
+- [x] Google OAuth ও single Premium monthly/annual Paddle configuration server-only boundaryসহ audit করা।
+- [x] Production `/sign-in`, `/tools`, `/premium`, Google start route ও OAuth callback behavior verify করা; confirmed defect ছাড়া কোনো unrelated change না করা।
+- [ ] Confirmed production fix থাকলে check/test/build চালিয়ে published checkpoint তৈরি করা এবং remaining external Paddle action স্পষ্টভাবে রিপোর্ট করা।
