@@ -18,17 +18,21 @@ const MAX_FILE_BYTES = 45 * 1024 * 1024;
 const MIN_PIXELS = 4_000_000;
 const TARGET_PIXELS = 4_300_000;
 const TEMPLATE_STORAGE_KEY = "nexa:adobe-stock-metadata-templates";
+const KEYWORD_HISTORY_STORAGE_KEY = "nexa:adobe-stock-keyword-suggestion-history";
+const MAX_KEYWORD_HISTORY_ENTRIES = 20;
 const CATEGORY_PRESETS = ["Animals", "Architecture", "Business", "Food", "Landscape", "Lifestyle", "Nature", "People", "Technology", "Travel"];
 
 type QualityFlag = "ok" | "review" | "warning";
 type TechnicalAnalysis = { sharpness: string; sharpnessFlag: QualityFlag; noise: string; noiseFlag: QualityFlag };
 type StockMetadata = { visualBrief: string; title: string; description: string; keywords: string; category: string };
 type SavedMetadataTemplate = { id: string; name: string; metadata: StockMetadata; createdAt: number };
+type KeywordSuggestionHistoryEntry = { id: string; fileName: string; keywords: string; title: string; createdAt: number };
 type BatchItem = {
   id: string;
   source: SourceImage;
   state: "pending" | "processing" | "done" | "error";
   metadata: StockMetadata;
+  exactFileDigest?: string;
   error?: string;
   result?: { blob: Blob; url: string; width: number; height: number; size: number; score: number; analysis: TechnicalAnalysis };
 };
@@ -53,6 +57,12 @@ function validateStockFile(file: File) {
   if (!file.type.startsWith("image/")) return "This file is not a browser-readable image.";
   if (file.size > MAX_FILE_BYTES) return "Use images below 45 MB for reliable local processing.";
   return null;
+}
+
+async function createExactFileDigest(file: File) {
+  if (!globalThis.crypto?.subtle) return null;
+  const digest = await globalThis.crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function drawProgressively(source: SourceImage, targetWidth: number, targetHeight: number) {
@@ -177,6 +187,17 @@ function readSavedTemplates(): SavedMetadataTemplate[] {
   }
 }
 
+function readKeywordSuggestionHistory(): KeywordSuggestionHistoryEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(KEYWORD_HISTORY_STORAGE_KEY) ?? "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((entry): entry is KeywordSuggestionHistoryEntry => Boolean(entry && typeof entry.id === "string" && typeof entry.fileName === "string" && typeof entry.keywords === "string" && typeof entry.createdAt === "number")).slice(0, MAX_KEYWORD_HISTORY_ENTRIES);
+  } catch {
+    return [];
+  }
+}
+
 function findDuplicateKeywords(value: string) {
   const seen = new Map<string, string>();
   const duplicates: string[] = [];
@@ -240,6 +261,8 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
   const [templates, setTemplates] = useState<SavedMetadataTemplate[]>(readSavedTemplates);
   const [templateName, setTemplateName] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [templateRename, setTemplateRename] = useState("");
+  const [keywordSuggestionHistory, setKeywordSuggestionHistory] = useState<KeywordSuggestionHistoryEntry[]>(readKeywordSuggestionHistory);
   const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
   const [batchCategory, setBatchCategory] = useState("");
   const subscriptionIsCurrent = !user?.subscriptionEndDate || new Date(user.subscriptionEndDate).getTime() > Date.now();
@@ -251,7 +274,13 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
   const runAi = trpc.ai.run.useMutation({
     onSuccess: (result) => {
       if (!assistingItemId) return;
+      const assistedItem = itemsRef.current.find((item) => item.id === assistingItemId);
+      const suggestedKeywords = result.outputs.keywords?.trim();
       setItems((current) => current.map((item) => item.id === assistingItemId ? { ...item, metadata: { ...item.metadata, title: result.outputs.seo_title || item.metadata.title, description: result.outputs.description || item.metadata.description, keywords: result.outputs.keywords || item.metadata.keywords, category: result.outputs.category_suggestion || item.metadata.category } } : item));
+      if (assistedItem && suggestedKeywords) {
+        const entry: KeywordSuggestionHistoryEntry = { id: crypto.randomUUID(), fileName: assistedItem.source.file.name, keywords: suggestedKeywords, title: result.outputs.seo_title?.trim() || assistedItem.metadata.title.trim(), createdAt: Date.now() };
+        setKeywordSuggestionHistory((current) => [entry, ...current.filter((currentEntry) => currentEntry.keywords.toLocaleLowerCase() !== entry.keywords.toLocaleLowerCase())].slice(0, MAX_KEYWORD_HISTORY_ENTRIES));
+      }
       setAssistingItemId(null);
       setAiError("");
       void trpcUtils.subscription.creditStatus.invalidate();
@@ -276,6 +305,14 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
     }
   }, [templates]);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(KEYWORD_HISTORY_STORAGE_KEY, JSON.stringify(keywordSuggestionHistory));
+    } catch {
+      // Browser-local history remains non-essential when storage is unavailable.
+    }
+  }, [keywordSuggestionHistory]);
+
   useEffect(() => () => itemsRef.current.forEach((item) => {
     URL.revokeObjectURL(item.source.url);
     if (item.result) URL.revokeObjectURL(item.result.url);
@@ -283,6 +320,16 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
 
   const preparedItems = useMemo(() => items.filter((item) => item.state === "done" && item.result), [items]);
   const displayItems = useMemo(() => priorityFirst ? [...items].sort((first, second) => (first.result?.score ?? -1) - (second.result?.score ?? -1)) : items, [items, priorityFirst]);
+  const selectedTemplate = templates.find((template) => template.id === selectedTemplateId);
+  const exactDuplicateGroups = useMemo(() => {
+    const groups = new Map<string, BatchItem[]>();
+    items.forEach((item) => {
+      if (!item.exactFileDigest) return;
+      groups.set(item.exactFileDigest, [...(groups.get(item.exactFileDigest) ?? []), item]);
+    });
+    return Array.from(groups.values()).filter((group) => group.length > 1);
+  }, [items]);
+  const exactDuplicateItemIds = useMemo(() => new Set(exactDuplicateGroups.flatMap((group) => group.map((item) => item.id))), [exactDuplicateGroups]);
 
   const addFiles = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
@@ -302,7 +349,13 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
       }
       try {
         const source = await loadLocalImage(file);
-        nextItems.push({ id: `${file.name}-${file.lastModified}-${crypto.randomUUID()}`, source, state: "pending", metadata: createMetadata() });
+        let exactFileDigest: string | undefined;
+        try {
+          exactFileDigest = (await createExactFileDigest(file)) ?? undefined;
+        } catch {
+          toast.message(`${file.name}: exact duplicate checking is unavailable for this file in this browser.`);
+        }
+        nextItems.push({ id: `${file.name}-${file.lastModified}-${crypto.randomUUID()}`, source, state: "pending", metadata: createMetadata(), exactFileDigest });
       } catch (error) {
         toast.error(`${file.name}: ${error instanceof Error ? error.message : "Image could not be read."}`);
       }
@@ -375,7 +428,39 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
     if (!selectedTemplateId) return;
     setTemplates((current) => current.filter((template) => template.id !== selectedTemplateId));
     setSelectedTemplateId("");
+    setTemplateRename("");
     toast.message("Local metadata template deleted.");
+  };
+
+  const renameTemplate = () => {
+    const template = templates.find((currentTemplate) => currentTemplate.id === selectedTemplateId);
+    const name = templateRename.trim().slice(0, 60);
+    if (!template) {
+      toast.error("Select a saved metadata template before renaming it.");
+      return;
+    }
+    if (!name) {
+      toast.error("Enter a template name before renaming it.");
+      return;
+    }
+    const normalizedName = name.toLocaleLowerCase();
+    if (templates.some((currentTemplate) => currentTemplate.id !== template.id && currentTemplate.name.toLocaleLowerCase() === normalizedName)) {
+      toast.error("A local metadata template already uses that name.");
+      return;
+    }
+    setTemplates((current) => current.map((currentTemplate) => currentTemplate.id === template.id ? { ...currentTemplate, name } : currentTemplate));
+    setTemplateRename(name);
+    toast.success(`Renamed local template to “${name}”.`);
+  };
+
+  const applyKeywordHistory = (entry: KeywordSuggestionHistoryEntry) => {
+    const ids = targetItemIds("selected");
+    if (!ids.size) {
+      toast.error("Select at least one metadata card before applying local keyword history.");
+      return;
+    }
+    setItems((current) => current.map((item) => ids.has(item.id) ? { ...item, metadata: { ...item.metadata, keywords: entry.keywords } } : item));
+    toast.success(`Applied local keyword history to ${ids.size} item${ids.size === 1 ? "" : "s"}.`);
   };
 
   const applyBatchCategory = (scope: "selected" | "all") => {
@@ -520,14 +605,16 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
         {items.length ? <div className="mt-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><p className="font-mono text-xs text-slate-300"><b className="text-cyan-200">{items.length}</b> / {MAX_BATCH_FILES} images selected</p><div className="flex flex-wrap gap-2"><button className="secondary-button" onClick={() => inputRef.current?.click()} disabled={processing}><ImagePlus size={15} /> Add images</button><button className="secondary-button" onClick={clearAll} disabled={processing}><Trash2 size={15} /> Clear</button></div></div>
           {preparedItems.length ? <><div className="mb-4 flex flex-wrap gap-2"><span className="rounded-md border border-white/10 bg-white/5 px-3 py-2 font-mono text-xs text-slate-200">Processed: {preparedItems.length}</span><span className="rounded-md border border-emerald-300/30 bg-emerald-300/10 px-3 py-2 font-mono text-xs text-emerald-200">5/5 technical: {readyCount}</span><span className="rounded-md border border-amber-300/30 bg-amber-300/10 px-3 py-2 font-mono text-xs text-amber-100">Review: {preparedItems.length - readyCount}</span></div><button className="mb-4 rounded-md border border-white/15 px-3 py-2 font-mono text-xs text-slate-300 transition hover:border-cyan-200 hover:text-cyan-100" onClick={() => setPriorityFirst((current) => !current)}>{priorityFirst ? "Showing review priority" : "Sort: needs review first"}</button></> : null}
+          {items.length ? <section className="mb-4 rounded-xl border border-violet-300/20 bg-violet-300/[0.045] p-4"><div className="flex gap-3"><span className="mt-0.5 rounded-md border border-violet-200/30 bg-violet-300/10 p-2 text-violet-100"><ShieldAlert size={17} /></span><div><p className="font-mono text-[10px] tracking-[0.14em] text-violet-100">EXACT DUPLICATE DETECTOR</p><h2 className="mt-1 text-sm font-semibold text-white">{exactDuplicateGroups.length ? `${exactDuplicateGroups.length} exact duplicate group${exactDuplicateGroups.length === 1 ? "" : "s"} found` : "No exact duplicate files found"}</h2><p className="mt-1 text-xs leading-5 text-slate-300">SHA-256 fingerprints are calculated in this browser only. This flags identical file bytes; it does not detect crops, re-encodes, edits or visually similar images.</p></div></div>{exactDuplicateGroups.length ? <ul className="mt-3 space-y-2">{exactDuplicateGroups.map((group) => <li key={group[0].exactFileDigest} className="rounded-md border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2 text-xs text-amber-100"><strong>Exact match:</strong> {group.map((item) => item.source.file.name).join(" · ")}</li>)}</ul> : null}{items.some((item) => !item.exactFileDigest) ? <p className="mt-3 text-xs text-slate-400">Some files could not be fingerprinted by this browser, so they are not included in this exact-match result.</p> : null}</section> : null}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{displayItems.map((item) => <article key={item.id} className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.035]">
             <div className="relative flex h-40 items-center justify-center bg-black/20 p-3"><img src={item.result?.url ?? item.source.url} alt={item.source.file.name} className="max-h-full max-w-full object-contain" /><button className="absolute left-2 top-2 rounded-full bg-black/60 p-1.5 text-white transition hover:bg-rose-500" onClick={() => removeItem(item.id)} disabled={processing} aria-label={`Remove ${item.source.file.name}`}><X size={14} /></button><span className={`absolute right-2 top-2 rounded-full border px-2 py-1 font-mono text-[10px] ${item.state === "done" ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-200" : item.state === "processing" ? "border-amber-300/40 bg-amber-300/10 text-amber-100" : item.state === "error" ? "border-rose-300/40 bg-rose-300/10 text-rose-200" : "border-white/15 bg-black/30 text-slate-300"}`}>{item.state === "done" ? "Ready" : item.state === "processing" ? "Working" : item.state === "error" ? "Error" : "Pending"}</span></div>
-            <div className="space-y-3 p-4"><p className="truncate text-sm font-semibold text-white" title={item.source.file.name}>{item.source.file.name}</p>{item.result ? <><div className="flex items-end gap-2"><strong className={`text-2xl ${item.result.score === 5 ? "text-emerald-200" : "text-amber-100"}`}>{item.result.score}/5</strong><span className="pb-1 text-xs text-slate-400">technical readiness</span></div><dl className="space-y-1.5 font-mono text-[11px] text-slate-300"><div className="flex justify-between"><dt>Resolution</dt><dd className="text-emerald-200">{((item.result.width * item.result.height) / 1_000_000).toFixed(1)} MP</dd></div><div className="flex justify-between"><dt>Format</dt><dd className="text-emerald-200">JPEG</dd></div><div className="flex justify-between"><dt>File size</dt><dd className="text-emerald-200">{readableBytes(item.result.size)}</dd></div><div className="flex justify-between"><dt>Sharpness (est.)</dt><dd className={statusStyle(item.result.analysis.sharpnessFlag)}>{item.result.analysis.sharpness}</dd></div><div className="flex justify-between"><dt>Noise (est.)</dt><dd className={statusStyle(item.result.analysis.noiseFlag)}>{item.result.analysis.noise}</dd></div></dl><button className="secondary-button w-full justify-center" onClick={() => downloadBlob(item.result!.blob, normalizedFileName(item.source.file.name))}><Download size={15} /> Download image</button></> : <dl className="space-y-1.5 font-mono text-[11px] text-slate-300"><div className="flex justify-between"><dt>Resolution</dt><dd className={item.source.width * item.source.height >= MIN_PIXELS ? "text-emerald-200" : "text-amber-100"}>{((item.source.width * item.source.height) / 1_000_000).toFixed(1)} MP{item.source.width * item.source.height < MIN_PIXELS ? " → upscale" : ""}</dd></div><div className="flex justify-between"><dt>Source format</dt><dd className={item.source.file.type === "image/jpeg" ? "text-emerald-200" : "text-amber-100"}>{formatLabel(item.source.file.type)}{item.source.file.type === "image/jpeg" ? "" : " → JPEG"}</dd></div><div className="flex justify-between"><dt>Source size</dt><dd>{readableBytes(item.source.file.size)}</dd></div>{item.error ? <div className="pt-2 text-rose-200">{item.error}</div> : null}</dl>}</div>
+            <div className="space-y-3 p-4"><p className="truncate text-sm font-semibold text-white" title={item.source.file.name}>{item.source.file.name}</p>{exactDuplicateItemIds.has(item.id) ? <p className="rounded-md border border-amber-300/25 bg-amber-300/10 px-2 py-1 font-mono text-[10px] text-amber-100">EXACT DUPLICATE FILE</p> : null}{item.result ? <><div className="flex items-end gap-2"><strong className={`text-2xl ${item.result.score === 5 ? "text-emerald-200" : "text-amber-100"}`}>{item.result.score}/5</strong><span className="pb-1 text-xs text-slate-400">technical readiness</span></div><dl className="space-y-1.5 font-mono text-[11px] text-slate-300"><div className="flex justify-between"><dt>Resolution</dt><dd className="text-emerald-200">{((item.result.width * item.result.height) / 1_000_000).toFixed(1)} MP</dd></div><div className="flex justify-between"><dt>Format</dt><dd className="text-emerald-200">JPEG</dd></div><div className="flex justify-between"><dt>File size</dt><dd className="text-emerald-200">{readableBytes(item.result.size)}</dd></div><div className="flex justify-between"><dt>Sharpness (est.)</dt><dd className={statusStyle(item.result.analysis.sharpnessFlag)}>{item.result.analysis.sharpness}</dd></div><div className="flex justify-between"><dt>Noise (est.)</dt><dd className={statusStyle(item.result.analysis.noiseFlag)}>{item.result.analysis.noise}</dd></div></dl><button className="secondary-button w-full justify-center" onClick={() => downloadBlob(item.result!.blob, normalizedFileName(item.source.file.name))}><Download size={15} /> Download image</button></> : <dl className="space-y-1.5 font-mono text-[11px] text-slate-300"><div className="flex justify-between"><dt>Resolution</dt><dd className={item.source.width * item.source.height >= MIN_PIXELS ? "text-emerald-200" : "text-amber-100"}>{((item.source.width * item.source.height) / 1_000_000).toFixed(1)} MP{item.source.width * item.source.height < MIN_PIXELS ? " → upscale" : ""}</dd></div><div className="flex justify-between"><dt>Source format</dt><dd className={item.source.file.type === "image/jpeg" ? "text-emerald-200" : "text-amber-100"}>{formatLabel(item.source.file.type)}{item.source.file.type === "image/jpeg" ? "" : " → JPEG"}</dd></div><div className="flex justify-between"><dt>Source size</dt><dd>{readableBytes(item.source.file.size)}</dd></div>{item.error ? <div className="pt-2 text-rose-200">{item.error}</div> : null}</dl>}</div>
           </article>)}</div>
           <section className="mt-6 border-t border-white/10 pt-6">
             <div className="mb-4 flex items-center gap-3"><span className="rounded-md border border-cyan-300/25 bg-cyan-300/10 p-2 text-cyan-100"><WandSparkles size={16} /></span><div><p className="font-mono text-[10px] tracking-[0.14em] text-cyan-100">EDITABLE METADATA</p><h2 className="text-base font-semibold text-white">Prepare accurate stock submission details</h2></div></div>
-            <div className="mb-5 grid gap-4 lg:grid-cols-2">
-              <article className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><p className="font-mono text-[10px] tracking-[0.14em] text-cyan-100">LOCAL METADATA TEMPLATES</p><p className="mt-1 text-xs leading-5 text-slate-300">Save the metadata from a selected card in this browser, then apply it to selected cards or the whole batch.</p><div className="mt-3 grid gap-2 sm:grid-cols-2"><input value={templateName} onChange={(event) => setTemplateName(event.target.value)} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300" placeholder="Template name" /><button className="secondary-button justify-center" onClick={saveTemplate}>Save current</button><select value={selectedTemplateId} onChange={(event) => setSelectedTemplateId(event.target.value)} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300"><option value="">Select saved template</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select><button className="secondary-button justify-center" onClick={() => applyTemplate("selected")}>Apply selected</button><button className="secondary-button justify-center" onClick={() => applyTemplate("all")}>Apply all</button><button className="secondary-button justify-center" onClick={deleteTemplate} disabled={!selectedTemplateId}>Delete template</button></div></article>
+            <div className="mb-5 grid gap-4 lg:grid-cols-3">
+              <article className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><p className="font-mono text-[10px] tracking-[0.14em] text-cyan-100">LOCAL METADATA TEMPLATES</p><p className="mt-1 text-xs leading-5 text-slate-300">Save the metadata from a selected card in this browser, then apply it to selected cards or the whole batch.</p><div className="mt-3 grid gap-2 sm:grid-cols-2"><input value={templateName} onChange={(event) => setTemplateName(event.target.value)} maxLength={60} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300" placeholder="Template name" /><button className="secondary-button justify-center" onClick={saveTemplate}>Save current</button><select value={selectedTemplateId} onChange={(event) => { const id = event.target.value; setSelectedTemplateId(id); setTemplateRename(templates.find((template) => template.id === id)?.name ?? ""); }} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300"><option value="">Select saved template</option>{templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}</select><button className="secondary-button justify-center" onClick={() => applyTemplate("selected")}>Apply selected</button><button className="secondary-button justify-center" onClick={() => applyTemplate("all")}>Apply all</button><button className="secondary-button justify-center" onClick={deleteTemplate} disabled={!selectedTemplateId}>Delete template</button><input value={templateRename} onChange={(event) => setTemplateRename(event.target.value)} maxLength={60} disabled={!selectedTemplate} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Rename selected template" /><button className="secondary-button justify-center" onClick={renameTemplate} disabled={!selectedTemplate}>Rename template</button></div></article>
+              <article className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><p className="font-mono text-[10px] tracking-[0.14em] text-cyan-100">LOCAL AI KEYWORD HISTORY</p><p className="mt-1 text-xs leading-5 text-slate-300">Keywords are retained only in this browser after a successful server-verified AI assist. History is not a new AI result.</p>{keywordSuggestionHistory.length ? <div className="mt-3 space-y-2">{keywordSuggestionHistory.map((entry) => <div key={entry.id} className="rounded-md border border-white/10 bg-black/15 p-3"><p className="truncate text-xs font-medium text-white" title={entry.fileName}>{entry.title || entry.fileName}</p><p className="mt-1 line-clamp-2 text-[11px] leading-5 text-slate-400">{entry.keywords}</p><div className="mt-2 flex items-center justify-between gap-2"><span className="text-[10px] text-slate-500">{new Date(entry.createdAt).toLocaleDateString()}</span><button className="secondary-button px-2 py-1 text-[10px]" onClick={() => applyKeywordHistory(entry)}>Apply selected</button></div></div>)}</div> : <p className="mt-3 text-xs leading-5 text-slate-500">Successful AI keyword suggestions will appear here for browser-local reuse.</p>}</article>
               <article className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><p className="font-mono text-[10px] tracking-[0.14em] text-cyan-100">BATCH CATEGORY PRESETS</p><p className="mt-1 text-xs leading-5 text-slate-300">Choose a category, then set it on selected metadata cards or apply it across the batch.</p><div className="mt-3 grid gap-2 sm:grid-cols-2"><select value={batchCategory} onChange={(event) => setBatchCategory(event.target.value)} className="rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm text-white outline-none transition focus:border-cyan-300"><option value="">Choose category preset</option>{CATEGORY_PRESETS.map((category) => <option key={category} value={category}>{category}</option>)}</select><button className="secondary-button justify-center" onClick={() => applyBatchCategory("selected")}>Apply selected</button><button className="secondary-button justify-center" onClick={() => applyBatchCategory("all")}>Apply all</button><span className="self-center text-xs text-slate-500">{selectedItemIds.length} metadata card{selectedItemIds.length === 1 ? "" : "s"} selected</span></div></article>
             </div>
             <div className="grid gap-4 xl:grid-cols-2">{displayItems.map((item) => <MetadataEditor key={`metadata-${item.id}`} item={item} onChange={(patch) => updateMetadata(item.id, patch)} onAssist={() => requestAiAssist(item)} assistDisabled={authLoading || processing || (runAi.isPending && assistingItemId === item.id)} assistLabel={runAi.isPending && assistingItemId === item.id ? "Creating suggestions…" : hasPremiumAccess ? `AI title + keywords · ${stockMetadataCost} credits` : "Premium AI title + keywords"} selected={selectedItemIds.includes(item.id)} onToggleSelected={() => toggleItemSelection(item.id)} />)}</div>

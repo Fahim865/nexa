@@ -288,3 +288,11 @@
 - [x] Case-insensitive duplicate-keyword detector যোগ করে per-item metadata review-এ clear feedback দেখানো।
 - [x] Batch category presets যোগ করে selected files বা full batch-এ category apply করা।
 - [x] Focused tests, responsive validation, check/test/build ও production checkpoint release সম্পন্ন করা।
+
+## Adobe Stock workflow refinements
+
+- [x] Existing template persistence, AI metadata assist state এবং browser-local image processing helpers audit করা।
+- [x] Saved metadata templates-এর browser-local rename workflow যোগ করা।
+- [x] Per-image browser-local keyword suggestion history দেখানো ও current metadata apply behavior রাখা।
+- [x] Uploaded images-এর browser-local content fingerprint তৈরি করে exact duplicate image detector যোগ করা।
+- [x] Focused tests, responsive validation, check/test/build ও production release সম্পন্ন করা।

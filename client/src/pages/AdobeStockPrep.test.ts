@@ -29,6 +29,22 @@ describe("Adobe Stock Prep local workflow", () => {
     expect(prepSource).toContain("Apply selected");
   });
 
+  it("supports browser-local template renaming and retains only bounded keyword suggestion history", () => {
+    expect(prepSource).toContain("const KEYWORD_HISTORY_STORAGE_KEY = \"nexa:adobe-stock-keyword-suggestion-history\"");
+    expect(prepSource).toContain("const MAX_KEYWORD_HISTORY_ENTRIES = 20");
+    expect(prepSource).toContain("const renameTemplate = () =>");
+    expect(prepSource).toContain("A local metadata template already uses that name.");
+    expect(prepSource).toContain("LOCAL AI KEYWORD HISTORY");
+    expect(prepSource).toContain("History is not a new AI result.");
+  });
+
+  it("uses browser-local SHA-256 fingerprints for truthful exact duplicate detection", () => {
+    expect(prepSource).toContain('globalThis.crypto.subtle.digest("SHA-256"');
+    expect(prepSource).toContain("EXACT DUPLICATE DETECTOR");
+    expect(prepSource).toContain("No exact duplicate files found");
+    expect(prepSource).toContain("identical file bytes; it does not detect crops, re-encodes, edits or visually similar images");
+  });
+
   it("registers the workspace as an Image Tool at its direct route", () => {
     expect(registrySource).toContain('id: "adobe-stock-prep"');
     expect(registrySource).toContain('route: "/tools/adobe-stock-prep"');
