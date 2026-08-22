@@ -272,3 +272,11 @@
 - [x] Existing tool registry-এর উপযুক্ত categoryতে Adobe Stock preparation tool, direct route ও Orbit Studio-compatible workspace যোগ করা।
 - [x] Attached tool-এর real local behavior preserve করে validation, download/error state, tests ও responsive rendering যাচাই করা।
 - [x] Existing NEXA functionality অপরিবর্তিত রেখে check/test/build সম্পন্ন করা; production checkpoint release করা বাকি।
+
+## Adobe Stock preparation enhancements
+
+- [x] Existing Adobe Stock Prep metadata model, local export flow, AI Premium authorization ও current validation rules audit করা।
+- [x] Batch image metadata editor যোগ করে per-item title, description, keywords ও category editing CSV export-এ persist করা।
+- [x] Browser-local Adobe submission guideline checker যোগ করে only deterministic technical/content readiness guidance দেখানো।
+- [x] Existing server-protected AI provider দিয়ে Premium-only title ও keyword assist যোগ করে FREE state এবং failure state truthful রাখা।
+- [x] Focused tests, responsive validation, check/test/build ও production checkpoint release সম্পন্ন করা।
