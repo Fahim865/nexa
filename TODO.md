@@ -265,3 +265,10 @@
 - [x] Signed-in user-এর avatar/name/profile dropdown, account navigation ও secure sign-out action যোগ করা।
 - [x] Existing server-verified plan, credits, subscription/billing status এবং upgrade/manage actionsসহ `/account` workspace যোগ করা।
 - [x] Responsive UI tests, authenticated route checks ও check/test/build সম্পন্ন করা; production checkpoint release করা বাকি।
+
+## Adobe Stock preparation tool integration
+
+- [x] Attached `adobe-stock-prep.html` থেকে tool behavior, inputs, outputs ও local-processing requirements audit করা।
+- [x] Existing tool registry-এর উপযুক্ত categoryতে Adobe Stock preparation tool, direct route ও Orbit Studio-compatible workspace যোগ করা।
+- [x] Attached tool-এর real local behavior preserve করে validation, download/error state, tests ও responsive rendering যাচাই করা।
+- [x] Existing NEXA functionality অপরিবর্তিত রেখে check/test/build সম্পন্ন করা; production checkpoint release করা বাকি।

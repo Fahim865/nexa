@@ -260,6 +260,16 @@ export const TOOL_REGISTRY = defineToolRegistry([
     route: "/tools/image-metadata",
   },
   {
+    id: "adobe-stock-prep",
+    name: "Adobe Stock Prep",
+    category: "Image Tools",
+    description: "Prepare up to 20 images locally for measurable JPEG, resolution, file-size, metadata, and technical-quality checks.",
+    creditCost: 0,
+    status: "available",
+    icon: FileImage,
+    route: "/tools/adobe-stock-prep",
+  },
+  {
     id: "mp4-converter",
     name: "MP4 Converter",
     category: "Video & Audio Tools",
@@ -717,6 +727,7 @@ export const IMAGE_TOOL_IDS = [
   "image-converter",
   "image-rotator",
   "image-metadata",
+  "adobe-stock-prep",
 ] as const;
 
 export type ImageToolId = (typeof IMAGE_TOOL_IDS)[number];

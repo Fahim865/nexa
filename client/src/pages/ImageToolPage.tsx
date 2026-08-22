@@ -4,6 +4,7 @@
  */
 import { NexaMark } from "@/components/NexaMark";
 import type { ImageToolId, ToolDefinition } from "@/data/nexa";
+import AdobeStockPrep from "@/pages/AdobeStockPrep";
 import {
   asProcessedImage,
   downloadProcessedImage,
@@ -29,7 +30,7 @@ import { useLocation } from "wouter";
 type ImageToolProps = { tool: ToolDefinition };
 type CropRegion = { x: number; y: number; width: number; height: number };
 
-const IMAGE_TOOL_IDS: ImageToolId[] = ["image-upscaler", "image-compressor", "image-resizer", "image-cropper", "image-converter", "image-rotator", "image-metadata"];
+const IMAGE_TOOL_IDS: ImageToolId[] = ["image-upscaler", "image-compressor", "image-resizer", "image-cropper", "image-converter", "image-rotator", "image-metadata", "adobe-stock-prep"];
 
 function ImageToolShell({ tool, children }: ImageToolProps & { children: ReactNode }) {
   const [, setLocation] = useLocation();
@@ -267,6 +268,7 @@ export default function ImageToolPage({ tool }: ImageToolProps) {
     case "image-converter": return <Converter tool={tool} />;
     case "image-rotator": return <Rotator tool={tool} />;
     case "image-metadata": return <Metadata tool={tool} />;
+    case "adobe-stock-prep": return <AdobeStockPrep tool={tool} />;
     default: return null;
   }
 }
