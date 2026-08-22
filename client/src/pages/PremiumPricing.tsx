@@ -20,7 +20,7 @@ export default function PremiumPricing() {
       try {
         await openPaddleTransactionCheckout({
           transactionId: session.id,
-          successUrl: `${window.location.origin}/welcome`,
+          successUrl: session.successUrl,
           email: user?.email ?? undefined,
         });
       } catch (error) {
@@ -44,11 +44,7 @@ export default function PremiumPricing() {
       window.location.assign(`/sign-in?returnTo=${returnTo}`);
       return;
     }
-    checkout.mutate({
-      plan,
-      successUrl: `${window.location.origin}/welcome`,
-      cancelUrl: `${window.location.origin}/premium?checkout=cancel`,
-    });
+    checkout.mutate({ plan });
   };
 
   return <main className="premium-pricing-page">

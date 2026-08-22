@@ -9,8 +9,6 @@ export type BillingPlan = z.infer<typeof billingPlanSchema>;
  */
 export const billingCheckoutInputSchema = z.object({
   plan: billingPlanSchema,
-  successUrl: z.string().url().max(2_000),
-  cancelUrl: z.string().url().max(2_000),
 }).strict();
 
 export const billingSessionInputSchema = z.object({
@@ -54,6 +52,9 @@ export type BillingCheckoutRequest = z.infer<typeof billingCheckoutInputSchema> 
 export type BillingCheckoutSession = {
   id: string;
   redirectUrl: string;
+  /** Canonical server-owned URLs: never derived from the current browser origin. */
+  successUrl: string;
+  cancelUrl: string;
 };
 
 export type BillingPortalSession = {

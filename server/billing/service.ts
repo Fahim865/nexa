@@ -71,7 +71,7 @@ export async function getBillingStatusForUser(userId: number) {
 
 export async function createCheckoutForUser(
   user: User,
-  input: { plan: "monthly" | "annual"; successUrl: string; cancelUrl: string },
+  input: { plan: "monthly" | "annual" },
 ) {
   const provider = requireBillingProvider();
   const catalog = getPremiumCatalog();

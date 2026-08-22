@@ -99,6 +99,13 @@ function assertSameAppOrigin(url: string, appOrigin: string) {
   }
 }
 
+function configuredCheckoutReturnUrls(appOrigin: string) {
+  return {
+    successUrl: new URL("/welcome", appOrigin).toString(),
+    cancelUrl: new URL("/premium?checkout=cancel", appOrigin).toString(),
+  };
+}
+
 async function paddleRequest(path: string, init: RequestInit = {}) {
   const { apiKey } = paddleConfig();
   const response = await fetch(`${paddleBaseUrl()}${path}`, {
@@ -210,8 +217,9 @@ export function createPaddleBillingProvider(): BillingProvider {
     name: "paddle",
     async createCheckoutSession(request) {
       const { appOrigin } = paddleConfig();
-      assertSameAppOrigin(request.successUrl, appOrigin);
-      assertSameAppOrigin(request.cancelUrl, appOrigin);
+      // Browser previews can use a different host. Checkout returns must never
+      // inherit that host; they are always derived from PADDLE_APP_URL.
+      const returnUrls = configuredCheckoutReturnUrls(appOrigin);
       const priceId = paddlePriceId(request.plan);
       const transaction = await paddleRequest("/transactions", {
         method: "POST",
@@ -225,7 +233,7 @@ export function createPaddleBillingProvider(): BillingProvider {
       const redirectUrl = stringValue(checkout?.url);
       const id = stringValue(transaction.id);
       if (!id || !redirectUrl) throw new BillingProviderError("Paddle did not return a hosted checkout URL.", "BILLING_PROVIDER_ERROR");
-      return { id, redirectUrl };
+      return { id, redirectUrl, ...returnUrls };
     },
     async verifyCheckoutSession(sessionId, applicationUserId) {
       const transaction = await paddleRequest(`/transactions/${encodeURIComponent(sessionId)}`);

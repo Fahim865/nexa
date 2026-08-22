@@ -234,15 +234,21 @@
 - [x] Uploaded `nexa-premium-site-v2-fixed.zip` ও `pasted_content_2.txt` active project-এর সঙ্গে তুলনা করে source of truth নির্ধারণ করা।
 - [x] Google OAuth ও single Premium monthly/annual Paddle configuration server-only boundaryসহ audit করা।
 - [x] Production `/sign-in`, `/tools`, `/premium`, Google start route ও OAuth callback behavior verify করা; confirmed defect ছাড়া কোনো unrelated change না করা।
-- [ ] Confirmed production fix থাকলে check/test/build চালিয়ে published checkpoint তৈরি করা এবং remaining external Paddle action স্পষ্টভাবে রিপোর্ট করা।
+- [x] Confirmed production fix থাকলে check/test/build চালিয়ে published checkpoint তৈরি করা এবং remaining external Paddle action স্পষ্টভাবে রিপোর্ট করা।
 
 ## Production end-to-end verification
 
 - [x] Production Google sign-in সম্পন্ন করে authenticated session, persistent account এবং `/tools` rendering যাচাই করা।
 - [ ] Authenticated user হিসেবে monthly ও annual Paddle Sandbox checkout launch, completion এবং `/welcome` status যাচাই করা।
 - [ ] Signed Paddle webhook, Premium entitlement, 5,000 credit issuance এবং cancellation/payment-failure lifecycle যাচাই করা।
-- [ ] শুধুমাত্র confirmed defect থাকলে minimal fix, regression tests, check/test/build ও published checkpoint তৈরি করা।
+- [x] শুধুমাত্র confirmed defect থাকলে minimal fix, regression tests, check/test/build ও published checkpoint তৈরি করা।
 - [ ] Reported production Google sign-in button failure reproduce করে root cause নির্ণয় ও minimal fix প্রয়োগ করা।
 - [ ] Connected Paddle Sandbox Dashboard থেকে public client token ও Default payment link configuration যাচাই করা।
 - [x] Server-created Paddle transaction-এর জন্য client-side checkout launcher implement করা; production payment surface launch এখনো release-এর পরে verify করা বাকি।
 - [ ] Paddle.js overlay-এর production launch, Sandbox payment completion, `/welcome` redirect এবং signed webhook entitlement event যাচাই করা।
+
+## Paddle checkout return URL repair
+
+- [x] Paddle-এর configured NEXA application origin ছাড়া অন্য origin থেকে তৈরি হওয়া checkout return URL error reproduce ও root cause নির্ণয় করা।
+- [x] Server-owned `PADDLE_APP_URL` origin দিয়ে checkout success/cancel URL normalize করে Paddle validation-compliant করা।
+- [x] Regression test, check/test/build দিয়ে return URL repair যাচাই করে production checkpoint release করা।

@@ -60,12 +60,12 @@ describe("Paddle adapter", () => {
 
     const checkout = await createPaddleBillingProvider().createCheckoutSession({
       plan: "monthly", userId: 17, email: "creator@example.com", monthlyPriceUsd: 10, monthlyCreditAllowance: 5000,
-      successUrl: "https://nexapremium-mpo86vkq.manus.space/premium?checkout=return",
-      cancelUrl: "https://nexapremium-mpo86vkq.manus.space/premium?checkout=cancel",
     });
 
     const request = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));
     expect(checkout.id).toBe("txn_monthly");
+    expect(checkout.successUrl).toBe("https://nexapremium-mpo86vkq.manus.space/welcome");
+    expect(checkout.cancelUrl).toBe("https://nexapremium-mpo86vkq.manus.space/premium?checkout=cancel");
     expect(request.items).toEqual([{ price_id: "pri_monthly", quantity: 1 }]);
     expect(request.custom_data).toEqual({ nexa_user_id: "17", nexa_plan: "monthly" });
     expect(fetchMock.mock.calls[0]?.[0]).toBe("https://sandbox-api.paddle.com/transactions");
@@ -80,8 +80,6 @@ describe("Paddle adapter", () => {
 
     await createPaddleBillingProvider().createCheckoutSession({
       plan: "annual", userId: 17, email: null, monthlyPriceUsd: 10, monthlyCreditAllowance: 5000,
-      successUrl: "https://nexapremium-mpo86vkq.manus.space/premium?checkout=return",
-      cancelUrl: "https://nexapremium-mpo86vkq.manus.space/premium?checkout=cancel",
     });
 
     const request = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body));

@@ -20,6 +20,7 @@ describe("PremiumPricing checkout access", () => {
   });
 
   it("returns from provider checkout to the dedicated truthful welcome page", () => {
-    expect(premiumPricingSource).toContain("successUrl: `${window.location.origin}/welcome`");
+    expect(premiumPricingSource).toContain("successUrl: session.successUrl");
+    expect(premiumPricingSource).not.toContain("window.location.origin}/welcome");
   });
 });
