@@ -3,6 +3,7 @@
  * Signal Azure actions, and quiet orbital motion—not a generic SaaS grid.
  */
 import { NexaMark } from "@/components/NexaMark";
+import { NexaAccountMenu } from "@/components/NexaAccountMenu";
 import {
   CommandDialog,
   CommandEmpty,
@@ -151,9 +152,7 @@ export default function Home() {
               <span>Search</span>
               <kbd><Command size={11} /> K</kbd>
             </button>
-            <button className="nav-cta" onClick={() => setLocation("/sign-in")}>
-              Sign in <ArrowUpRight size={16} />
-            </button>
+            <NexaAccountMenu />
           </div>
 
           <button className="icon-button sm:hidden" onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle navigation menu">
@@ -168,8 +167,8 @@ export default function Home() {
             <button onClick={() => { setMenuOpen(false); setSearchOpen(true); }}>
               <Search size={16} /> Search tools
             </button>
-            <button onClick={() => { setMenuOpen(false); setLocation("/sign-in"); }}>
-              <LockKeyhole size={16} /> Sign in
+            <button onClick={() => { setMenuOpen(false); setLocation("/account"); }}>
+              <LockKeyhole size={16} /> Account
             </button>
           </div>
         ) : null}

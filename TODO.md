@@ -252,3 +252,16 @@
 - [x] Paddle-এর configured NEXA application origin ছাড়া অন্য origin থেকে তৈরি হওয়া checkout return URL error reproduce ও root cause নির্ণয় করা।
 - [x] Server-owned `PADDLE_APP_URL` origin দিয়ে checkout success/cancel URL normalize করে Paddle validation-compliant করা।
 - [x] Regression test, check/test/build দিয়ে return URL repair যাচাই করে production checkpoint release করা।
+
+## Production Google sign-in error repair
+
+- [ ] Reported production Google sign-in error reproduce করে browser, callback, session ও server logs থেকে exact root cause নির্ণয় করা।
+- [ ] Existing OAuth state, PKCE, callback URI ও server-only secret boundary বজায় রেখে minimal sign-in fix করা।
+- [ ] Google OAuth regression tests, check/test/build, production release ও `/tools` post-login rendering পুনরায় যাচাই করা।
+
+## Authenticated account and billing workspace
+
+- [x] Existing authenticated header, account query, subscription status ও billing route capabilities audit করা।
+- [x] Signed-in user-এর avatar/name/profile dropdown, account navigation ও secure sign-out action যোগ করা।
+- [x] Existing server-verified plan, credits, subscription/billing status এবং upgrade/manage actionsসহ `/account` workspace যোগ করা।
+- [x] Responsive UI tests, authenticated route checks ও check/test/build সম্পন্ন করা; production checkpoint release করা বাকি।

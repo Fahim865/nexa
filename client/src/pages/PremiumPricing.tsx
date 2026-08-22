@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ArrowLeft, Check, CreditCard, Crown, Loader2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { NexaAccountMenu } from "@/components/NexaAccountMenu";
 import { trpc } from "@/lib/trpc";
 import { openPaddleTransactionCheckout } from "@/lib/paddleCheckout";
 
@@ -50,7 +51,7 @@ export default function PremiumPricing() {
   return <main className="premium-pricing-page">
     <div className="orbital-wash orbital-wash--pricing" aria-hidden="true" />
     <section className="premium-pricing-shell">
-      <Link href="/" className="tool-back-link"><ArrowLeft size={16} /> Back to NEXA</Link>
+      <div className="flex items-center justify-between gap-4"><Link href="/" className="tool-back-link"><ArrowLeft size={16} /> Back to NEXA</Link><NexaAccountMenu compact /></div>
       <header className="premium-pricing-header">
         <span className="premium-eyebrow"><Sparkles size={14} /> NEXA PREMIUM</span>
         <h1>More creative output.<br /><em>One clear plan.</em></h1>

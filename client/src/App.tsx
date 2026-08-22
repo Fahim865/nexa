@@ -8,6 +8,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 
+const Account = lazy(() => import("@/pages/Account"));
 const AiCreatorToolPage = lazy(() => import("@/pages/AiCreatorToolPage"));
 const DocumentUtilityToolPage = lazy(() => import("@/pages/DocumentUtilityToolPage"));
 const ImageToolPage = lazy(() => import("@/pages/ImageToolPage"));
@@ -130,6 +131,7 @@ function Router() {
         <Route path="/tools/all" component={AllToolsRoute} />
         <Route path="/tools" component={ToolIndexRoute} />
         <Route path="/sign-in" component={SignIn} />
+        <Route path="/account" component={Account} />
         <Route path="/premium" component={PremiumPricing} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/privacy" component={PrivacyPolicyRoute} />

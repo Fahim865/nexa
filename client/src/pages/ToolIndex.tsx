@@ -3,6 +3,7 @@
  * of a single unstructured wall of tools.
  */
 import { NexaMark } from "@/components/NexaMark";
+import { NexaAccountMenu } from "@/components/NexaAccountMenu";
 import {
   FEATURED_AI_TOOL_IDS,
   getToolById,
@@ -108,7 +109,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
             <a href="/tools/all" aria-current={mode === "all" ? "page" : undefined}>All tools</a>
             <a href="/premium">Premium</a>
           </nav>
-          <button className="discovery-nav__back" type="button" onClick={() => setLocation("/")}><ArrowLeft size={15} /> Home</button>
+          <div className="flex items-center gap-2"><NexaAccountMenu compact /><button className="discovery-nav__back" type="button" onClick={() => setLocation("/")}><ArrowLeft size={15} /> Home</button></div>
         </div>
       </header>
 
