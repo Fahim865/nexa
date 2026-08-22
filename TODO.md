@@ -235,3 +235,14 @@
 - [x] Google OAuth ও single Premium monthly/annual Paddle configuration server-only boundaryসহ audit করা।
 - [x] Production `/sign-in`, `/tools`, `/premium`, Google start route ও OAuth callback behavior verify করা; confirmed defect ছাড়া কোনো unrelated change না করা।
 - [ ] Confirmed production fix থাকলে check/test/build চালিয়ে published checkpoint তৈরি করা এবং remaining external Paddle action স্পষ্টভাবে রিপোর্ট করা।
+
+## Production end-to-end verification
+
+- [x] Production Google sign-in সম্পন্ন করে authenticated session, persistent account এবং `/tools` rendering যাচাই করা।
+- [ ] Authenticated user হিসেবে monthly ও annual Paddle Sandbox checkout launch, completion এবং `/welcome` status যাচাই করা।
+- [ ] Signed Paddle webhook, Premium entitlement, 5,000 credit issuance এবং cancellation/payment-failure lifecycle যাচাই করা।
+- [ ] শুধুমাত্র confirmed defect থাকলে minimal fix, regression tests, check/test/build ও published checkpoint তৈরি করা।
+- [ ] Reported production Google sign-in button failure reproduce করে root cause নির্ণয় ও minimal fix প্রয়োগ করা।
+- [ ] Connected Paddle Sandbox Dashboard থেকে public client token ও Default payment link configuration যাচাই করা।
+- [x] Server-created Paddle transaction-এর জন্য client-side checkout launcher implement করা; production payment surface launch এখনো release-এর পরে verify করা বাকি।
+- [ ] Paddle.js overlay-এর production launch, Sandbox payment completion, `/welcome` redirect এবং signed webhook entitlement event যাচাই করা।
