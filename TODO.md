@@ -310,3 +310,10 @@
 - [x] User-provided FINEMIND AI reference থেকে compact circular logo badge তৈরি করা।
 - [x] Header ও footer/shared logo slots-এ circular badge প্রয়োগ করা; অন্য UI বা functionality অপরিবর্তিত রাখা।
 - [x] Responsive visual verification, check/test/build ও production release সম্পন্ন করা।
+
+## FINEMIND AI header branding polish
+
+- [x] Shared header logo markup, existing spacing এবং favicon configuration পর্যালোচনা করা।
+- [x] Header logo-তে subtle scale/glow hover effect এবং FINEMIND AI text spacing refinement প্রয়োগ করা।
+- [x] Browser tab favicon-এ current circular FINEMIND AI logo প্রয়োগ করা।
+- [x] Responsive visual validation, browser metadata check, test/build ও production release সম্পন্ন করা।

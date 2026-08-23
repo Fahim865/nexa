@@ -13,14 +13,14 @@ export function NexaMark({
   const source = "/manus-storage/finemind-ai-circular-badge_6c5f776e.png";
 
   return (
-    <div className={`flex items-center gap-2 ${className}`} aria-label="FINEMIND AI home">
+    <div className={`group flex items-center gap-2.5 ${className}`} aria-label="FINEMIND AI home">
       <img
-        className={`h-10 w-10 shrink-0 rounded-full object-contain ${imageClassName}`}
+        className={`h-10 w-10 shrink-0 rounded-full object-contain transition-[transform,filter] duration-200 [transition-timing-function:cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.06] group-hover:drop-shadow-[0_0_10px_rgba(56,189,248,0.65)] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${imageClassName}`}
         src={source}
         alt="FINEMIND AI circular logo"
       />
       {withWordmark ? (
-        <span className="whitespace-nowrap font-semibold text-[0.7rem] tracking-[0.18em] text-slate-100">
+        <span className="whitespace-nowrap font-semibold text-[0.7rem] tracking-[0.16em] text-slate-100">
           FINEMIND <span className="text-sky-300">AI</span>
         </span>
       ) : null}
