@@ -317,3 +317,10 @@
 - [x] Header logo-তে subtle scale/glow hover effect এবং FINEMIND AI text spacing refinement প্রয়োগ করা।
 - [x] Browser tab favicon-এ current circular FINEMIND AI logo প্রয়োগ করা।
 - [x] Responsive visual validation, browser metadata check, test/build ও production release সম্পন্ন করা।
+
+## FINEMIND AI logo and hero wordmark refinement
+
+- [x] Current shared logo hover styling এবং homepage hero brand placement পর্যালোচনা করা।
+- [x] Header logo hover-এ reduced glow ও subtle shadow প্রয়োগ করা।
+- [x] Header logo-এর পাশের wordmark সরিয়ে homepage hero-এর উপরে বড় FINEMIND AI wordmark প্রয়োগ করা।
+- [x] Responsive visual validation, focused regression test, check/build ও production release সম্পন্ন করা।
