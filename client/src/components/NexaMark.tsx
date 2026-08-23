@@ -10,16 +10,18 @@ export function NexaMark({
   imageClassName = "",
   withWordmark = true,
 }: NexaMarkProps) {
+  const source = withWordmark
+    ? "/manus-storage/finemind-ai-lockup_4094cc3a.jpg"
+    : "/manus-storage/finemind-ai-mark_eb8c5537.jpg";
+  const defaultSize = withWordmark ? "h-11 w-24" : "h-11 w-11";
+
   return (
-    <div className={`flex items-center gap-3 ${className}`} aria-label="NEXA home">
+    <div className={`flex items-center ${className}`} aria-label="FINEMIND AI home">
       <img
-        className={`h-11 w-11 shrink-0 object-contain ${imageClassName}`}
-        src="/manus-storage/nexa-mark_9240b89d.png"
-        alt="NEXA nexus mark"
+        className={`${defaultSize} shrink-0 object-contain ${imageClassName}`}
+        src={source}
+        alt={withWordmark ? "FINEMIND AI logo" : "FINEMIND AI mark"}
       />
-      {withWordmark ? (
-        <span className="nexa-wordmark text-[1.08rem] tracking-[0.24em] text-white">NEXA</span>
-      ) : null}
     </div>
   );
 }

@@ -20,13 +20,13 @@ export default function ToolPlaceholder() {
   if (!tool) {
     return (
       <div className="tool-route-page">
-        <header className="nexa-nav tool-route-nav"><a href="/" aria-label="Return to NEXA home"><NexaMark /></a></header>
+        <header className="nexa-nav tool-route-nav"><a href="/" aria-label="Return to FINEMIND AI home"><NexaMark /></a></header>
         <main className="tool-route-main">
           <section className="tool-route-panel">
             <p className="section-index"><span /> TOOL ROUTE</p>
             <CircleAlert size={26} className="tool-route-icon" />
             <h1>This tool route is <em>not registered.</em></h1>
-            <p>The address does not match a current NEXA tool definition. Return to the Tool Index to browse the registered routes.</p>
+            <p>The address does not match a current FINEMIND AI tool definition. Return to the Tool Index to browse the registered routes.</p>
             <button className="primary-button" onClick={() => setLocation("/#tool-index")}><ArrowLeft size={17} /> Back to tool index</button>
           </section>
         </main>
@@ -47,7 +47,7 @@ export default function ToolPlaceholder() {
   return (
     <div className="tool-route-page">
       <header className="nexa-nav tool-route-nav">
-        <a href="/" aria-label="Return to NEXA home"><NexaMark /></a>
+        <a href="/" aria-label="Return to FINEMIND AI home"><NexaMark /></a>
         <a className="secondary-button tool-route-home" href="/#tool-index"><ArrowLeft size={16} /> Tool index</a>
       </header>
       <main className="tool-route-main">
@@ -69,7 +69,7 @@ export default function ToolPlaceholder() {
           <div className="tool-route-notice"><CircleAlert size={17} /><p>No live tool functionality is enabled on this page yet. This route is intentionally a transparent placeholder until the real implementation is added.</p></div>
           <div className="tool-route-actions">
             <button className="primary-button" onClick={() => setLocation("/#tool-index")}><ArrowLeft size={17} /> Browse registered tools</button>
-            <a className="secondary-button" href="/"><Home size={16} /> NEXA home <ArrowUpRight size={15} /></a>
+            <a className="secondary-button" href="/"><Home size={16} /> FINEMIND AI home <ArrowUpRight size={15} /></a>
           </div>
         </section>
       </main>

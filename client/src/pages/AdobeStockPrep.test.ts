@@ -17,7 +17,7 @@ describe("Adobe Stock Prep local workflow", () => {
     expect(prepSource).toContain("JSZip");
     expect(prepSource).toContain("Technical check only.");
     expect(prepSource).toContain("not an approval prediction");
-    expect(prepSource).toContain("nexa-adobe-stock-technical-report.csv");
+    expect(prepSource).toContain("finemind-ai-adobe-stock-technical-report.csv");
   });
 
   it("keeps metadata templates, duplicate detection and batch category actions browser-local", () => {

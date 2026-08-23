@@ -296,3 +296,10 @@
 - [x] Per-image browser-local keyword suggestion history দেখানো ও current metadata apply behavior রাখা।
 - [x] Uploaded images-এর browser-local content fingerprint তৈরি করে exact duplicate image detector যোগ করা।
 - [x] Focused tests, responsive validation, check/test/build ও production release সম্পন্ন করা।
+
+## FINEMIND AI brand replacement
+
+- [x] Existing NEXA name, logo component এবং global brand metadata usage শনাক্ত করা।
+- [x] User-provided FINEMIND AI logo asset নিরাপদ web asset হিসেবে যোগ করা।
+- [x] Existing logo slots ও visible NEXA brand labels-এ FINEMIND AI প্রয়োগ করা; অন্য UI বা functionality অপরিবর্তিত রাখা।
+- [x] Focused regression test, responsive verification, check/test/build ও production release সম্পন্ন করা।

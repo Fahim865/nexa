@@ -16,7 +16,7 @@ export default function Welcome() {
   const heading = isPremium ? "Premium is active." : "We’re confirming your subscription.";
   const description = isPremium
     ? "Your server-verified Premium entitlement and current AI credit balance are now available in your workspace."
-    : "A return from checkout never activates Premium by itself. Your access changes only after NEXA receives and verifies the Paddle subscription event.";
+    : "A return from checkout never activates Premium by itself. Your access changes only after FINEMIND AI receives and verifies the Paddle subscription event.";
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#06101d] px-5 py-5 text-[#f5f8ff] sm:px-8 sm:py-8">
@@ -24,7 +24,7 @@ export default function Welcome() {
         <div className="absolute -right-32 -top-32 size-[440px] rounded-full border border-[#59B5FF]/15" aria-hidden="true" />
         <div className="absolute -bottom-44 -left-36 size-[460px] rounded-full border border-[#59B5FF]/10" aria-hidden="true" />
         <section className="relative z-10 max-w-2xl">
-          <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] text-[#9ad3ff]"><Crown size={14} /> NEXA PREMIUM</p>
+          <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] text-[#9ad3ff]"><Crown size={14} /> FINEMIND AI PREMIUM</p>
           <div className="mt-7 flex size-14 items-center justify-center rounded-2xl border border-[#59B5FF]/25 bg-[#59B5FF]/10 text-[#8dceff]">
             {isPremium ? <CheckCircle2 size={28} /> : <Clock3 size={28} />}
           </div>

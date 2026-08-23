@@ -84,13 +84,13 @@ function defineToolRegistry<const T extends readonly ToolDefinition[]>(tools: T)
 
 export const PLAN_CONFIG = {
   free: {
-    name: "NEXA Free",
+    name: "FINEMIND AI Free",
     priceLabel: "$0",
     creditsLabel: "Browse all AI workflows",
     detail: "Explore every AI tool and its secure request workspace before upgrading.",
   },
   premium: {
-    name: "NEXA Premium",
+    name: "FINEMIND AI Premium",
     priceLabel: "$10",
     cadence: "/ month",
     creditsLabel: "Secure AI execution",
@@ -866,7 +866,7 @@ export type ToolDiscoveryCategory = {
 };
 
 export const TOOL_DISCOVERY_CATEGORIES: readonly ToolDiscoveryCategory[] = [
-  { id: "all", label: "All tools", description: "Every registered NEXA workspace", accent: "#59B5FF" },
+  { id: "all", label: "All tools", description: "Every registered FINEMIND AI workspace", accent: "#59B5FF" },
   { id: "ai", label: "AI Tools", description: "General-purpose protected intelligence", accent: "#8B8CFF", categories: ["AI"] },
   { id: "image", label: "Image Tools", description: "Local image preparation and inspection", accent: "#54D6C2", categories: ["Image Tools"] },
   { id: "video", label: "Video Tools", description: "Browser-local and secure media workflows", accent: "#FF9F76", match: (tool) => tool.category === "Video & Audio Tools" && tool.route.startsWith("/tools/video/") },

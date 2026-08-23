@@ -562,7 +562,7 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
       const result = item.result!;
       return [csvField(item.source.file.name), csvField(item.metadata.title), csvField(item.metadata.description), csvField(item.metadata.keywords), csvField(item.metadata.category), ((result.width * result.height) / 1_000_000).toFixed(1), csvField(readableBytes(result.size)), `${result.score}/5`, csvField(result.analysis.sharpness), csvField(result.analysis.noise)].join(",");
     });
-    downloadBlob(new Blob([header, rows.join("\n")], { type: "text/csv;charset=utf-8" }), "nexa-adobe-stock-metadata.csv");
+    downloadBlob(new Blob([header, rows.join("\n")], { type: "text/csv;charset=utf-8" }), "finemind-ai-adobe-stock-metadata.csv");
     setStatus("Adobe Stock metadata CSV download started.");
   };
 
@@ -570,7 +570,7 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
     if (!items.length) return;
     const header = "Filename,Check,Status,Measured guidance\n";
     const rows = items.flatMap((item) => getSubmissionChecks(item).map((check) => [csvField(item.source.file.name), csvField(check.label), check.status, csvField(check.detail)].join(",")));
-    downloadBlob(new Blob([header, rows.join("\n")], { type: "text/csv;charset=utf-8" }), "nexa-adobe-stock-technical-report.csv");
+    downloadBlob(new Blob([header, rows.join("\n")], { type: "text/csv;charset=utf-8" }), "finemind-ai-adobe-stock-technical-report.csv");
     setStatus("Technical guideline report download started. This report is not an approval decision.");
   };
 
@@ -578,7 +578,7 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
   const Icon = tool.icon;
   return <div className="tool-route-page local-tool-page image-tool-page">
     <header className="nexa-nav tool-route-nav">
-      <a href="/" aria-label="Return to NEXA home"><NexaMark /></a>
+      <a href="/" aria-label="Return to FINEMIND AI home"><NexaMark /></a>
       <a className="secondary-button tool-route-home" href="/#tool-index"><ArrowLeft size={16} /> Tool index</a>
     </header>
     <main className="local-tool-main image-tool-main">
@@ -621,7 +621,7 @@ export default function AdobeStockPrep({ tool }: { tool: ToolDefinition }) {
           </section>
           <section className="mt-6 border-t border-white/10 pt-6"><div className="mb-4 flex items-center gap-3"><span className="rounded-md border border-amber-300/30 bg-amber-300/10 p-2 text-amber-100"><ShieldAlert size={16} /></span><div><p className="font-mono text-[10px] tracking-[0.14em] text-amber-100">SUBMISSION GUIDELINE CHECKER</p><h2 className="text-base font-semibold text-white">Measured preparation checks — not an approval prediction</h2></div></div><div className="grid gap-4 xl:grid-cols-2">{displayItems.map((item) => <article key={`checks-${item.id}`} className="rounded-xl border border-white/10 bg-black/15 p-4"><h3 className="truncate text-sm font-semibold text-white" title={item.source.file.name}>{item.source.file.name}</h3><dl className="mt-3 space-y-3">{getSubmissionChecks(item).map((check) => <div key={check.label} className="grid gap-1 border-t border-white/5 pt-3 first:border-0 first:pt-0 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]"><dt className={`font-mono text-[11px] ${statusStyle(check.status)}`}>{check.label}</dt><dd className="text-xs leading-5 text-slate-300">{check.detail}</dd></div>)}</dl></article>)}</div></section>
           <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.035] p-4"><div className="flex flex-wrap gap-3"><button className="primary-button" onClick={() => void processAll()} disabled={processing}>{processing ? <><LoaderCircle className="image-spinner" size={16} /> Preparing images…</> : <><Check size={16} /> Make images technically ready</>}</button><button className="secondary-button" onClick={() => void downloadZip()} disabled={!preparedItems.length || processing}><FileDown size={15} /> Download ZIP</button><button className="secondary-button" onClick={downloadCsv} disabled={!preparedItems.length || processing}><Download size={15} /> Export metadata CSV</button><button className="secondary-button" onClick={downloadTechnicalReport} disabled={!items.length || processing}><ShieldAlert size={15} /> Export technical report</button></div>{processing ? <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-cyan-300 transition-all" style={{ width: `${progress}%` }} /></div> : null}<p className={`mt-3 font-mono text-xs ${processing ? "text-cyan-200" : "text-slate-400"}`}>{status}</p></div>
-        </div> : <div className="image-workspace-hint">Your source images are processed in this browser tab. Nothing is sent to NEXA or Adobe.</div>}
+        </div> : <div className="image-workspace-hint">Your source images are processed in this browser tab. Nothing is sent to FINEMIND AI or Adobe.</div>}
         <section className="mt-5 rounded-xl border border-white/10 bg-white/[0.025] p-5"><h2 className="text-base font-semibold text-white">Manual checks that remain yours</h2><ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-300"><li>Inspect hands, eyes, teeth and text at 100–200% for artifacts.</li><li>Remove watermarks, logos, timestamps and protected content before submission.</li><li>Confirm releases, intellectual-property rights and marketplace-specific guidelines.</li><li>Review composition and commercial usefulness; technical preparation cannot judge these.</li></ul></section>
       </section>
     </main>

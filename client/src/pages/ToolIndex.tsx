@@ -102,7 +102,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
     <div className="tool-discovery-page">
       <header className="nexa-nav discovery-nav">
         <div className="discovery-nav__inner">
-          <a href="/" className="group" aria-label="Return to NEXA home"><NexaMark imageClassName="transition-transform duration-200 group-hover:rotate-6" /></a>
+          <a href="/" className="group" aria-label="Return to FINEMIND AI home"><NexaMark imageClassName="transition-transform duration-200 group-hover:rotate-6" /></a>
           <nav aria-label="Tool discovery navigation">
             <a href="/">Home</a>
             <a href="/tools" aria-current={mode === "overview" ? "page" : undefined}>Discover</a>
@@ -118,7 +118,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
           <div className="discovery-hero__copy">
             <p className="section-index"><span /> TOOL DISCOVERY / {mode === "all" ? "FULL CATALOG" : "CURATED INDEX"}</p>
             <h1>{mode === "all" ? <>Every tool.<br /><em>Clearer paths.</em></> : <>Find the right<br /><em>next tool.</em></>}</h1>
-            <p>Search NEXA by outcome, format, or workflow. The catalog groups tools by the work they support, while every card stays connected to its canonical route.</p>
+            <p>Search FINEMIND AI by outcome, format, or workflow. The catalog groups tools by the work they support, while every card stays connected to its canonical route.</p>
           </div>
           <div className="discovery-orbit" aria-hidden="true"><i /><i /><i /><b><Search size={21} /></b></div>
         </section>
@@ -126,7 +126,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
         <section className="discovery-control-panel" aria-label="Tool search and category filters">
           <label className="discovery-search-field">
             <Search size={20} aria-hidden="true" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by tool, task, format, or keyword…" type="search" aria-label="Search NEXA tools" autoComplete="off" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by tool, task, format, or keyword…" type="search" aria-label="Search FINEMIND AI tools" autoComplete="off" />
             {query ? <button type="button" onClick={() => setQuery("")} aria-label="Clear tool search"><X size={16} /></button> : null}
           </label>
           <div className="discovery-filter-strip" role="list" aria-label="Tool categories">
@@ -158,7 +158,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
             <ToolSection
               label="01 / START HERE"
               title="Popular tools"
-              description="Curated shortcuts for common NEXA workflows; this is not a fabricated usage ranking."
+              description="Curated shortcuts for common FINEMIND AI workflows; this is not a fabricated usage ranking."
               tools={popularTools}
               action={<button type="button" className="discovery-inline-link" onClick={() => setLocation("/tools/all")}>View all tools <ArrowRight size={16} /></button>}
             />
@@ -192,7 +192,7 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
         ) : (
           <ToolSection
             label={mode === "all" ? "ALL REGISTERED TOOLS" : "SEARCH RESULTS"}
-            title={isFiltering ? <>Results for <em>{query || activeMetadata.label}</em></> : "The full NEXA catalog"}
+            title={isFiltering ? <>Results for <em>{query || activeMetadata.label}</em></> : "The full FINEMIND AI catalog"}
             description={isFiltering ? "Search checks canonical names, registry descriptions, routes, categories, and common workflow keywords." : "Use the search field or a category filter to narrow the complete registry."}
             tools={results}
             empty={<div className="discovery-empty-state"><Layers3 size={21} /><div><strong>No registered tool matches this search.</strong><p>Try a broader task or reset the current category filter.</p></div></div>}

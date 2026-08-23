@@ -38,7 +38,7 @@ function ImageToolShell({ tool, children }: ImageToolProps & { children: ReactNo
   return (
     <div className="tool-route-page local-tool-page image-tool-page">
       <header className="nexa-nav tool-route-nav">
-        <a href="/" aria-label="Return to NEXA home"><NexaMark /></a>
+        <a href="/" aria-label="Return to FINEMIND AI home"><NexaMark /></a>
         <a className="secondary-button tool-route-home" href="/#tool-index"><ArrowLeft size={16} /> Tool index</a>
       </header>
       <main className="local-tool-main image-tool-main">

@@ -131,7 +131,7 @@ export default function Home() {
     <div className="nexa-site min-h-screen overflow-x-clip bg-[#06101d] text-[#f5f8ff] selection:bg-[#59B5FF]/30 selection:text-white">
       <header className="nexa-nav">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-4 lg:px-10">
-          <a href="#top" className="group" aria-label="Go to NEXA home">
+          <a href="#top" className="group" aria-label="Go to FINEMIND AI home">
             <NexaMark imageClassName="transition-transform duration-200 group-hover:rotate-6" />
           </a>
 
@@ -176,14 +176,14 @@ export default function Home() {
 
       <main id="top">
         <section className="hero-section">
-          <img className="hero-art" src="/manus-storage/nexa-orbit-hero_2ebd6525.jpg" alt="Abstract orbital NEXA workspace artwork" />
+          <img className="hero-art" src="/manus-storage/nexa-orbit-hero_2ebd6525.jpg" alt="Abstract orbital FINEMIND AI workspace artwork" />
           <div className="hero-shade" />
           <div className="hero-grid" aria-hidden="true" />
           <div className="relative z-10 mx-auto grid min-h-[760px] max-w-[1440px] items-center gap-12 px-5 pb-16 pt-28 lg:grid-cols-[minmax(0,0.88fr)_minmax(440px,0.95fr)] lg:px-10 lg:pb-20 lg:pt-32">
             <div className="hero-copy max-w-[720px]">
               <p className="section-index light-index"><span /> 01 — INTELLIGENT UTILITY</p>
               <h1>Your tools, <em>finally</em><br />in one orbit.</h1>
-              <p className="hero-subcopy">NEXA brings everyday utility, creative momentum, and thoughtful AI workflows into one composed workspace—so your next useful action is already close.</p>
+              <p className="hero-subcopy">FINEMIND AI brings everyday utility, creative momentum, and thoughtful AI workflows into one composed workspace—so your next useful action is already close.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <button className="primary-button" onClick={() => setLocation("/tools")}>
                   Explore the tool index <ArrowDownRight size={18} />
@@ -199,7 +199,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hero-stage" aria-label="NEXA product preview">
+            <div className="hero-stage" aria-label="FINEMIND AI product preview">
               <div className="stage-orbit orbit-one" />
               <div className="stage-orbit orbit-two" />
               <div className="stage-axis axis-one"><i /><i /></div>
@@ -255,7 +255,7 @@ export default function Home() {
                 <button className="primary-button mt-8" onClick={handleToolAction}>
                   {selectedTool.status === "available" ? "Open local preview" : "Check availability"}<ArrowUpRight size={17} />
                 </button>
-                <div className="feature-tabs" role="tablist" aria-label="Featured NEXA tools">
+                <div className="feature-tabs" role="tablist" aria-label="Featured FINEMIND AI tools">
                   {featuredTools.map((tool) => {
                     const Icon = tool.icon;
                     return (
@@ -267,7 +267,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="feature-art-panel">
-                <img src="/manus-storage/nexa-tool-constellation_eab102ce.jpg" alt="Abstract constellation of NEXA tool modules" />
+                <img src="/manus-storage/nexa-tool-constellation_eab102ce.jpg" alt="Abstract constellation of FINEMIND AI tool modules" />
                 <div className="active-lens" aria-label={`${selectedTool.name} active lens preview`}>
                   <div className="lens-header"><span><SelectedIcon size={15} /> ACTIVE LENS</span><i>LOCAL VIEW</i></div>
                   <div className="lens-body">
@@ -293,7 +293,7 @@ export default function Home() {
                 <p className="section-index"><span /> 04 — WORKSPACE PREVIEW</p>
                 <h2>A calm place for<br /><span>small wins.</span></h2>
               </div>
-              <p className="section-lede">NEXA is designed to make everyday utility feel considered. These local previews are real browser interactions, not simulated success states.</p>
+              <p className="section-lede">FINEMIND AI is designed to make everyday utility feel considered. These local previews are real browser interactions, not simulated success states.</p>
             </div>
             <div className="workspace-grid">
               <article className="live-module calculator-module">
@@ -312,7 +312,7 @@ export default function Home() {
                 <div className="word-count"><strong>{wordCount}</strong><span>words in view</span><span>{words.length} characters</span></div>
               </article>
               <article className="workspace-visual-card">
-                <img src="/manus-storage/nexa-workspace-collage_291b6d71.jpg" alt="NEXA workspace panels floating in a dark studio" />
+                <img src="/manus-storage/nexa-workspace-collage_291b6d71.jpg" alt="FINEMIND AI workspace panels floating in a dark studio" />
                 <div className="workspace-visual-copy"><span className="section-index light-index"><span /> PERSONAL WORKSPACE</span><h3>Signals, notes, and tools in a single field.</h3></div>
               </article>
             </div>
@@ -324,7 +324,7 @@ export default function Home() {
           <div className="section-shell relative z-10 py-24 lg:py-32">
             <div className="why-layout">
               <div>
-                <p className="section-index"><span /> 05 — THE NEXA DIFFERENCE</p>
+                <p className="section-index"><span /> 05 — THE FINEMIND AI DIFFERENCE</p>
                 <h2>Less switching.<br /><span>More signal.</span></h2>
               </div>
               <div className="why-stat"><strong>01</strong><p>A focused tool ecosystem that behaves more like a workspace than a link directory.</p></div>
@@ -362,10 +362,10 @@ export default function Home() {
         <section className="final-cta-section">
           <div className="final-orbit one" /><div className="final-orbit two" />
           <div className="relative z-10 mx-auto max-w-[900px] px-5 py-28 text-center lg:py-36">
-            <p className="section-index justify-center light-index"><span /> NEXA / YOUR DIGITAL TOOLKIT</p>
+            <p className="section-index justify-center light-index"><span /> FINEMIND AI / YOUR DIGITAL TOOLKIT</p>
             <h2>Stop switching between<br /><em>dozens of tools.</em></h2>
             <p>Bring the next useful action into one intelligent workspace.</p>
-            <button className="primary-button mx-auto mt-8" onClick={() => scrollToId("tool-index")}>Explore NEXA <ArrowDownRight size={18} /></button>
+            <button className="primary-button mx-auto mt-8" onClick={() => scrollToId("tool-index")}>Explore FINEMIND AI <ArrowDownRight size={18} /></button>
           </div>
         </section>
       </main>
@@ -374,12 +374,12 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 py-12 lg:flex-row lg:items-end lg:justify-between lg:px-10">
           <div><NexaMark /><p className="mt-5 max-w-xs text-sm leading-6 text-white/48">Everything you need. One intelligent workspace.</p></div>
           <div className="footer-links"><a href="#tool-index">Tools</a><a href="#plans">Plans</a><button onClick={() => setLocation("/privacy")}>Privacy</button><button onClick={() => setLocation("/terms")}>Terms</button></div>
-          <p className="text-xs text-white/35">© 2026 NEXA. Product experience preview.</p>
+          <p className="text-xs text-white/35">© 2026 FINEMIND AI. Product experience preview.</p>
         </div>
       </footer>
 
       <CommandDialog open={searchOpen} onOpenChange={(open) => { setSearchOpen(open); if (!open) setToolSearchQuery(""); }}>
-        <CommandInput placeholder="Search NEXA tools and actions…" value={toolSearchQuery} onValueChange={setToolSearchQuery} />
+        <CommandInput placeholder="Search FINEMIND AI tools and actions…" value={toolSearchQuery} onValueChange={setToolSearchQuery} />
         <CommandList>
           <CommandEmpty>No matching tool found.</CommandEmpty>
           <CommandGroup heading="TOOLS">
@@ -394,7 +394,7 @@ export default function Home() {
           </CommandGroup>
           <CommandGroup heading="ACTIONS">
             <CommandItem value="Open tool index" onSelect={() => { setSearchOpen(false); scrollToId("tool-index"); }}><Search size={16} /><span>Open tool index</span></CommandItem>
-            <CommandItem value="View NEXA plans" onSelect={() => { setSearchOpen(false); scrollToId("plans"); }}><Heart size={16} /><span>View NEXA plans</span></CommandItem>
+            <CommandItem value="View FINEMIND AI plans" onSelect={() => { setSearchOpen(false); scrollToId("plans"); }}><Heart size={16} /><span>View FINEMIND AI plans</span></CommandItem>
           </CommandGroup>
         </CommandList>
       </CommandDialog>

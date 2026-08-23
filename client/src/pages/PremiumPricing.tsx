@@ -51,9 +51,9 @@ export default function PremiumPricing() {
   return <main className="premium-pricing-page">
     <div className="orbital-wash orbital-wash--pricing" aria-hidden="true" />
     <section className="premium-pricing-shell">
-      <div className="flex items-center justify-between gap-4"><Link href="/" className="tool-back-link"><ArrowLeft size={16} /> Back to NEXA</Link><NexaAccountMenu compact /></div>
+      <div className="flex items-center justify-between gap-4"><Link href="/" className="tool-back-link"><ArrowLeft size={16} /> Back to FINEMIND AI</Link><NexaAccountMenu compact /></div>
       <header className="premium-pricing-header">
-        <span className="premium-eyebrow"><Sparkles size={14} /> NEXA PREMIUM</span>
+        <span className="premium-eyebrow"><Sparkles size={14} /> FINEMIND AI PREMIUM</span>
         <h1>More creative output.<br /><em>One clear plan.</em></h1>
         <p>Premium protects AI access with a verified subscription and a predictable monthly credit allowance.</p>
       </header>

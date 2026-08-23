@@ -20,7 +20,7 @@ function initial(name?: string | null, email?: string | null) {
   return (name?.trim().charAt(0) || email?.trim().charAt(0) || "N").toUpperCase();
 }
 
-/** Shared authenticated account affordance for the public NEXA product surfaces. */
+/** Shared authenticated account affordance for the public FINEMIND AI product surfaces. */
 export function NexaAccountMenu({ compact = false }: NexaAccountMenuProps) {
   const [, setLocation] = useLocation();
   const { user, loading, logout } = useAuth();
@@ -28,7 +28,7 @@ export function NexaAccountMenu({ compact = false }: NexaAccountMenuProps) {
   const signOut = async () => {
     try {
       await logout();
-      toast.success("Signed out of NEXA.");
+      toast.success("Signed out of FINEMIND AI.");
       setLocation("/");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not sign out. Please try again.");
@@ -58,12 +58,12 @@ export function NexaAccountMenu({ compact = false }: NexaAccountMenuProps) {
           <Avatar className="size-7 border border-[#59B5FF]/35 bg-[#0a2138]">
             <AvatarFallback className="bg-[#0a2138] text-[11px] font-bold text-[#a9dcff]">{initial(user.name, user.email)}</AvatarFallback>
           </Avatar>
-          {!compact ? <span className="min-w-0 pr-1"><span className="block truncate text-xs font-semibold leading-tight">{user.name || "NEXA member"}</span><span className="block truncate text-[10px] text-white/45">Account</span></span> : null}
+          {!compact ? <span className="min-w-0 pr-1"><span className="block truncate text-xs font-semibold leading-tight">{user.name || "FINEMIND AI member"}</span><span className="block truncate text-[10px] text-white/45">Account</span></span> : null}
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60 border-white/10 bg-[#0a1727] text-[#f5f8ff]">
         <DropdownMenuLabel className="px-3 py-2.5">
-          <p className="truncate text-sm font-semibold">{user.name || "NEXA member"}</p>
+          <p className="truncate text-sm font-semibold">{user.name || "FINEMIND AI member"}</p>
           <p className="mt-0.5 truncate text-xs font-normal text-white/50">{user.email || "Signed-in account"}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-white/10" />
