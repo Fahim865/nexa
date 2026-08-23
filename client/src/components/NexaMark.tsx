@@ -10,18 +10,20 @@ export function NexaMark({
   imageClassName = "",
   withWordmark = true,
 }: NexaMarkProps) {
-  const source = withWordmark
-    ? "/manus-storage/finemind-ai-lockup_4094cc3a.jpg"
-    : "/manus-storage/finemind-ai-mark_eb8c5537.jpg";
-  const defaultSize = withWordmark ? "h-11 w-24" : "h-11 w-11";
+  const source = "/manus-storage/finemind-ai-circular-badge_6c5f776e.png";
 
   return (
-    <div className={`flex items-center ${className}`} aria-label="FINEMIND AI home">
+    <div className={`flex items-center gap-2 ${className}`} aria-label="FINEMIND AI home">
       <img
-        className={`${defaultSize} shrink-0 object-contain ${imageClassName}`}
+        className={`h-10 w-10 shrink-0 rounded-full object-contain ${imageClassName}`}
         src={source}
-        alt={withWordmark ? "FINEMIND AI logo" : "FINEMIND AI mark"}
+        alt="FINEMIND AI circular logo"
       />
+      {withWordmark ? (
+        <span className="whitespace-nowrap font-semibold text-[0.7rem] tracking-[0.18em] text-slate-100">
+          FINEMIND <span className="text-sky-300">AI</span>
+        </span>
+      ) : null}
     </div>
   );
 }

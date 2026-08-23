@@ -303,3 +303,10 @@
 - [x] User-provided FINEMIND AI logo asset নিরাপদ web asset হিসেবে যোগ করা।
 - [x] Existing logo slots ও visible NEXA brand labels-এ FINEMIND AI প্রয়োগ করা; অন্য UI বা functionality অপরিবর্তিত রাখা।
 - [x] Focused regression test, responsive verification, check/test/build ও production release সম্পন্ন করা।
+
+## FINEMIND AI circular logo refinement
+
+- [x] Current shared FINEMIND AI logo asset, header/footer placement এবং existing size behavior পর্যালোচনা করা।
+- [x] User-provided FINEMIND AI reference থেকে compact circular logo badge তৈরি করা।
+- [x] Header ও footer/shared logo slots-এ circular badge প্রয়োগ করা; অন্য UI বা functionality অপরিবর্তিত রাখা।
+- [x] Responsive visual verification, check/test/build ও production release সম্পন্ন করা।
