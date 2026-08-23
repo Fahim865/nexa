@@ -132,7 +132,7 @@ export default function Home() {
       <header className="nexa-nav">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 py-4 lg:px-10">
           <a href="#top" className="group" aria-label="Go to FINEMIND AI home">
-            <NexaMark />
+            <NexaMark withWordmark />
           </a>
 
           <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary navigation">
@@ -182,7 +182,7 @@ export default function Home() {
           <div className="relative z-10 mx-auto grid min-h-[760px] max-w-[1440px] items-center gap-12 px-5 pb-16 pt-28 lg:grid-cols-[minmax(0,0.88fr)_minmax(440px,0.95fr)] lg:px-10 lg:pb-20 lg:pt-32">
             <div className="hero-copy max-w-[720px]">
               <p className="section-index light-index"><span /> 01 — INTELLIGENT UTILITY</p>
-              <p className="mb-4 text-3xl font-semibold tracking-[0.14em] text-white sm:text-4xl lg:text-5xl">FINEMIND <span className="text-sky-300">AI</span></p>
+              <p className="hero-brand-wordmark">FINEMIND <span>AI</span></p>
               <h1>Your tools, <em>finally</em><br />in one orbit.</h1>
               <p className="hero-subcopy">FINEMIND AI brings everyday utility, creative momentum, and thoughtful AI workflows into one composed workspace—so your next useful action is already close.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">

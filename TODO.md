@@ -324,3 +324,11 @@
 - [x] Header logo hover-এ reduced glow ও subtle shadow প্রয়োগ করা।
 - [x] Header logo-এর পাশের wordmark সরিয়ে homepage hero-এর উপরে বড় FINEMIND AI wordmark প্রয়োগ করা।
 - [x] Responsive visual validation, focused regression test, check/build ও production release সম্পন্ন করা।
+
+## FINEMIND AI hero and header wordmark polish
+
+- [x] Current homepage hero wordmark typography, mobile breakpoints এবং header logo/navigation spacing পর্যালোচনা করা।
+- [x] Hero FINEMIND AI-তে logo-matched font/color এবং subtle hover color transition প্রয়োগ করা।
+- [x] Mobile hero wordmark-এর font size ও spacing ছোট-screen-friendly করা।
+- [x] Header logo ও navigation links-এর মাঝখানে bold FINEMIND AI wordmark প্রয়োগ করা।
+- [x] Responsive visual validation, focused tests, check/build ও production release সম্পন্ন করা。

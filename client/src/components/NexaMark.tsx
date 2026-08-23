@@ -20,7 +20,7 @@ export function NexaMark({
         alt="FINEMIND AI circular logo"
       />
       {withWordmark ? (
-        <span className="whitespace-nowrap font-semibold text-[0.7rem] tracking-[0.16em] text-slate-100">
+        <span className="hidden whitespace-nowrap font-extrabold text-[0.74rem] tracking-[0.12em] text-slate-100 lg:inline-flex">
           FINEMIND <span className="text-sky-300">AI</span>
         </span>
       ) : null}
