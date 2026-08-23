@@ -332,3 +332,9 @@
 - [x] Mobile hero wordmark-এর font size ও spacing ছোট-screen-friendly করা।
 - [x] Header logo ও navigation links-এর মাঝখানে bold FINEMIND AI wordmark প্রয়োগ করা।
 - [x] Responsive visual validation, focused tests, check/build ও production release সম্পন্ন করা。
+
+## FINEMIND AI hero entrance animation
+
+- [x] Current hero wordmark styling ও existing motion conventions পর্যালোচনা করা।
+- [x] Page load-এ hero FINEMIND AI wordmark-এর subtle fade-in ও slide-up animation প্রয়োগ করা।
+- [x] Reduced-motion preference, responsive rendering, focused tests, check/build ও production release সম্পন্ন করা।
