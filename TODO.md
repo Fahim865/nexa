@@ -160,13 +160,13 @@
 - [x] Production `/api/auth/google/start` থেকে same-host OAuth state cookie issuance, secure attributes এবং exact redirect URI inspect করা।
 - [x] Callback requestে state cookie preservation নিশ্চিত করে missing/mismatched state handling fix করা, OAuth security checks বজায় রেখে।
 - [x] Google callbackে persistent NEXA session cookie issuance ও safe local redirect regression coverage যোগ করা।
-- [ ] TypeScript, full tests, production build এবং published production authorization flow যাচাই করা।
+- [x] TypeScript, full tests, production build এবং published production authorization flow যাচাই করা।
 
 ## Authenticated Tool Index rendering fix
 
 - [x] Google OAuth callback-এর পরে authenticated `/tools` route blank/`@@` render হওয়ার root cause নির্ণয় করা।
 - [x] Authenticated session, account plan, subscription, credit ও Tool Index data dependency crash ছাড়া load নিশ্চিত করা।
-- [ ] Minimal root-cause fix এবং regression test যোগ করে TypeScript, test, build ও production flow যাচাই করা।
+- [x] Minimal root-cause fix এবং regression test যোগ করে TypeScript, test, build ও production flow যাচাই করা।
 
 ## Production bundle graph repair
 
@@ -376,3 +376,9 @@
 - [x] Managed deployment-এর `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH` root cause নির্ণয় করে lockfile ও override configuration একসঙ্গে সঙ্গতিপূর্ণ করা।
 - [x] Freeze করা dependency install, check, tests ও build দিয়ে repaired deployment artifact যাচাই করা।
 - [ ] Build recovery-এর পরে public production routes, Google OAuth readiness, logo delivery ও Premium catalog-এর বাস্তব remaining issue তালিকাভুক্ত করা।
+## Latest Google sign-in session loop
+
+- [ ] Production Google sign-in callback-এর পর session cookie, database user persistence, `auth.me` response এবং redirect loop-এর exact failure শনাক্ত করা।
+- [ ] OAuth architecture, FREE/PREMIUM rules, credits, billing ও tools অপরিবর্তিত রেখে minimal session fix প্রয়োগ করা।
+- [ ] Sign-in regression test, type check, full tests, build এবং live authenticated flow যাচাই করা।
+

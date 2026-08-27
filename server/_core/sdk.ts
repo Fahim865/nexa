@@ -171,7 +171,9 @@ class SDKServer {
       {
         openId,
         appId: ENV.appId,
-        name: options.name || "",
+        // The verifier requires a non-empty name. Google profiles may omit it, so
+        // fall back to the stable account identifier without changing the user record.
+        name: options.name?.trim() || openId,
       },
       options
     );
