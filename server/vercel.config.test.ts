@@ -37,12 +37,14 @@ describe("Vercel deployment boundary", () => {
 
   it("approves only the required native build dependencies for pnpm installs", () => {
     const workspaceConfig = fs.readFileSync(path.join(projectRoot, "pnpm-workspace.yaml"), "utf8");
+    const dockerfile = fs.readFileSync(path.join(projectRoot, "Dockerfile"), "utf8");
 
     expect(workspaceConfig).toContain("allowBuilds:");
     expect(workspaceConfig).toContain('"@tailwindcss/oxide": true');
     expect(workspaceConfig).toContain("esbuild: true");
     expect(workspaceConfig).toContain("patchedDependencies:");
     expect(workspaceConfig).toContain("wouter@3.7.1: patches/wouter@3.7.1.patch");
+    expect(dockerfile).toContain("COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./");
     expect(fs.readFileSync(path.join(projectRoot, "package.json"), "utf8")).toContain('"packageManager": "pnpm@10.26.0"');
   });
 

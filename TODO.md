@@ -370,3 +370,9 @@
 - [x] Heavy homepage discovery bundle lazy-load করে initial Vite chunk size warning-এর root cause দূর করা।
 - [x] Shared tRPC ও query-client dependenciesকে stable vendor chunks-এ ভাগ করে final initial Vite bundle warning দূর করা।
 - [x] TypeScript, tests, production build এবং Vercel live endpoints দিয়ে warning resolution যাচাই করা।
+
+## Latest managed deployment recovery
+
+- [x] Managed deployment-এর `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH` root cause নির্ণয় করে lockfile ও override configuration একসঙ্গে সঙ্গতিপূর্ণ করা।
+- [x] Freeze করা dependency install, check, tests ও build দিয়ে repaired deployment artifact যাচাই করা।
+- [ ] Build recovery-এর পরে public production routes, Google OAuth readiness, logo delivery ও Premium catalog-এর বাস্তব remaining issue তালিকাভুক্ত করা।
