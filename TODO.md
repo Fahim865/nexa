@@ -338,3 +338,14 @@
 - [x] Current hero wordmark styling ও existing motion conventions পর্যালোচনা করা।
 - [x] Page load-এ hero FINEMIND AI wordmark-এর subtle fade-in ও slide-up animation প্রয়োগ করা।
 - [x] Reduced-motion preference, responsive rendering, focused tests, check/build ও production release সম্পন্ন করা।
+
+## Vercel deployment
+
+- [x] Existing GitHub/Vercel connection, repository deployment source এবং current Vercel project settings যাচাই করা।
+- [x] Current FINEMIND AI app-এর Vercel build/runtime compatibility ও required server-side environment variables যাচাই করা।
+- [x] Vercel production deployment trigger করে deployment status ও public URL যাচাই করা।
+- [ ] Vercel deployment result এবং user-required remaining action জানানো।
+- [x] Existing Express route registration reusable রেখে Vercel Function default export ও Vite SPA rewrite configuration যোগ করা।
+- [x] Existing FINEMIND AI Vercel project-এ complete compatible source tree দিয়ে production deployment করে HTML, client assets ও API boundary যাচাই করা।
+- [x] Vercel Function-এ local server modules bundled রেখে module-resolution runtime failure দূর করা।
+- [x] Invalid Vercel Function runtime setting সরিয়ে platform-default Node runtime দিয়ে corrected deployment যাচাই করা।
