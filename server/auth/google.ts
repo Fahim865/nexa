@@ -111,6 +111,14 @@ function getConfiguredOAuthStartUrl(returnTo: string) {
 function isRequestOnConfiguredOAuthHost(req: Request) {
   try {
     const callbackUrl = new URL(getGoogleOAuthConfiguration().redirectUri);
+    const vercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+    const acceptedHosts = new Set([callbackUrl.host.toLowerCase()]);
+    if (vercelProductionUrl) {
+      const productionUrl = new URL(
+        vercelProductionUrl.startsWith("http") ? vercelProductionUrl : `https://${vercelProductionUrl}`,
+      );
+      acceptedHosts.add(productionUrl.host.toLowerCase());
+    }
     // Production traffic reaches Express through a reverse proxy. In that case
     // `Host` can be the internal service host, while `X-Forwarded-Host` retains
     // the browser-facing origin that owns the host-only OAuth state cookie.
@@ -118,7 +126,7 @@ function isRequestOnConfiguredOAuthHost(req: Request) {
       .flatMap((value) => (value ?? "").split(","))
       .map((value) => value.trim().toLowerCase())
       .filter(Boolean);
-    return requestHosts.includes(callbackUrl.host.toLowerCase());
+    return requestHosts.some((host) => acceptedHosts.has(host));
   } catch {
     return false;
   }

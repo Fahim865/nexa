@@ -125,6 +125,29 @@ describe("Google OAuth safety helpers", () => {
     }
   });
 
+  it("accepts Vercel's project production host before issuing OAuth state", async () => {
+    const previousProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "finemindai.vercel.app";
+    const app = express();
+    registerGoogleAuthRoutes(app);
+    const server = await new Promise<ReturnType<typeof app.listen>>((resolve) => {
+      const listener = app.listen(0, "127.0.0.1", () => resolve(listener));
+    });
+
+    try {
+      const address = server.address() as AddressInfo;
+      const response = await requestGoogleStart(address.port, "finemindai.vercel.app");
+
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toMatch(/^https:\/\/accounts\.google\.com\/o\/oauth2\/v2\/auth\?/);
+      expect(response.headers["set-cookie"]?.toString()).toContain("nexa_google_oauth=");
+    } finally {
+      if (previousProductionUrl === undefined) delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+      else process.env.VERCEL_PROJECT_PRODUCTION_URL = previousProductionUrl;
+      await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+    }
+  });
+
   it("uses the reverse proxy's browser-facing host before issuing OAuth state", async () => {
     const app = express();
     registerGoogleAuthRoutes(app);

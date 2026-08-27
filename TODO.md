@@ -375,10 +375,22 @@
 
 - [x] Managed deployment-এর `ERR_PNPM_LOCKFILE_CONFIG_MISMATCH` root cause নির্ণয় করে lockfile ও override configuration একসঙ্গে সঙ্গতিপূর্ণ করা।
 - [x] Freeze করা dependency install, check, tests ও build দিয়ে repaired deployment artifact যাচাই করা।
-- [ ] Build recovery-এর পরে public production routes, Google OAuth readiness, logo delivery ও Premium catalog-এর বাস্তব remaining issue তালিকাভুক্ত করা।
+- [x] Build recovery-এর পরে public production routes, Google OAuth readiness, logo delivery ও Premium catalog-এর বাস্তব remaining issue তালিকাভুক্ত করা।
 ## Latest Google sign-in session loop
 
-- [ ] Production Google sign-in callback-এর পর session cookie, database user persistence, `auth.me` response এবং redirect loop-এর exact failure শনাক্ত করা।
-- [ ] OAuth architecture, FREE/PREMIUM rules, credits, billing ও tools অপরিবর্তিত রেখে minimal session fix প্রয়োগ করা।
+- [x] Production Google sign-in callback-এর পর session cookie, database user persistence, `auth.me` response এবং redirect loop-এর exact failure শনাক্ত করা।
+- [x] OAuth architecture, FREE/PREMIUM rules, credits, billing ও tools অপরিবর্তিত রেখে minimal session fix প্রয়োগ করা।
 - [ ] Sign-in regression test, type check, full tests, build এবং live authenticated flow যাচাই করা।
 
+
+## Latest Vercel redeploy request
+
+- [x] Connected existing Vercel project-এর current production deployment ও environment readiness যাচাই করা।
+- [x] সর্বশেষ session/database fix-সহ existing Vercel project redeploy করা।
+- [x] Vercel production-এ database availability, Google OAuth readiness, logo delivery ও Premium catalog live endpoint যাচাই করা।
+
+## Vercel canonical OAuth host loop
+
+- [x] Vercel-এর canonical alias এবং configured `GOOGLE_REDIRECT_URI` mismatch-এর কারণে start-route redirect loop নির্ণয় করা।
+- [ ] OAuth state cookie ও callback-এর জন্য একটিমাত্র canonical production origin নির্ধারণ করে Google OAuth configuration সামঞ্জস্য করা।
+- [ ] Canonical Vercel origin-এ Google start, state cookie, `auth.me`, database-backed callback এবং Premium catalog পুনরায় যাচাই করা।
