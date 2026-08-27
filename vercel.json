@@ -6,6 +6,10 @@
   "outputDirectory": "dist/public",
   "rewrites": [
     {
+      "source": "/manus-storage/:path*",
+      "destination": "https://nexapremium-mpo86vkq.manus.space/manus-storage/:path*"
+    },
+    {
       "source": "/api/:path*",
       "destination": "/api/[...path]"
     },

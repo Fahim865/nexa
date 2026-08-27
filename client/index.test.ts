@@ -10,7 +10,7 @@ describe("production HTML shell", () => {
     expect(indexHtml).not.toContain("@@");
   });
 
-  it("uses the current circular FINEMIND AI badge as the browser favicon", () => {
-    expect(indexHtml).toContain('rel="icon" type="image/png" href="/manus-storage/finemind-ai-circular-badge_6c5f776e.png"');
+  it("uses the verified FINEMIND AI badge as the browser favicon", () => {
+    expect(indexHtml).toContain('rel="icon" type="image/png" href="https://nexapremium-mpo86vkq.manus.space/manus-storage/finemind-ai-circular-badge_6c5f776e.png"');
   });
 });

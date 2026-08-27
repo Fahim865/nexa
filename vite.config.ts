@@ -167,6 +167,20 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    // The compressed initial asset remains below 170 kB. Keep the build signal
+    // focused on materially larger bundles while lazy-loading PDF.js on demand.
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        // Keep the static registry (and its icon-only dependencies) distinct
+        // from the application entry without separating React runtime exports.
+        manualChunks(id) {
+          if (id.endsWith("/client/src/data/nexa.ts")) return "tool-registry";
+          if (id.includes("/node_modules/@tanstack/")) return "tanstack-query";
+          if (id.includes("/node_modules/@trpc/")) return "trpc-client";
+        },
+      },
+    },
   },
   server: {
     host: true,

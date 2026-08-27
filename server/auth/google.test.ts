@@ -3,7 +3,13 @@ import { request as httpRequest } from "node:http";
 import type { AddressInfo } from "node:net";
 import { describe, expect, it } from "vitest";
 import { createGoogleOpenId } from "../db";
-import { getGoogleAuthPublicStatus, isSafeReturnPath, registerGoogleAuthRoutes } from "./google";
+import {
+  getGoogleAuthPublicStatus,
+  getSafeGoogleOAuthCallbackFailureDetails,
+  isSafeReturnPath,
+  normalizeGoogleOAuthEnvironmentValue,
+  registerGoogleAuthRoutes,
+} from "./google";
 
 function requestGoogleStart(port: number, host: string, forwardedHost?: string) {
   return new Promise<{ headers: Record<string, string | string[] | undefined>; statusCode?: number }>((resolve, reject) => {
@@ -44,6 +50,22 @@ function requestGoogleCallback(port: number, host: string, path: string, cookie?
 }
 
 describe("Google OAuth safety helpers", () => {
+  it("normalizes pasted OAuth environment values before provider use", () => {
+    expect(normalizeGoogleOAuthEnvironmentValue("  client-value\n")).toBe("client-value");
+  });
+
+  it("keeps OAuth callback logs free of provider request and response payloads", () => {
+    const details = getSafeGoogleOAuthCallbackFailureDetails({
+      isAxiosError: true,
+      code: "ERR_BAD_REQUEST",
+      config: { data: "client_secret=must-not-appear" },
+      response: { status: 401, data: { client_secret: "must-not-appear" } },
+    });
+
+    expect(details).toEqual({ category: "provider", status: 401, code: "ERR_BAD_REQUEST" });
+    expect(JSON.stringify(details)).not.toContain("must-not-appear");
+  });
+
   it("accepts only local return paths", () => {
     expect(isSafeReturnPath("/tools")).toBe(true);
     expect(isSafeReturnPath("/tools?view=all")).toBe(true);
@@ -149,6 +171,7 @@ describe("Google OAuth safety helpers", () => {
       expect(accepted.statusCode).toBe(302);
       expect(accepted.headers.location).toBe("/sign-in?google=denied");
       expect(accepted.headers["set-cookie"]?.toString()).toContain("nexa_google_oauth=;");
+      expect(accepted.headers["set-cookie"]?.toString()).not.toContain("Max-Age");
 
       const rejected = await requestGoogleCallback(
         address.port,

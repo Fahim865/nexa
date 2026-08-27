@@ -6,13 +6,25 @@ import { NexaMark } from "@/components/NexaMark";
 import type { DocumentUtilityToolId, ToolDefinition } from "@/data/nexa";
 import { decodeBase64Utf8, encodeBase64Utf8, generatePassword, markdownToSafeHtml } from "@/lib/documentUtility";
 import { ArrowLeft, CheckCircle2, Copy, Download, FileStack, FileText, FileUp, LoaderCircle, QrCode, RotateCcw, ShieldCheck } from "lucide-react";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
 import QRCode from "qrcode";
 import { type ChangeEvent, type DragEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 
-GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).toString();
+type PdfJsModule = typeof import("pdfjs-dist/legacy/build/pdf.mjs");
+
+let pdfJsModulePromise: Promise<PdfJsModule> | undefined;
+
+async function loadPdfJs() {
+  if (!pdfJsModulePromise) {
+    pdfJsModulePromise = import("pdfjs-dist/legacy/build/pdf.mjs").then((module) => {
+      module.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).toString();
+      return module;
+    });
+  }
+
+  return pdfJsModulePromise;
+}
 
 type ToolProps = { tool: ToolDefinition };
 const TEXT_TOOL_IDS: DocumentUtilityToolId[] = ["markdown-previewer", "markdown-to-html", "json-formatter", "json-validator", "json-minifier", "base64-encoder", "base64-decoder", "url-encoder", "url-decoder"];
@@ -80,7 +92,7 @@ function PdfPageCounter({ tool }: ToolProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const selectFile = (nextFile: File) => { if (nextFile.type !== "application/pdf") { setError("Choose a valid PDF document."); return; } if (nextFile.size > 40 * 1024 * 1024) { setError("Choose a PDF below 40 MB for reliable local processing."); return; } setFile(nextFile); setPages(null); setError(""); };
-  const analyze = async () => { if (!file) return; setBusy(true); setError(""); try { const data = new Uint8Array(await file.arrayBuffer()); const task = getDocument({ data }); const pdf = await task.promise; setPages(pdf.numPages); } catch { setError("This PDF could not be read in the current browser."); } finally { setBusy(false); } };
+  const analyze = async () => { if (!file) return; setBusy(true); setError(""); try { const [{ getDocument }, data] = await Promise.all([loadPdfJs(), file.arrayBuffer().then((buffer) => new Uint8Array(buffer))]); const task = getDocument({ data }); const pdf = await task.promise; setPages(pdf.numPages); } catch { setError("This PDF could not be read in the current browser."); } finally { setBusy(false); } };
   const drop = (event: DragEvent<HTMLButtonElement>) => { event.preventDefault(); const nextFile = event.dataTransfer.files?.[0]; if (nextFile) selectFile(nextFile); };
   const change = (event: ChangeEvent<HTMLInputElement>) => { const nextFile = event.target.files?.[0]; if (nextFile) selectFile(nextFile); event.target.value = ""; };
   return <PageShell tool={tool}><div className="utility-single-panel"><input ref={inputRef} className="image-file-input" type="file" accept="application/pdf" onChange={change} />{!file ? <button className="image-dropzone" onClick={() => inputRef.current?.click()} onDragOver={(event) => event.preventDefault()} onDrop={drop}><FileUp size={25} /><strong>Drop a PDF here</strong><span>or choose a local document below 40 MB</span></button> : <div className="utility-file-summary"><FileText size={24} /><div><strong>{file.name}</strong><span>{(file.size / 1024 / 1024).toFixed(2)} MB · local file only</span></div><button onClick={() => { setFile(null); setPages(null); setError(""); }}>Replace</button></div>}{error ? <p className="image-error">{error}</p> : null}{file ? <div className="utility-action-stack"><ActionButton busy={busy} onClick={analyze}>Count pages</ActionButton><button className="secondary-button" onClick={() => { setFile(null); setPages(null); setError(""); }}><RotateCcw size={15} /> Reset</button></div> : null}{pages !== null ? <div className="utility-count-result"><FileStack size={22} /><strong>{pages}</strong><span>pages in this PDF</span><small>The document stayed in this browser tab.</small></div> : null}</div></PageShell>;

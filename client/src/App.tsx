@@ -6,7 +6,6 @@ import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { recordRecentTool } from "@/hooks/useRecentTools";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
 
 const Account = lazy(() => import("@/pages/Account"));
 const AiCreatorToolPage = lazy(() => import("@/pages/AiCreatorToolPage"));
@@ -17,6 +16,7 @@ const MediaToolPage = lazy(() => import("@/pages/MediaToolPage"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const PremiumPricing = lazy(() => import("@/pages/PremiumPricing"));
 const LegalPage = lazy(() => import("@/pages/LegalPage"));
+const Home = lazy(() => import("@/pages/Home"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
 const ToolPlaceholder = lazy(() => import("@/pages/ToolPlaceholder"));

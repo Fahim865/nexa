@@ -349,3 +349,24 @@
 - [x] Existing FINEMIND AI Vercel project-এ complete compatible source tree দিয়ে production deployment করে HTML, client assets ও API boundary যাচাই করা।
 - [x] Vercel Function-এ local server modules bundled রেখে module-resolution runtime failure দূর করা।
 - [x] Invalid Vercel Function runtime setting সরিয়ে platform-default Node runtime দিয়ে corrected deployment যাচাই করা।
+- [ ] Vercel production Google sign-in configuration ও callback flow নির্ণয় করে reported sign-in failure সংশোধন করা।
+- [x] User-added server-only Google OAuth variables প্রয়োগের জন্য current Vercel sourceটি পুনরায় production deploy করা।
+- [x] Authenticated checkout শুরু না করে live Vercel billing configuration availability যাচাই করা।
+- [x] Vercel upload payload তৈরির আগেই generated Function files অন্তর্ভুক্ত করে API rewrite runtime সক্রিয় করা।
+- [ ] Google authorization completionের পর Vercel callback, database/session creation ও client redirect failure নির্ণয় ও সংশোধন করা।
+- [x] Vercel production-এ FINEMIND AI circular logo asset load failure নির্ণয় ও reference correction করা।
+- [x] Server-side Google OAuth environment values safely normalize করে token exchange failure প্রতিরোধ করা।
+- [x] OAuth callback logs থেকে credentials বা token payload প্রকাশ রোধ করা।
+- [ ] Vercel environment-এ Google client secret-এর accidental whitespace/invalid value নিরাপদে সংশোধন করা।
+- [x] `/manus-storage/*` request managed asset host-এ SPA fallback-এর আগে পৌঁছানোর জন্য Vercel rewrite order সংশোধন করা।
+- [x] Vercel server-only Premium price ও monthly credit configuration $10 ও 5,000 নিয়মে validate করা।
+
+## Latest Vercel production warnings
+
+- [x] Latest production deployment-এর তিনটি warning-এর exact source, severity ও affected route শনাক্ত করা।
+- [x] Confirmed warning-এর জন্য কেবল প্রয়োজনীয় code/configuration fix প্রয়োগ করে regression coverage রাখা।
+- [x] pnpm workspace configuration-এর install compatibility পুনরায় যাচাই করে required patch/override rules অক্ষুণ্ণ রাখা।
+- [x] OAuth callback ও sign-out cookie cleanup থেকে deprecated Express `maxAge` option সরিয়ে test warning দূর করা।
+- [x] Heavy homepage discovery bundle lazy-load করে initial Vite chunk size warning-এর root cause দূর করা।
+- [x] Shared tRPC ও query-client dependenciesকে stable vendor chunks-এ ভাগ করে final initial Vite bundle warning দূর করা।
+- [x] TypeScript, tests, production build এবং Vercel live endpoints দিয়ে warning resolution যাচাই করা।

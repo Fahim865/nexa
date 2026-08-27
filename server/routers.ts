@@ -66,8 +66,7 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
     googleStatus: publicProcedure.query(() => getGoogleAuthPublicStatus()),
     logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      ctx.res.clearCookie(COOKIE_NAME, getSessionCookieOptions(ctx.req));
       return {
         success: true,
       } as const;

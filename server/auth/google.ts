@@ -16,6 +16,29 @@ const GOOGLE_JWKS = createRemoteJWKSet(new URL("https://www.googleapis.com/oauth
 const GOOGLE_CALLBACK_PATH = "/api/auth/google/callback";
 const OAUTH_MAX_AGE_MS = 10 * 60 * 1000;
 
+export function normalizeGoogleOAuthEnvironmentValue(value: string) {
+  return value.trim();
+}
+
+function getGoogleOAuthConfiguration() {
+  return {
+    clientId: normalizeGoogleOAuthEnvironmentValue(ENV.googleClientId),
+    clientSecret: normalizeGoogleOAuthEnvironmentValue(ENV.googleClientSecret),
+    redirectUri: normalizeGoogleOAuthEnvironmentValue(ENV.googleRedirectUri),
+  };
+}
+
+export function getSafeGoogleOAuthCallbackFailureDetails(error: unknown) {
+  if (axios.isAxiosError(error)) {
+    return {
+      category: "provider" as const,
+      status: error.response?.status,
+      code: error.code,
+    };
+  }
+  return { category: "internal" as const };
+}
+
 type GoogleOAuthCookie = {
   state: string;
   codeVerifier: string;
@@ -64,6 +87,11 @@ function getCookieOptions(req: Request) {
   };
 }
 
+function getCookieClearOptions(req: Request) {
+  const { maxAge: _maxAge, ...cookieOptions } = getCookieOptions(req);
+  return cookieOptions;
+}
+
 function isValidRedirectUri(value: string) {
   try {
     const url = new URL(value);
@@ -74,7 +102,7 @@ function isValidRedirectUri(value: string) {
 }
 
 function getConfiguredOAuthStartUrl(returnTo: string) {
-  const callbackUrl = new URL(ENV.googleRedirectUri);
+  const callbackUrl = new URL(getGoogleOAuthConfiguration().redirectUri);
   const startUrl = new URL("/api/auth/google/start", callbackUrl.origin);
   startUrl.searchParams.set("returnTo", returnTo);
   return startUrl.toString();
@@ -82,7 +110,7 @@ function getConfiguredOAuthStartUrl(returnTo: string) {
 
 function isRequestOnConfiguredOAuthHost(req: Request) {
   try {
-    const callbackUrl = new URL(ENV.googleRedirectUri);
+    const callbackUrl = new URL(getGoogleOAuthConfiguration().redirectUri);
     // Production traffic reaches Express through a reverse proxy. In that case
     // `Host` can be the internal service host, while `X-Forwarded-Host` retains
     // the browser-facing origin that owns the host-only OAuth state cookie.
@@ -97,7 +125,8 @@ function isRequestOnConfiguredOAuthHost(req: Request) {
 }
 
 export function getGoogleAuthPublicStatus() {
-  const enabled = Boolean(ENV.googleClientId && ENV.googleClientSecret && isValidRedirectUri(ENV.googleRedirectUri));
+  const config = getGoogleOAuthConfiguration();
+  const enabled = Boolean(config.clientId && config.clientSecret && isValidRedirectUri(config.redirectUri));
   return {
     enabled,
     provider: "google" as const,
@@ -133,13 +162,14 @@ async function maybeCurrentOpenId(req: Request) {
 }
 
 async function exchangeCode(code: string, verification: GoogleOAuthCookie) {
+  const config = getGoogleOAuthConfiguration();
   const response = await axios.post<{ id_token?: string }>(
     GOOGLE_TOKEN_ENDPOINT,
     new URLSearchParams({
       code,
-      client_id: ENV.googleClientId,
-      client_secret: ENV.googleClientSecret,
-      redirect_uri: ENV.googleRedirectUri,
+      client_id: config.clientId,
+      client_secret: config.clientSecret,
+      redirect_uri: config.redirectUri,
       grant_type: "authorization_code",
       code_verifier: verification.codeVerifier,
     }).toString(),
@@ -151,9 +181,10 @@ async function exchangeCode(code: string, verification: GoogleOAuthCookie) {
 }
 
 export async function verifyGoogleIdToken(idToken: string, expectedNonce: string): Promise<GoogleClaims> {
+  const config = getGoogleOAuthConfiguration();
   const { payload } = await jwtVerify(idToken, GOOGLE_JWKS, {
     algorithms: ["RS256"],
-    audience: ENV.googleClientId,
+    audience: config.clientId,
     issuer: ["https://accounts.google.com", "accounts.google.com"],
   });
 
@@ -162,7 +193,7 @@ export async function verifyGoogleIdToken(idToken: string, expectedNonce: string
   if (typeof payload.email !== "string" || !payload.email || payload.email_verified !== true) {
     throw new Error("Google account email must be verified");
   }
-  if (typeof payload.azp === "string" && payload.azp !== ENV.googleClientId) {
+  if (typeof payload.azp === "string" && payload.azp !== config.clientId) {
     throw new Error("Google ID token authorized party did not match");
   }
 
@@ -203,9 +234,10 @@ export function registerGoogleAuthRoutes(app: Express) {
     res.cookie(GOOGLE_OAUTH_COOKIE, base64Url(Buffer.from(JSON.stringify(verification))), getCookieOptions(req));
 
     const challenge = base64Url(createHash("sha256").update(codeVerifier).digest());
+    const config = getGoogleOAuthConfiguration();
     const params = new URLSearchParams({
-      client_id: ENV.googleClientId,
-      redirect_uri: ENV.googleRedirectUri,
+      client_id: config.clientId,
+      redirect_uri: config.redirectUri,
       response_type: "code",
       scope: "openid email profile",
       state,
@@ -222,7 +254,7 @@ export function registerGoogleAuthRoutes(app: Express) {
     const returnedState = typeof req.query.state === "string" ? req.query.state : undefined;
     const providerError = typeof req.query.error === "string" ? req.query.error : undefined;
     const verification = decodeOAuthCookie(getCookie(req, GOOGLE_OAUTH_COOKIE));
-    res.clearCookie(GOOGLE_OAUTH_COOKIE, { ...getCookieOptions(req), maxAge: -1 });
+    res.clearCookie(GOOGLE_OAUTH_COOKIE, getCookieClearOptions(req));
 
     if (!returnedState || !verification || Date.now() - verification.startedAt > OAUTH_MAX_AGE_MS || !safeEquals(returnedState, verification.state)) {
       redirectToSignInError(res, "invalid");
@@ -250,7 +282,7 @@ export function registerGoogleAuthRoutes(app: Express) {
       res.cookie(COOKIE_NAME, sessionToken, { ...getSessionCookieOptions(req), maxAge: ONE_YEAR_MS });
       res.redirect(302, verification.returnTo);
     } catch (error) {
-      console.error("[Google OAuth] Callback failed", error);
+      console.error("[Google OAuth] Callback failed", getSafeGoogleOAuthCallbackFailureDetails(error));
       redirectToSignInError(res, "failed");
     }
   });

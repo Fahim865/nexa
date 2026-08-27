@@ -4,6 +4,11 @@ import { describe, expect, it } from "vitest";
 const appSource = readFileSync(new URL("./App.tsx", import.meta.url), "utf8");
 
 describe("application tool routing", () => {
+  it("lazy-loads the discovery-heavy homepage instead of placing it in the initial application bundle", () => {
+    expect(appSource).toContain('const Home = lazy(() => import("@/pages/Home"));');
+    expect(appSource).not.toContain('import Home from "./pages/Home";');
+  });
+
   it("routes every registered browser-local text or calculator tool to LocalToolPage", () => {
     expect(appSource).toContain('const LocalToolPage = lazy(() => import("@/pages/LocalToolPage"));');
     expect(appSource).toContain("const localToolRoutes = TOOL_REGISTRY.filter((tool) => isLocalToolId(tool.id));");
