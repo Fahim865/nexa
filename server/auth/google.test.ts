@@ -50,6 +50,10 @@ function requestGoogleCallback(port: number, host: string, path: string, cookie?
 }
 
 describe("Google OAuth safety helpers", () => {
+  const configuredRedirectUri = process.env.GOOGLE_REDIRECT_URI?.trim() || "https://nexapremium-mpo86vkq.manus.space/api/auth/google/callback";
+  const configuredOrigin = new URL(configuredRedirectUri).origin;
+  const configuredHost = new URL(configuredRedirectUri).host;
+
   it("normalizes pasted OAuth environment values before provider use", () => {
     expect(normalizeGoogleOAuthEnvironmentValue("  client-value\n")).toBe("client-value");
   });
@@ -91,13 +95,13 @@ describe("Google OAuth safety helpers", () => {
 
     try {
       const address = server.address() as AddressInfo;
-      const response = await requestGoogleStart(address.port, "nexapremium-mpo86vkq.manus.space");
+      const response = await requestGoogleStart(address.port, configuredHost);
 
       expect(response.statusCode).toBe(302);
       expect(response.headers.location).toMatch(/^https:\/\/accounts\.google\.com\/o\/oauth2\/v2\/auth\?/);
       expect(response.headers["set-cookie"]?.toString()).toContain("nexa_google_oauth=");
       expect(new URL(response.headers.location!.toString()).searchParams.get("redirect_uri")).toBe(
-        "https://nexapremium-mpo86vkq.manus.space/api/auth/google/callback",
+        configuredRedirectUri,
       );
     } finally {
       await new Promise<void>((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
@@ -117,7 +121,7 @@ describe("Google OAuth safety helpers", () => {
 
       expect(response.statusCode).toBe(302);
       expect(response.headers.location).toBe(
-        "https://nexapremium-mpo86vkq.manus.space/api/auth/google/start?returnTo=%2Ftools",
+        `${configuredOrigin}/api/auth/google/start?returnTo=%2Ftools`,
       );
       expect(response.headers["set-cookie"]).toBeUndefined();
     } finally {
@@ -160,7 +164,7 @@ describe("Google OAuth safety helpers", () => {
       const response = await requestGoogleStart(
         address.port,
         "internal-nexa-service:3000",
-        "nexapremium-mpo86vkq.manus.space",
+        configuredHost,
       );
 
       expect(response.statusCode).toBe(302);
@@ -180,7 +184,7 @@ describe("Google OAuth safety helpers", () => {
 
     try {
       const address = server.address() as AddressInfo;
-      const host = "nexapremium-mpo86vkq.manus.space";
+      const host = configuredHost;
       const start = await requestGoogleStart(address.port, host);
       const state = new URL(start.headers.location!.toString()).searchParams.get("state");
       const stateCookie = start.headers["set-cookie"]!.toString().split(";")[0];

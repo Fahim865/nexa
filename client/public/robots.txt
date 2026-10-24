@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /api/
+Disallow: /sign-in
+
+Sitemap: https://finemindai.vercel.app/sitemap.xml

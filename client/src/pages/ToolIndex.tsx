@@ -16,8 +16,9 @@ import {
   type ToolDiscoveryCategoryId,
 } from "@/data/nexa";
 import { useRecentTools } from "@/hooks/useRecentTools";
+import { trackEvent } from "@/lib/analytics";
 import { ArrowLeft, ArrowRight, ArrowUpRight, CheckCircle2, ChevronRight, Clock3, Layers3, Search, Sparkles, X } from "lucide-react";
-import { useDeferredValue, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { useLocation } from "wouter";
 import "./tool-index.css";
 
@@ -97,6 +98,12 @@ export default function ToolIndex({ mode = "overview" }: ToolIndexProps) {
   const featuredAiTools = useMemo(() => asTools(FEATURED_AI_TOOL_IDS), []);
   const isFiltering = query.trim().length > 0 || activeCategory !== "all";
   const activeMetadata = TOOL_DISCOVERY_CATEGORIES.find((category) => category.id === activeCategory) ?? TOOL_DISCOVERY_CATEGORIES[0];
+
+  useEffect(() => {
+    if (deferredQuery.trim().length > 1) {
+      trackEvent("tool_search", { category: activeCategory, result_count: results.length });
+    }
+  }, [activeCategory, deferredQuery, results.length]);
 
   return (
     <div className="tool-discovery-page">

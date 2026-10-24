@@ -4,6 +4,7 @@ import { getToolByRoute, isAiCreatorToolId, isDocumentUtilityToolId, isImageTool
 import { Route, Switch, useLocation } from "wouter";
 import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { recordRecentTool } from "@/hooks/useRecentTools";
+import { trackEvent, trackPageView } from "@/lib/analytics";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
@@ -35,9 +36,20 @@ const remainingToolRoutes = TOOL_REGISTRY.filter((tool) => !isImageToolId(tool.i
 function TrackToolVisit({ tool, children }: { tool: ToolDefinition; children: ReactNode }) {
   useEffect(() => {
     recordRecentTool(tool.id);
+    trackEvent("tool_open", { tool_id: tool.id, tool_name: tool.name, category: tool.category, status: tool.status });
   }, [tool.id]);
 
   return <>{children}</>;
+}
+
+function RouteAnalytics() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
+
+  return null;
 }
 
 function ImageToolRoute() {
@@ -126,6 +138,7 @@ function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#06111e]" aria-busy="true" aria-label="Loading page" />}>
+      <RouteAnalytics />
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/tools/all" component={AllToolsRoute} />

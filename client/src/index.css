@@ -273,3 +273,17 @@
   .premium-plan-selector:disabled label { cursor: not-allowed; opacity: 0.58; }
   @media (max-width: 620px) { .premium-plan-selector__choices { grid-template-columns: 1fr; } }
 }
+
+/* Final responsive guardrails: preserve the visual system while keeping touch targets and long labels usable on narrow screens. */
+@layer components {
+  @media (max-width: 520px) {
+    body { overflow-x: hidden; }
+    .nexa-nav { backdrop-filter: blur(14px); }
+    .nav-cta, .primary-button, .secondary-button, .module-button { min-height: 2.75rem; }
+    .hero-copy { max-width: 100%; }
+    .hero-subcopy { font-size: 0.94rem; line-height: 1.6; }
+    .tool-index-toolbar { align-items: stretch; flex-direction: column; }
+    .tool-index-toolbar > p { white-space: normal; }
+    .tool-index-search { width: 100%; }
+  }
+}
