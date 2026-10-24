@@ -176,7 +176,7 @@ export default function Home() {
 
       <main id="top">
         <section className="hero-section">
-          <img className="hero-art" src="/manus-storage/nexa-orbit-hero_2ebd6525.jpg" alt="Abstract orbital FINEMIND AI workspace artwork" />
+          <img className="hero-art" src="/manus-storage/nexa-orbit-hero_2ebd6525.jpg" alt="Abstract orbital FINEMIND AI workspace artwork" fetchPriority="high" decoding="async" />
           <div className="hero-shade" />
           <div className="hero-grid" aria-hidden="true" />
           <div className="relative z-10 mx-auto grid min-h-[760px] max-w-[1440px] items-center gap-12 px-5 pb-16 pt-28 lg:grid-cols-[minmax(0,0.88fr)_minmax(440px,0.95fr)] lg:px-10 lg:pb-20 lg:pt-32">

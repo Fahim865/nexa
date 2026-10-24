@@ -6,6 +6,8 @@ const source = readFileSync(new URL("./NexaMark.tsx", import.meta.url), "utf8");
 describe("FINEMIND AI shared logo", () => {
   it("uses a compact circular badge with a subtle natural hover treatment", () => {
     expect(source).toContain("finemind-ai-circular-badge_6c5f776e.png");
+    expect(source).toContain('const source = "/manus-storage/finemind-ai-circular-badge_6c5f776e.png"');
+    expect(source).not.toContain("nexapremium-mpo86vkq.manus.space/manus-storage");
     expect(source).toContain('rounded-full object-contain');
     expect(source).toContain("withWordmark = false");
     expect(source).toContain("font-extrabold text-[0.74rem]");

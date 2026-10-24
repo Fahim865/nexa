@@ -10,7 +10,7 @@ export function NexaMark({
   imageClassName = "",
   withWordmark = false,
 }: NexaMarkProps) {
-  const source = "https://nexapremium-mpo86vkq.manus.space/manus-storage/finemind-ai-circular-badge_6c5f776e.png";
+  const source = "/manus-storage/finemind-ai-circular-badge_6c5f776e.png";
 
   return (
     <div className={`group flex items-center gap-2.5 ${className}`} aria-label="FINEMIND AI home">
